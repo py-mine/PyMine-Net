@@ -18,3 +18,9 @@ class Pose(IntEnum):
     SPIN_ATTACK = 4
     SNEAKING = 5
     DYING = 6
+
+
+class EntityModifier(IntEnum):
+    MODIFY = 0  # add / subtract amount
+    MODIFY_PERCENT = 1  # add / subtract amount percent of the current value
+    MODIFY_MULTIPLY_PERCENT = 2  # multiply by percent amount

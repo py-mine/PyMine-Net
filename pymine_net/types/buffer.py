@@ -4,9 +4,8 @@ import struct
 import json
 import uuid
 
+from pymine_net.data.enums import Direction, EntityModifier, Pose
 from pymine_net import nbt
-from pymine_net.data.enums import Direction, Pose
-from pymine_net.types.chat import Chat
 
 
 BYTES_LIKE = Union[bytes, bytearray]
@@ -56,7 +55,7 @@ class Buffer(bytearray):
     def write_byte(self, value: int) -> Self:
         """Writes a singular byte to the buffer."""
 
-        self.buf.write(struct.pack(">b", value))
+        self.extend(struct.pack(">b", value))
         return self
     
     def read(self, fmt: str) -> Union[object, Tuple[object]]:
@@ -151,8 +150,7 @@ class Buffer(bytearray):
     def write_optional_varint(self, value: int = None) -> Self:
         """Writes an optional (None if not present) varint to the buffer."""
 
-        self.write_varint(0 if value is None else value + 1)
-        return self
+        return self.write_varint(0 if value is None else value + 1)
 
     def read_string(self) -> str:
         """Reads a UTF8 string from the buffer."""
@@ -175,9 +173,7 @@ class Buffer(bytearray):
     def write_json(self, value: object) -> Self:
         """Writes json data to the buffer."""
 
-        self.write_string(json.dumps(value))
-
-        return self
+        return self.write_string(json.dumps(value))
 
     def read_nbt(self) -> nbt.TAG_Compound:
         """Reads an nbt tag from the buffer."""
@@ -202,7 +198,7 @@ class Buffer(bytearray):
     def write_uuid(self, value: uuid.UUID) -> Self:
         """Writes a UUID to the buffer."""
 
-        self.write_bytes(value.bytes)
+        return self.write_bytes(value.bytes)
 
     def read_position(self) -> Tuple[int, int, int]:
         """Reads a Minecraft position (x, y, z) from the buffer."""
@@ -233,8 +229,7 @@ class Buffer(bytearray):
         def to_twos_complement(num, bits):
             return num + (1 << bits) if num < 0 else num
 
-        self.write("Q", to_twos_complement(x, 26) << 38 + to_twos_complement(z, 26) << 12 + to_twos_complement(y, 12))
-
+        return self.write("Q", to_twos_complement(x, 26) << 38 + to_twos_complement(z, 26) << 12 + to_twos_complement(y, 12))
 
     def read_slot(self) -> dict:
         """Reads an inventory / container slot from the buffer."""
@@ -254,8 +249,7 @@ class Buffer(bytearray):
     def write_rotation(self, x: float, y: float, z: float) -> Self:
         """Writes a rotation to the buffer."""
 
-        self.write("fff", x, y, z)
-        return self
+        return self.write("fff", x, y, z)
 
     def read_direction(self) -> Direction:
         """Reads a direction from the buffer."""
@@ -265,8 +259,7 @@ class Buffer(bytearray):
     def write_direction(self, value: Direction) -> Self:
         """Writes a direction to the buffer."""
 
-        self.write_varint(value.value)
-        return self
+        return self.write_varint(value.value)
 
     def read_pose(self) -> Pose:
         """Reads a pose from the buffer."""
@@ -276,8 +269,7 @@ class Buffer(bytearray):
     def write_pose(self, value: Pose) -> Self:
         """Writes a pose to the buffer."""
 
-        self.write_varint(value.value)
-        return self
+        return self.write_varint(value.value)
 
     def write_recipe_item(self, value: Union[dict, str]) -> Self:
         """Writes a recipe item / slot to the buffer."""
@@ -293,3 +285,205 @@ class Buffer(bytearray):
 
     def write_ingredient(self, value: dict) -> Self:
         """Writes a part of a recipe to the buffer."""
+
+        self.write_varint(len(value))
+
+        for slot in value.values():
+            self.write_recipe_item(slot)
+
+    def write_recipe(self, recipe_id: str, recipe: dict) -> Self:
+        """Writes a recipe to the buffer."""
+
+        recipe_type = recipe["type"]
+
+        self.write_string(recipe_type).write_string(recipe_id)
+
+        if recipe.get("group") is None:
+            recipe["group"] = "null"
+
+        if recipe_type == "minecraft:crafting_shapeless":
+            print(recipe.get("ingredients"))
+
+            self.write_string(recipe["group"]).write_varint(len(recipe["ingredients"]))
+
+            for ingredient in recipe.get("ingredients", []):
+                self.write_ingredient(ingredient)
+            
+            self.write_recipe_item(recipe["result"])
+        elif recipe_type == "minecraft:crafting_shaped":
+            self.write_varint(len(recipe["patern"][0])).write_varint(len(recipe["pattern"])).write_string(recipe["group"])
+
+            for ingredient in recipe.get("ingredients", []):
+                self.write_ingredient(ingredient)
+
+            self.write_recipe_item(recipe["result"])
+        elif recipe_type[10:] in ("smelting", "blasting", "campfire_cooking"):
+            print(recipe)
+
+            (
+                self
+                .write_string(recipe["group"])
+                .write_ingredient(recipe["ingredient"])
+                .write_recipe_item(recipe["result"])
+                .write("f", recipe["experience"])
+                .write(recipe["cookingtime"])
+            )
+        elif recipe_type == "minecraft:stonecutting":
+            self.write_string(recipe["group"]).write_ingredient(recipe["ingredient"]).write_recipe_item(recipe["result"])
+        elif recipe_type == "minecraft:smithing":
+            self.write_ingredient(recipe["base"]).write_ingredient(recipe["addition"]).write_ingredient(recipe["result"])
+
+        return self
+
+    def read_villager(self) -> dict:
+        """Reads villager data from the buffer."""
+
+        return {
+            "kind": self.read_varint(),
+            "profession": self.read_varint(),
+            "level": self.read_varint(),
+        }
+
+    def write_villager(self, kind: int, profession: int, level: int) -> Self:
+        return self.write_varint(kind).write_varint(profession).write_varint(level)
+
+    def write_trade(
+        self,
+        in_item_1: dict,
+        out_item: dict,
+        disabled: bool,
+        num_trade_usages: int,
+        max_trade_usages: int,
+        xp: int,
+        special_price: int,
+        price_multi: float,
+        demand: int,
+        in_item_2: dict = None,
+    ) -> Self:
+        self.write_slot(**in_item_1).write_slot(**out_item)
+
+        if in_item_2 is not None:
+             self.write("?", True).write_slot(**in_item_2)
+        else:
+             self.write("?", False)
+
+        return (
+            self
+            .write("?", disabled)
+            .write("i", num_trade_usages)
+            .write("i", max_trade_usages)
+            .write("i", xp)
+            .write("i", special_price)
+            .write("f", price_multi)
+            .write("i", demand)
+        )
+
+    def read_particle(self) -> dict:
+        particle = {}
+        particle_id = particle["id"] = self.read_varint()
+
+        if particle_id == 3 or particle_id == 23:
+            particle["block_state"] = self.read_varint()
+        elif particle_id == 14:
+            particle["red"] = self.read("f")
+            particle["green"] = self.read("f")
+            particle["blue"] = self.read("f")
+            particle["scale"] = self.read("f")
+        elif particle_id == 32:
+            particle["item"] = self.read_slot()
+
+        return particle
+
+    def write_particle(self, **value) -> Self:
+        particle_id = value["particle_id"]
+
+        if particle_id == 3 or particle_id == 23:
+            self.write_varint(value["block_state"])
+        elif particle_id == 14:
+            self.write("ffff", value["red"], value["green"], value["blue"], value["scale"])
+        elif particle_id == 32:
+            self.write_slot(**value["item"])
+
+        return self
+
+    def write_entity_metadata(self, value: dict) -> Self:
+        #  index, type, value
+        for (i, t), v in value.items():
+            self.write("B", i).write_varint(t)
+
+            if t == 0:
+                self.write("b", v)
+            elif t == 1: 
+                self.write_varint(v)
+            elif t == 2:
+                self.write("f", v)
+            elif t == 3:
+                self.write_string(v)
+            elif t == 4:
+                self.write_chat(v)
+            elif t == 5:
+                self.write_optional(self.write_chat, v)
+            elif t == 6:
+                self.write_slot(**v)
+            elif t == 7:
+                self.write("?", v)
+            elif t == 8:
+                self.write_rotation(*v)
+            elif t == 9:
+                self.write_position(*v)
+            elif t == 10:
+                self.write("?", v is not None)
+                if v is not None:
+                    self.write_position(*v)
+            elif t == 11:
+                self.write_direction(v)
+            elif t == 12:
+                self.write_optional(self.write_uuid, v)
+            elif t == 13:
+                self.write_block(v)
+            elif t == 14:
+                self.write_nbt(v)
+            elif t == 15:
+                self.write_particle(**v)
+            elif t == 16:
+                self.write_villager(*v)
+            elif t == 17:
+                self.write_optional_varint(v)
+            elif t == 18:
+                self.write_pose(v)
+        
+        self.write_bytes(b"\xFE")
+
+        return self
+
+    def read_modifier(self) -> Tuple[uuid.UUID, float, EntityModifier]:
+        return (self.read_uuid(), self.read("f"), EntityModifier(self.read("b")))
+
+    def write_modifier(self, uuid_: uuid.UUID, amount: float, operation: EntityModifier):
+        return self.write_uuid(uuid_).write("f", amount).write("b", operation)
+
+    def write_node(self, node: dict) -> Self:
+        node_flags = node["flags"]        
+        self.write_byte(node_flags).write_varint(len(node["children"]))
+
+        for child in node["children"]:
+            self.write_node(child)
+
+
+        if node_flags & 0x08:
+            self.write_varint(node["redirect_node"])
+        
+        if 1 >= node_flags & 0x03 <= 2:  # argument or literal node
+            self.write_string(node["name"])
+        
+        if node_flags & 0x3 == 2:  # argument node
+            self.write_string(node["parser"])
+
+            if node.get("properties"):
+                for writer, data in node["properties"]:
+                    writer(data)
+
+        if node_flags & 0x10:
+            self.write_string(node["suggestions_type"])
+
+        return self
