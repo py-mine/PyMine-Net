@@ -5,6 +5,7 @@ import json
 import uuid
 
 from pymine_net import nbt
+from pymine_net.data.enums import Direction, Pose
 from pymine_net.types.chat import Chat
 
 
@@ -220,6 +221,12 @@ class Buffer(bytearray):
             from_twos_complement(data >> 12 & 0x3FFFFFF, 26),
         )
 
+    def read_chat(self):
+        raise NotImplementedError("Just read json?")
+
+    def write_chat(self):
+        raise NotImplementedError("Just write json?")
+
     def write_position(self, x: int, y: int, z: int) -> Self:
         """Writes a Minecraft position (x, y, z) to the buffer."""
 
@@ -229,5 +236,60 @@ class Buffer(bytearray):
         self.write("Q", to_twos_complement(x, 26) << 38 + to_twos_complement(z, 26) << 12 + to_twos_complement(y, 12))
 
 
-buffer = Buffer()
-buffer.write_byte(1).write_bytes(b"123abc").write_varint(420)
+    def read_slot(self) -> dict:
+        """Reads an inventory / container slot from the buffer."""
+
+        raise NotImplementedError
+
+    def write_slot(self, item: str = None, count: int = 1, tag: nbt.TAG = None) -> Self:
+        """Writes an inventory / container slot to the buffer."""
+
+        raise NotImplementedError
+
+    def read_rotation(self) -> Tuple[float, float, float]:
+        """Reads a rotation from the buffer."""
+
+        return self.read("fff")
+
+    def write_rotation(self, x: float, y: float, z: float) -> Self:
+        """Writes a rotation to the buffer."""
+
+        self.write("fff", x, y, z)
+        return self
+
+    def read_direction(self) -> Direction:
+        """Reads a direction from the buffer."""
+
+        return Direction(self.read_varint())
+
+    def write_direction(self, value: Direction) -> Self:
+        """Writes a direction to the buffer."""
+
+        self.write_varint(value.value)
+        return self
+
+    def read_pose(self) -> Pose:
+        """Reads a pose from the buffer."""
+
+        return Pose(self.read_varint())
+
+    def write_pose(self, value: Pose) -> Self:
+        """Writes a pose to the buffer."""
+
+        self.write_varint(value.value)
+        return self
+
+    def write_recipe_item(self, value: Union[dict, str]) -> Self:
+        """Writes a recipe item / slot to the buffer."""
+
+        if isinstance(value, dict):
+            self.write_slot(**value)
+        elif isinstance(value, str):
+            self.write_slot(value)
+        else:
+            raise TypeError(f"Invalid type {type(value)}.")
+
+        return self
+
+    def write_ingredient(self, value: dict) -> Self:
+        """Writes a part of a recipe to the buffer."""
