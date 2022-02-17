@@ -1,6 +1,13 @@
 from enum import IntEnum
 
-__all__ = ("Direction", "Pose", "EntityModifier")
+__all__ = ("GameState", "Direction", "Pose", "EntityModifier")
+
+
+class GameState(IntEnum):
+    HANDSHAKING = 0
+    STATUS = 1
+    LOGIN = 2
+    PLAY = 3
 
 
 class Direction(IntEnum):

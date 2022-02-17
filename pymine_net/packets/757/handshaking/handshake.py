@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from pymine_net.enums import PacketDirection
-from pymine_net import ClientPacket, Buffer
+from pymine_net import ServerBoundPacket, Buffer
+
+__all__ = ("HandshakeHandshake",)
 
 
-class HandshakeHandshake(ClientPacket):
+class HandshakeHandshake(ServerBoundPacket):
     """Initiates the connection between the server and client. (Client -> Server)
 
     :param int protocol: Protocol version to be used.

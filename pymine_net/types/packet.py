@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod, abstractclassmethod
 
-from pymine_net import Buffer
+from pymine_net.types.buffer import Buffer
 
-__all__ = ("Packet", "ClientPacket", "ServerPacket")
+__all__ = ("Packet", "ServerBoundPacket", "ClientBoundPacket")
 
 
 class Packet(ABC):
@@ -18,7 +18,7 @@ class Packet(ABC):
         self.id: int = self.__class__.id
 
 
-class ClientPacket(Packet):
+class ServerBoundPacket(Packet):
     """Base Packet class for packets received from the client. (Client -> Server)
 
     :param int id: Packet identifaction number. Defaults to None.
@@ -26,11 +26,11 @@ class ClientPacket(Packet):
     """
 
     @abstractclassmethod
-    def unpack(cls, buf: Buffer) -> ClientPacket:
+    def unpack(cls, buf: Buffer) -> ServerBoundPacket:
         pass
 
 
-class ServerPacket(Packet):
+class ClientBoundPacket(Packet):
     """Base Packet class for packets to be sent from the server. (Server -> Client)
 
     :param int id: Packet identifaction number. Defaults to None.
