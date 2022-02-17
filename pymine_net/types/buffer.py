@@ -4,11 +4,8 @@ import struct
 import json
 import uuid
 
-from pymine_net.data.enums import Direction, EntityModifier, Pose
-from pymine_net import nbt
-
-
-BYTES_LIKE = Union[bytes, bytearray]
+from pymine_net.enums import Direction, EntityModifier, Pose
+from pymine_net import nbt, Registry
 
 
 class Buffer(bytearray):
@@ -16,7 +13,7 @@ class Buffer(bytearray):
         super().__init__(*args, **kwargs)
         self.pos = 0
 
-    def write_bytes(self, data: BYTES_LIKE) -> Self:
+    def write_bytes(self, data: Union[bytes, bytearray]) -> Self:
         """Writes bytes to the buffer."""
 
         self.extend(data)
@@ -217,11 +214,22 @@ class Buffer(bytearray):
             from_twos_complement(data >> 12 & 0x3FFFFFF, 26),
         )
 
-    def read_chat(self):
-        raise NotImplementedError("Just read json?")
+    def read_chat(self) -> dict:
+        """Reads a chat message from the buffer."""
 
-    def write_chat(self):
-        raise NotImplementedError("Just write json?")
+        return self.read_json()
+
+    def write_chat(self, value: Union[str, dict]):
+        """Writes a chat message to the buffer."""
+
+        if isinstance(value, str):
+            self.write_json({"text": value})
+        elif isinstance(value, dict):
+            self.write_json(value)
+        else:
+            raise TypeError(f"Invalid type {type(value)}.")
+
+        return self
 
     def write_position(self, x: int, y: int, z: int) -> Self:
         """Writes a Minecraft position (x, y, z) to the buffer."""
@@ -231,15 +239,29 @@ class Buffer(bytearray):
 
         return self.write("Q", to_twos_complement(x, 26) << 38 + to_twos_complement(z, 26) << 12 + to_twos_complement(y, 12))
 
-    def read_slot(self) -> dict:
+    def read_slot(self, registry: Registry) -> dict:
         """Reads an inventory / container slot from the buffer."""
 
-        raise NotImplementedError
+        has_item_id = self.read_optional(self.read_varint)
 
-    def write_slot(self, item: str = None, count: int = 1, tag: nbt.TAG = None) -> Self:
+        if has_item_id is None:
+            return {"item": None}
+
+        return {
+            "item": registry.decode(self.read_varint()),
+            "count": self.read("b"),
+            "tag": self.read_nbt()
+        }
+
+    def write_slot(self, registry: Registry, item: str = None, count: int = 1, tag: nbt.TAG = None) -> Self:
         """Writes an inventory / container slot to the buffer."""
 
-        raise NotImplementedError
+        item_id = registry.encode(item)
+
+        if item_id is None:
+            self.write("?", False)
+        else:
+            self.write("?", True).write_varint(item_id).write("b", count).write_nbt(tag)
 
     def read_rotation(self) -> Tuple[float, float, float]:
         """Reads a rotation from the buffer."""
@@ -468,7 +490,6 @@ class Buffer(bytearray):
 
         for child in node["children"]:
             self.write_node(child)
-
 
         if node_flags & 0x08:
             self.write_varint(node["redirect_node"])
