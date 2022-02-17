@@ -2,6 +2,7 @@ import math
 import sys
 import os
 
+# fix path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from pymine_net import Buffer, nbt
