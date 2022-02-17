@@ -440,9 +440,7 @@ class Buffer(bytearray):
         if particle_id == 3 or particle_id == 23:
             self.write_varint(value["block_state"])
         elif particle_id == 14:
-            self.write(
-                "ffff", value["red"], value["green"], value["blue"], value["scale"]
-            )
+            self.write("ffff", value["red"], value["green"], value["blue"], value["scale"])
         elif particle_id == 32:
             self.write_slot(**value["item"])
 
@@ -501,9 +499,7 @@ class Buffer(bytearray):
     def read_modifier(self) -> Tuple[uuid.UUID, float, EntityModifier]:
         return (self.read_uuid(), self.read("f"), EntityModifier(self.read("b")))
 
-    def write_modifier(
-        self, uuid_: uuid.UUID, amount: float, operation: EntityModifier
-    ):
+    def write_modifier(self, uuid_: uuid.UUID, amount: float, operation: EntityModifier):
         return self.write_uuid(uuid_).write("f", amount).write("b", operation)
 
     def write_node(self, node: dict) -> Self:

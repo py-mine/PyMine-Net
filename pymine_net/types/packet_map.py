@@ -34,9 +34,7 @@ class StatePacketMap:
 class PacketMap:
     """Stores a Minecraft protocol's packets"""
 
-    def __init__(
-        self, protocol: Union[str, int], packets: Dict[GameState, StatePacketMap]
-    ):
+    def __init__(self, protocol: Union[str, int], packets: Dict[GameState, StatePacketMap]):
         self.protocol = protocol
         self.packets = packets
 
