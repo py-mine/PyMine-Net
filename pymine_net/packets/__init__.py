@@ -4,6 +4,8 @@ import importlib
 from pymine_net.types.packet_map import PacketMap, StatePacketMap
 from pymine_net.enums import GameState
 
+__all__ = ("load_packet_map",)
+
 GAME_STATES = {
     GameState.HANDSHAKING: "handshaking",
     GameState.STATUS: "status",
