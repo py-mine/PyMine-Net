@@ -4,8 +4,7 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from pymine_net.types.buffer import Buffer
-import pymine_net.types.nbt as nbt
+from pymine_net import Buffer, nbt
 
 
 def test_bigtest():  # tests that loading bigtest.nbt works without errors

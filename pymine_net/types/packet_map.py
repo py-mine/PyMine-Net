@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, Union, List, Type
+from typing import Dict, Tuple, Union, List, Type
 
 from pymine_net import Packet
 from pymine_net.enums import GameState
@@ -22,6 +22,8 @@ class StatePacketMap:
 
     @classmethod
     def from_list(cls, state: GameState, packets: List[Type[Packet]]) -> StatePacketMap:
+        packets = [p for p in packets if isinstance(p, type)]
+
         return cls(
             state,
             {p.id: p for p in packets if issubclass(p, ServerBoundPacket)},
@@ -38,10 +40,10 @@ class PacketMap:
         self.protocol = protocol
         self.packets = packets
 
-    def __getitem__(self, s: slice) -> Type[ServerBoundPacket]:
+    def __getitem__(self, key: Tuple[GameState, int]) -> Type[ServerBoundPacket]:
         state: GameState
         packet_id: int
 
-        (state, packet_id, _) = (s.start, s.stop, s.step)
+        (state, packet_id) = key
 
         return self.packets[state].serverbound[packet_id]

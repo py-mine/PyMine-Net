@@ -29,6 +29,7 @@ def test_io():
     assert buf.read_bytes() == b"\x02\x03"
 
     buf.reset()
+    assert buf.pos == 0
     assert buf.read_bytes() == b"\x02\x69\x00\x01\x02\x03"
     buf.reset()
 
@@ -36,10 +37,17 @@ def test_io():
 def test_basic():
     buf = Buffer()
 
+    buf.write_string("abcdefhijklmnopqrstuvwxyz")
+    buf.clear()
+    
+    assert buf.pos == 0
+    assert buf == b""
+    
     assert (
         buf.write("i", 123).write("b", 1).write("?", True).write("q", 1234567890456)
         == buf
     )
+
     assert buf == b"\x00\x00\x00{\x01\x01\x00\x00\x01\x1fq\xfb\x06\x18"
 
     assert buf.read("i") == 123
@@ -99,11 +107,17 @@ def test_string():
     buf.write_string("")
     buf.write_string("")
     buf.write_string("2")
+    buf.write_string("")
+    buf.write_string("")
+    buf.write_string("2")
     buf.write_string("adkfj;adkfa;ldkfj\x01af\t\n\n00;\xc3\x85\xc3\x84\xc3\x96")
     buf.write_string("")
     buf.write_string("BrUh")
     buf.write_string("")
 
+    assert buf.read_string() == ""
+    assert buf.read_string() == ""
+    assert buf.read_string() == "2"
     assert buf.read_string() == ""
     assert buf.read_string() == ""
     assert buf.read_string() == "2"

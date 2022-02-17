@@ -1,9 +1,18 @@
+[tool.black]
+line-length = 100
+target-version = ['py37', 'py38']
+include = '\.pyi?$'
+
+[tool.pytest.ini_options]
+addopts = "--full-trace -v"
+testpaths = ["tests"]
+
 [tool.poetry]
 name = "pymine-net"
 version = "1.0.0"
 description = "Networking library for Minecraft in Python"
-authors = ["Your Name <you@example.com>"]
-license = "MIT"
+authors = ["PyMine-Net Developers & Contributors"]
+license = "GPLv3"
 
 [tool.poetry.dependencies]
 python = "^3.8"
