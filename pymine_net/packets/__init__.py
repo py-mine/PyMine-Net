@@ -17,8 +17,6 @@ def load_packet_map(protocol: Union[int, str]) -> PacketMap:
 
     for state, state_name in GAME_STATES.items():
         module = importlib.import_module(f"pymine_net.packets.{protocol}.{state_name}")
-        packets[state] = StatePacketMap.from_list(
-            state, [getattr(module, c) for c in dir(module)]
-        )
+        packets[state] = StatePacketMap.from_list(state, [getattr(module, c) for c in dir(module)])
 
     return PacketMap(protocol, packets)

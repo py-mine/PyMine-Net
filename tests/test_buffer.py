@@ -39,14 +39,11 @@ def test_basic():
 
     buf.write_string("abcdefhijklmnopqrstuvwxyz")
     buf.clear()
-    
+
     assert buf.pos == 0
     assert buf == b""
-    
-    assert (
-        buf.write("i", 123).write("b", 1).write("?", True).write("q", 1234567890456)
-        == buf
-    )
+
+    assert buf.write("i", 123).write("b", 1).write("?", True).write("q", 1234567890456) == buf
 
     assert buf == b"\x00\x00\x00{\x01\x01\x00\x00\x01\x1fq\xfb\x06\x18"
 
@@ -121,9 +118,7 @@ def test_string():
     assert buf.read_string() == ""
     assert buf.read_string() == ""
     assert buf.read_string() == "2"
-    assert (
-        buf.read_string() == "adkfj;adkfa;ldkfj\x01af\t\n\n00;\xc3\x85\xc3\x84\xc3\x96"
-    )
+    assert buf.read_string() == "adkfj;adkfa;ldkfj\x01af\t\n\n00;\xc3\x85\xc3\x84\xc3\x96"
     assert buf.read_string() == ""
     assert buf.read_string() == "BrUh"
     assert buf.read_string() == ""
