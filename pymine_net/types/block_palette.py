@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 
 
+__all__ = ("Palette",)
+
+
 class Palette(ABC):
     @abstractmethod
     def get_bits_per_block(self) -> int:

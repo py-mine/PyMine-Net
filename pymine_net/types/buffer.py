@@ -7,6 +7,8 @@ import uuid
 from pymine_net.enums import Direction, EntityModifier, Pose
 from pymine_net import nbt, Registry
 
+__all__ = ("Buffer",)
+
 
 class Buffer(bytearray):
     def __init__(self, *args, **kwargs):

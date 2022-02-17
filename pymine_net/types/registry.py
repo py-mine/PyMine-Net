@@ -1,5 +1,7 @@
 from typing import Union
 
+__all__ = ("Registry",)
+
 
 class Registry:
     def __init__(self, data: Union[dict, list, tuple], data_reversed: Union[dict, list, tuple] = None):
