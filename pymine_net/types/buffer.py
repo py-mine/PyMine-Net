@@ -61,7 +61,7 @@ class Buffer(bytearray):
     def read(self, fmt: str) -> Union[object, Tuple[object]]:
         """Using the given format, reads from the buffer and returns the unpacked value."""
 
-        print("sliced:", self[self.pos:])
+        print("sliced:", self[self.pos :])
 
         unpacked = struct.unpack(">" + fmt, self.read_bytes(struct.calcsize(fmt)))
 
@@ -184,7 +184,7 @@ class Buffer(bytearray):
     def read_nbt(self) -> nbt.TAG_Compound:
         """Reads an nbt tag from the buffer."""
 
-        return nbt.unpack(self[self.pos:])
+        return nbt.unpack(self[self.pos :])
 
     def write_nbt(self, value: nbt.TAG = None) -> Self:
         """Writes an nbt tag to the buffer."""
