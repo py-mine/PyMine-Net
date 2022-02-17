@@ -24,7 +24,5 @@ jobs:
         if: steps.black-check.outcome != 'success'
         run: |
           black --config pyproject.toml .
-          git config --global user.name github-actions
-          git config --global user.email '${GITHUB_ACTOR}@users.noreply.github.com'
-          git commit -am "apply black codestyle" --allow-empty
+          git commit --author="github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>" -am "apply black codestyle"
           git push
