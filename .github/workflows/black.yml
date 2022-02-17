@@ -34,6 +34,6 @@ jobs:
         run: |
           for s in $(cat .black_diff | sort | uniq | grep -e "--- " - | perl -n -e'/--- (.*)\t.*/gs && print($1,"\n")')
           do
-            echo -e "::warning file=$s,title=Reformatting Needed::This file needs reformatting with black\nThis will be done on merge, or you can run it manually with\n'black --config pyproject.toml pymine_net'"
+            echo -e "::warning file=$s,line=0,title=Reformatting Needed::This file needs reformatting with black"
           done
          
