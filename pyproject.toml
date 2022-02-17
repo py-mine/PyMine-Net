@@ -4,7 +4,7 @@ target-version = ['py37', 'py38']
 include = '\.pyi?$'
 
 [tool.pytest.ini_options]
-addopts = "--full-trace -v"
+addopts = "--full-trace -rP -v"
 testpaths = ["tests"]
 
 [tool.poetry]
@@ -22,6 +22,7 @@ mutf8 = "^1.0.6"
 flake8 = "^4.0.1"
 black = "^22.1.0"
 pytest = "^7.0.1"
+colorama = "^0.4.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
