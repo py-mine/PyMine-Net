@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from mutf8 import encode_modified_utf8, decode_modified_utf8
+import traceback
 import struct
 import gzip
 
@@ -28,11 +29,12 @@ TYPES = []
 
 def unpack(buf, root_is_full: bool = True) -> TAG_Compound:
     try:
-        data = gzip.decompress(buf[buf.pos :])
-        buf.clear()
-        buf.write_bytes(data)
+        data = gzip.decompress(buf)
     except Exception:
         pass
+    else:
+        buf.clear()
+        buf.write_bytes(data)
 
     if root_is_full:
         buf.read_byte()

@@ -37,7 +37,7 @@ class Buffer(bytearray):
     def clear(self) -> None:
         """Resets the position and clears the bytearray."""
 
-        self.clear()
+        super().clear()
         self.pos = 0
 
     def reset(self) -> None:
@@ -60,8 +60,6 @@ class Buffer(bytearray):
 
     def read(self, fmt: str) -> Union[object, Tuple[object]]:
         """Using the given format, reads from the buffer and returns the unpacked value."""
-
-        print("sliced:", self[self.pos :])
 
         unpacked = struct.unpack(">" + fmt, self.read_bytes(struct.calcsize(fmt)))
 
