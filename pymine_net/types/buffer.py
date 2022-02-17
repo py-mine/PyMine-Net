@@ -5,7 +5,8 @@ import json
 import uuid
 
 from pymine_net.enums import Direction, EntityModifier, Pose
-from pymine_net import nbt, Registry
+from pymine_net.types.registry import Registry
+from pymine_net.types import nbt
 
 __all__ = ("Buffer",)
 
@@ -26,10 +27,10 @@ class Buffer(bytearray):
         """Reads bytes from the buffer, if length is None then all bytes are read."""
 
         if length is None:
-            length = len(self.buf)
+            length = len(self)
 
         try:
-            return self.buf[self.pos : self.pos + length]
+            return self[self.pos : self.pos + length]
         finally:
             self.pos += length
 
@@ -47,7 +48,7 @@ class Buffer(bytearray):
     def read_byte(self) -> int:
         """Reads a singular byte as an integer from the buffer."""
 
-        byte = self.buf[self.pos]
+        byte = self[self.pos]
         self.pos += 1
         return byte
 
@@ -60,7 +61,9 @@ class Buffer(bytearray):
     def read(self, fmt: str) -> Union[object, Tuple[object]]:
         """Using the given format, reads from the buffer and returns the unpacked value."""
 
-        unpacked = struct.unpack(">" + fmt, self.read(struct.calcsize(fmt)))
+        print("sliced:", self[self.pos:])
+
+        unpacked = struct.unpack(">" + fmt, self.read_bytes(struct.calcsize(fmt)))
 
         if len(unpacked) == 1:
             return unpacked[0]
@@ -181,7 +184,7 @@ class Buffer(bytearray):
     def read_nbt(self) -> nbt.TAG_Compound:
         """Reads an nbt tag from the buffer."""
 
-        return nbt.unpack(self)
+        return nbt.unpack(self[self.pos:])
 
     def write_nbt(self, value: nbt.TAG = None) -> Self:
         """Writes an nbt tag to the buffer."""

@@ -1,20 +1,17 @@
 from __future__ import annotations
 
-from pymine_net.enums import PacketDirection
-from pymine_net import ClientPacket, ServerPacket, Buffer
+from pymine_net import ServerBoundPacket, ClientBoundPacket, Buffer
+
+__all__ = ("StatusStatusRequest", "StatusStatusResponse", "StatusStatusPingPong")
 
 
-# see https://wiki.vg/Server_List_Ping for more information
-
-
-class StatusStatusRequest(ClientPacket):
+class StatusStatusRequest(ServerBoundPacket):
     """Request from the client to get information on the server. (Client -> Server)
 
     :ivar int id: Unique packet ID.
     """
 
     id = 0x00
-    to = PacketDirection.TO_SERVER
 
     def __init__(self) -> None:
         super().__init__()
@@ -24,7 +21,7 @@ class StatusStatusRequest(ClientPacket):
         return cls()
 
 
-class StatusStatusResponse(ServerPacket):
+class StatusStatusResponse(ClientBoundPacket):
     """Returns server status data back to the requesting client. (Server -> Client)
 
     :param dict response_data: JSON response data sent back to the client.
@@ -41,3 +38,26 @@ class StatusStatusResponse(ServerPacket):
 
     def pack(self) -> Buffer:
         return Buffer().write_json(self.response_data)
+
+
+class StatusStatusPingPong(ServerBoundPacket, ClientBoundPacket):
+    """Ping pong? (Client <-> Server)
+
+    :param int payload: A long number, randomly generated or what the client sent.
+    :ivar int id: Unique packet ID.
+    :ivar int payload:
+    """
+
+    id = 0x01
+
+    def __init__(self, payload: int) -> None:
+        super().__init__()
+
+        self.payload = payload
+
+    @classmethod
+    def unpack(cls, buf: Buffer) -> StatusStatusPingPong:
+        return cls(buf.read("q"))
+
+    def pack(self) -> Buffer:
+        return Buffer().write("q", self.payload)

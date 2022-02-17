@@ -12,6 +12,7 @@ mutf8 = "^1.0.6"
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
 black = "^22.1.0"
+pytest = "^7.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
