@@ -4,7 +4,11 @@ __all__ = ("Registry",)
 
 
 class Registry:
-    def __init__(self, data: Union[dict, list, tuple], data_reversed: Union[dict, list, tuple] = None):
+    def __init__(
+        self,
+        data: Union[dict, list, tuple],
+        data_reversed: Union[dict, list, tuple] = None,
+    ):
         self.data_reversed = data_reversed
 
         if isinstance(data, dict):

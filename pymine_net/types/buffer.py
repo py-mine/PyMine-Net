@@ -56,7 +56,7 @@ class Buffer(bytearray):
 
         self.extend(struct.pack(">b", value))
         return self
-    
+
     def read(self, fmt: str) -> Union[object, Tuple[object]]:
         """Using the given format, reads from the buffer and returns the unpacked value."""
 
@@ -109,7 +109,9 @@ class Buffer(bytearray):
         value_min = -1 << (max_bits - 1)
 
         if not (value_min <= value <= value_max):
-            raise ValueError(f"Value doesn't fit in given range: {value_min} <= {value} < {value_max}")
+            raise ValueError(
+                f"Value doesn't fit in given range: {value_min} <= {value} < {value_max}"
+            )
 
         return value
 
@@ -120,7 +122,9 @@ class Buffer(bytearray):
         value_min = -1 << (max_bits - 1)
 
         if not (value_min <= value <= value_max):
-            raise ValueError(f"num doesn't fit in given range: {value_min} <= {value} < {value_max}")
+            raise ValueError(
+                f"num doesn't fit in given range: {value_min} <= {value} < {value_max}"
+            )
 
         if value < 0:
             value += 1 << 32
@@ -239,7 +243,12 @@ class Buffer(bytearray):
         def to_twos_complement(num, bits):
             return num + (1 << bits) if num < 0 else num
 
-        return self.write("Q", to_twos_complement(x, 26) << 38 + to_twos_complement(z, 26) << 12 + to_twos_complement(y, 12))
+        return self.write(
+            "Q",
+            to_twos_complement(x, 26)
+            << 38 + to_twos_complement(z, 26)
+            << 12 + to_twos_complement(y, 12),
+        )
 
     def read_slot(self, registry: Registry) -> dict:
         """Reads an inventory / container slot from the buffer."""
@@ -252,10 +261,12 @@ class Buffer(bytearray):
         return {
             "item": registry.decode(self.read_varint()),
             "count": self.read("b"),
-            "tag": self.read_nbt()
+            "tag": self.read_nbt(),
         }
 
-    def write_slot(self, registry: Registry, item: str = None, count: int = 1, tag: nbt.TAG = None) -> Self:
+    def write_slot(
+        self, registry: Registry, item: str = None, count: int = 1, tag: nbt.TAG = None
+    ) -> Self:
         """Writes an inventory / container slot to the buffer."""
 
         item_id = registry.encode(item)
@@ -332,10 +343,12 @@ class Buffer(bytearray):
 
             for ingredient in recipe.get("ingredients", []):
                 self.write_ingredient(ingredient)
-            
+
             self.write_recipe_item(recipe["result"])
         elif recipe_type == "minecraft:crafting_shaped":
-            self.write_varint(len(recipe["patern"][0])).write_varint(len(recipe["pattern"])).write_string(recipe["group"])
+            self.write_varint(len(recipe["patern"][0])).write_varint(
+                len(recipe["pattern"])
+            ).write_string(recipe["group"])
 
             for ingredient in recipe.get("ingredients", []):
                 self.write_ingredient(ingredient)
@@ -345,17 +358,20 @@ class Buffer(bytearray):
             print(recipe)
 
             (
-                self
-                .write_string(recipe["group"])
+                self.write_string(recipe["group"])
                 .write_ingredient(recipe["ingredient"])
                 .write_recipe_item(recipe["result"])
                 .write("f", recipe["experience"])
                 .write(recipe["cookingtime"])
             )
         elif recipe_type == "minecraft:stonecutting":
-            self.write_string(recipe["group"]).write_ingredient(recipe["ingredient"]).write_recipe_item(recipe["result"])
+            self.write_string(recipe["group"]).write_ingredient(
+                recipe["ingredient"]
+            ).write_recipe_item(recipe["result"])
         elif recipe_type == "minecraft:smithing":
-            self.write_ingredient(recipe["base"]).write_ingredient(recipe["addition"]).write_ingredient(recipe["result"])
+            self.write_ingredient(recipe["base"]).write_ingredient(
+                recipe["addition"]
+            ).write_ingredient(recipe["result"])
 
         return self
 
@@ -387,13 +403,12 @@ class Buffer(bytearray):
         self.write_slot(**in_item_1).write_slot(**out_item)
 
         if in_item_2 is not None:
-             self.write("?", True).write_slot(**in_item_2)
+            self.write("?", True).write_slot(**in_item_2)
         else:
-             self.write("?", False)
+            self.write("?", False)
 
         return (
-            self
-            .write("?", disabled)
+            self.write("?", disabled)
             .write("i", num_trade_usages)
             .write("i", max_trade_usages)
             .write("i", xp)
@@ -424,7 +439,9 @@ class Buffer(bytearray):
         if particle_id == 3 or particle_id == 23:
             self.write_varint(value["block_state"])
         elif particle_id == 14:
-            self.write("ffff", value["red"], value["green"], value["blue"], value["scale"])
+            self.write(
+                "ffff", value["red"], value["green"], value["blue"], value["scale"]
+            )
         elif particle_id == 32:
             self.write_slot(**value["item"])
 
@@ -437,7 +454,7 @@ class Buffer(bytearray):
 
             if t == 0:
                 self.write("b", v)
-            elif t == 1: 
+            elif t == 1:
                 self.write_varint(v)
             elif t == 2:
                 self.write("f", v)
@@ -475,7 +492,7 @@ class Buffer(bytearray):
                 self.write_optional_varint(v)
             elif t == 18:
                 self.write_pose(v)
-        
+
         self.write_bytes(b"\xFE")
 
         return self
@@ -483,11 +500,13 @@ class Buffer(bytearray):
     def read_modifier(self) -> Tuple[uuid.UUID, float, EntityModifier]:
         return (self.read_uuid(), self.read("f"), EntityModifier(self.read("b")))
 
-    def write_modifier(self, uuid_: uuid.UUID, amount: float, operation: EntityModifier):
+    def write_modifier(
+        self, uuid_: uuid.UUID, amount: float, operation: EntityModifier
+    ):
         return self.write_uuid(uuid_).write("f", amount).write("b", operation)
 
     def write_node(self, node: dict) -> Self:
-        node_flags = node["flags"]        
+        node_flags = node["flags"]
         self.write_byte(node_flags).write_varint(len(node["children"]))
 
         for child in node["children"]:
@@ -495,10 +514,10 @@ class Buffer(bytearray):
 
         if node_flags & 0x08:
             self.write_varint(node["redirect_node"])
-        
+
         if 1 >= node_flags & 0x03 <= 2:  # argument or literal node
             self.write_string(node["name"])
-        
+
         if node_flags & 0x3 == 2:  # argument node
             self.write_string(node["parser"])
 

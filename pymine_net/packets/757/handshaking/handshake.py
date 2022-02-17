@@ -30,4 +30,6 @@ class HandshakeHandshake(ClientPacket):
 
     @classmethod
     def unpack(cls, buf: Buffer) -> HandshakeHandshake:
-        return cls(buf.read_varint(), buf.read_string(), buf.read("H"), buf.read_varint())
+        return cls(
+            buf.read_varint(), buf.read_string(), buf.read("H"), buf.read_varint()
+        )

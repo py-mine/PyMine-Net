@@ -103,7 +103,9 @@ class TAG:
         return cls(cls.unpack_name(buf), cls.unpack_data(buf))
 
     def pretty(self, indent: int = 0) -> str:
-        return ("    " * indent) + f'{self.__class__.__name__}("{self.name}"): {self.data}'
+        return (
+            "    " * indent
+        ) + f'{self.__class__.__name__}("{self.name}"): {self.data}'
 
     def __str__(self):
         return self.pretty()
@@ -327,7 +329,9 @@ class TAG_String(TAG):
         return decode_modified_utf8(buf.read_bytes(buf.read("H")))
 
     def pretty(self, indent: int = 0) -> str:
-        return f'{" " * 4 * indent}{self.__class__.__name__}("{self.name}"): {self.data}'
+        return (
+            f'{" " * 4 * indent}{self.__class__.__name__}("{self.name}"): {self.data}'
+        )
 
 
 class TAG_List(TAG, list):
@@ -449,9 +453,7 @@ class TAG_Int_Array(TAG, list):
         return [buf.read("i") for _ in range(buf.read("i"))]
 
     def pretty(self, indent: int = 0) -> str:
-        return (
-            f'{" " * 4 * indent}TAG_Int_Array("{self.name}"): [{", ".join([str(v) for v in self])}]'
-        )
+        return f'{" " * 4 * indent}TAG_Int_Array("{self.name}"): [{", ".join([str(v) for v in self])}]'
 
 
 class TAG_Long_Array(TAG, list):
