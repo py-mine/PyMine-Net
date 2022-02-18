@@ -10,7 +10,7 @@ __all__ = (
     "PlayBlockAction",
     "PlayBlockChange",
     "PlayQueryBlockNBT",
-    "PlayBlockPlacement",
+    "PlayPlayerBlockPlacement",
     "PlayNBTQueryResponse",
     "PlayMultiBlockChange",
 )
