@@ -68,6 +68,7 @@ class PlayBlockBreakAnimation(ClientBoundPacket):
             .write("b", self.stage)
         )
 
+
 # vvv not confident about this one, pls check :) -emerald
 class PlayAnimationServerBound(ServerBoundPacket):
     """Sent when a client's arm swings. (Client -> Server)
