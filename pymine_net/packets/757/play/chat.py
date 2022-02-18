@@ -11,7 +11,7 @@ from pymine_net.types.chat import Chat
 __all__ = (
     "PlayChatMessageClientBound",
     "PlayChatMessageServerBound",
-    # "PlayTabCompleteClientBound",
+    "PlayTabCompleteClientBound",
     "PlayTabCompleteServerBound",
     # "PlayTitle",
 )
@@ -83,3 +83,29 @@ class PlayTabCompleteServerBound(ServerBoundPacket):
     @classmethod
     def unpack(cls, buf: Buffer) -> PlayTabCompleteServerBound:
         return cls(buf.read_varint(), buf.read_string())
+
+
+class PlayTabCompleteClientBound(ClientBoundPacket):
+    """The server responds with a list of auto-completions of the last word sent to it. In the case of regular chat, this is a player username. Command names and parameters are also supported. he client sorts these alphabetically before listing them. (Server -> Client)"""
+
+    id = 0x11
+
+    def __init__(self, transaction_id: int, start: int, matches: list):
+        super().__init__()
+
+        self.transaction_id = transaction_id
+        self.start = start
+        self.matches = matches
+
+    def pack(self):
+        buf = Buffer().write_varint(self.id).write_varint(self.start).write_varint(self.length).write_varint(len(self.matches))
+
+        for m in self.matches:
+            buf.write_string(m[0])
+
+            if len(m) > 1:
+                buf.write("?", True).write_chat(Chat(m[1]))
+            else:
+                buf.write("?", False)
+
+        return buf
