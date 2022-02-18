@@ -96,7 +96,7 @@ class PlayTabCompleteClientBound(ClientBoundPacket):
         self.start = start
         self.matches = matches
 
-    def pack(self):
+    def pack(self) -> Buffer:
         buf = (
             Buffer()
             .write_varint(self.id)
