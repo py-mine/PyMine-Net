@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 
-from pymine_net.types.packet import Packet
+from pymine_net.types.packet import ClientBoundPacket
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.chat import Chat
 

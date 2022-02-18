@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from pymine_net import ServerBoundPacket, Buffer
+from pymine_net.types.packet import ServerBoundPacket
+from pymine_net.types.buffer import Buffer
 
 __all__ = ("HandshakeHandshake",)
 
