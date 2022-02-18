@@ -36,8 +36,12 @@ class UnimplementedAbstractError(Exception):
 
 
 class MismatchedOverridenAbstractError(Exception):
-    def __init__(self, cls_name: str, obj_name: str, abstract_annotations: dict, obj_annotations: dict):
-        super().__init__(f"Overriden abstract {obj_name} of {cls_name} has mismatched annotations: {obj_name}({self.fmt_annos(abstract_annotations)}) != {obj_name}({self.fmt_annos(obj_annotations)}).")
+    def __init__(
+        self, cls_name: str, obj_name: str, abstract_annotations: dict, obj_annotations: dict
+    ):
+        super().__init__(
+            f"Overriden abstract {obj_name} of {cls_name} has mismatched annotations: {obj_name}({self.fmt_annos(abstract_annotations)}) != {obj_name}({self.fmt_annos(obj_annotations)})."
+        )
 
     @staticmethod
     def fmt_annos(dct: dict) -> str:
@@ -57,7 +61,7 @@ class StrictABCMeta(type):
                 abstract_data: Optional[AbstractObjData] = getattr(obj, "__abstract__", None)
 
                 self_obj = getattr(self, obj_name, None)
-                
+
                 # check if it's an abstract object
                 if abstract_data is not None:
                     # check to see if this class implements that abstract object
@@ -72,10 +76,20 @@ class StrictABCMeta(type):
                         self_obj_annotations = getattr(self_obj, "__annotations__", None)
 
                         if self_obj_annotations is None and abstract_data.annotations is not None:
-                            raise MismatchedOverridenAbstractError(self.__name__, obj.__name__, abstract_data.annotations, self_obj_annotations)
+                            raise MismatchedOverridenAbstractError(
+                                self.__name__,
+                                obj.__name__,
+                                abstract_data.annotations,
+                                self_obj_annotations,
+                            )
 
                         if not check_annotations(abstract_data.annotations, self_obj_annotations):
-                            raise MismatchedOverridenAbstractError(self.__name__, obj.__name__, abstract_data.annotations, self_obj_annotations)
+                            raise MismatchedOverridenAbstractError(
+                                self.__name__,
+                                obj.__name__,
+                                abstract_data.annotations,
+                                self_obj_annotations,
+                            )
 
         return self
 
