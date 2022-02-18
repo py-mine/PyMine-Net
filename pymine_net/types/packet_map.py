@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import Dict, Tuple, Union, List, Type
+from typing import Dict, List, Tuple, Type, Union
 
 from pymine_net import Packet
 from pymine_net.enums import GameState
-from pymine_net.types.packet import ServerBoundPacket, ClientBoundPacket
+from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 
 
 class StatePacketMap:
