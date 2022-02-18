@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, List, Union
 import importlib
 import warnings
 import os
@@ -26,10 +26,12 @@ def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> Packet
     for state, state_name in GAME_STATES.items():
         module_base = ["packets", str(protocol), state_name]
 
+        # iterate through the files in the <state> folder
         for file_name in os.listdir(os.path.join(FILE_DIR, *module_base)):
             if not file_name.endswith(".py"):
                 continue
-
+            
+            # import the file (pymine_net.packets.<protocol>.<state>.<packet group>)
             module = importlib.import_module(".".join(["pymine_net", *module_base, file_name[:-3]]))
 
             if debug and not hasattr(module, "__all__"):
@@ -38,9 +40,11 @@ def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> Packet
                 )
                 continue
 
-            packet_classes = []
+            packet_classes: List[Packet] = []
 
+            # iterate through object names in module.__all__
             for member_name in module.__all__:
+                # attempt to get object, warn if it's not actually present
                 try:
                     obj = getattr(module, member_name)
                 except AttributeError:
@@ -52,6 +56,7 @@ def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> Packet
                     if issubclass(obj, Packet):
                         packet_classes.append(obj)
 
+            # attempt to create the StatePacketMap from the list of loaded packets.
             try:
                 packets[state] = StatePacketMap.from_list(
                     state, packet_classes, check_duplicates=debug
