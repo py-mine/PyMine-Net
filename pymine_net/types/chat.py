@@ -2,8 +2,8 @@ from typing import Union
 
 
 class Chat:
-    def __init__(self, chat: Union[str, dict]):
-        if isinstance(chat, str):
-            self.chat = {"text": chat}
+    def __init__(self, data: Union[str, dict]):
+        if isinstance(data, str):
+            self.data = {"text": data}
         else:
-            self.chat = chat
+            self.data = data
