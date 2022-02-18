@@ -33,16 +33,20 @@ def load_packet_map(protocol: Union[int, str]) -> PacketMap:
             module = importlib.import_module(".".join(["pymine_net", *module_base, file_name[:-3]]))
 
             if not hasattr(module, "__all__"):
-                warnings.warn(f"{module.__name__} is missing attribute __all__ and cannot be loaded.")
+                warnings.warn(
+                    f"{module.__name__} is missing attribute __all__ and cannot be loaded."
+                )
                 continue
-            
+
             packet_classes = []
 
             for member_name in module.__all__:
                 try:
                     obj = getattr(module, member_name)
                 except AttributeError:
-                    warnings.warn(f"{module.__name__} is missing member {member_name!r} present in __all__.")
+                    warnings.warn(
+                        f"{module.__name__} is missing member {member_name!r} present in __all__."
+                    )
                 else:
                     if issubclass(obj, Packet):
                         packet_classes.append(obj)
