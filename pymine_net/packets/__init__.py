@@ -1,8 +1,8 @@
-from typing import Dict, Union
 import importlib
+from typing import Dict, Union
 
-from pymine_net.types.packet_map import PacketMap, StatePacketMap
 from pymine_net.enums import GameState
+from pymine_net.types.packet_map import PacketMap, StatePacketMap
 
 __all__ = ("load_packet_map",)
 

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from mutf8 import encode_modified_utf8, decode_modified_utf8
-import traceback
-import struct
 import gzip
+import struct
+import traceback
+
+from mutf8 import decode_modified_utf8, encode_modified_utf8
 
 __all__ = (
     "TAG",

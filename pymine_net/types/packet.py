@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod, abstractclassmethod
+from abc import ABC, abstractclassmethod, abstractmethod
 
 from pymine_net.types.buffer import Buffer
 
