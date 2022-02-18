@@ -64,7 +64,6 @@ class PlayBlockBreakAnimation(ClientBoundPacket):
         return Buffer().write_varint(self.entity_id).write_position(self.x, self.y, self.z).write("b", self.stage)
 
 
-# vvv not confident about this one, pls check :) -emerald
 class PlayAnimationServerBound(ServerBoundPacket):
     """Sent when a client's arm swings. (Client -> Server)
 
