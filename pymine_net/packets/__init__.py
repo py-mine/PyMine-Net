@@ -30,7 +30,7 @@ def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> Packet
         for file_name in os.listdir(os.path.join(FILE_DIR, *module_base)):
             if not file_name.endswith(".py"):
                 continue
-            
+
             # import the file (pymine_net.packets.<protocol>.<state>.<packet group>)
             module = importlib.import_module(".".join(["pymine_net", *module_base, file_name[:-3]]))
 
