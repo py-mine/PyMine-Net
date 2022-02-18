@@ -27,7 +27,7 @@ from pymine_net import load_packet_map
     ),
 )
 def test_ensure_all_packets(capsys, protocol, config):
-    packet_map = load_packet_map(protocol)
+    packet_map = load_packet_map(protocol, debug=True)
     initial_check = True
 
     print(f"PACKET CHECK (protocol={protocol}): ", end="")

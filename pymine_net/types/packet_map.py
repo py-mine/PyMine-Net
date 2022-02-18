@@ -7,6 +7,17 @@ from pymine_net.enums import GameState
 from pymine_net.types.packet import ServerBoundPacket, ClientBoundPacket
 
 
+class DuplicatePacketIdError(Exception):
+    def __init__(self, protocol: Union[str, int], state: GameState, packet_id: int, direction: str):
+        super().__init__(f"Duplicate packet ID found (protocol={protocol}, state={state.name}, {direction}): 0x{packet_id:02X}")
+
+        self.protocol = protocol
+        self.state = state
+        self.packet_id = packet_id
+        self.direction = direction
+
+
+
 class StatePacketMap:
     """Stores a game state's packets"""
 
@@ -21,12 +32,27 @@ class StatePacketMap:
         self.client_bound = client_bound
 
     @classmethod
-    def from_list(cls, state: GameState, packets: List[Type[Packet]]) -> StatePacketMap:
-        return cls(
+    def from_list(cls, state: GameState, packets: List[Type[Packet]], *, check_duplicates: bool = False) -> StatePacketMap:
+        self = cls(
             state,
             {p.id: p for p in packets if issubclass(p, ServerBoundPacket)},
             {p.id: p for p in packets if issubclass(p, ClientBoundPacket)},
         )
+
+        if check_duplicates:
+            for packet_id in self.server_bound.keys():
+                found = [p for p in packets if p.id == packet_id and issubclass(p, ServerBoundPacket)]
+
+                if len(found) > 1:
+                    raise DuplicatePacketIdError("unknown", state, packet_id, "SERVER-BOUND")
+
+            for packet_id in self.client_bound.keys():
+                found = [p for p in packets if p.id == packet_id and issubclass(p, ClientBoundPacket)]
+
+                if len(found) > 1:
+                    raise DuplicatePacketIdError("unknown", state, packet_id, "CLIENT-BOUND")
+        
+        return self
 
 
 class PacketMap:
