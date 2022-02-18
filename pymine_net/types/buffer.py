@@ -5,6 +5,7 @@ import json
 import uuid
 
 from pymine_net.enums import Direction, EntityModifier, Pose
+from pymine_net.types.chat import Chat
 from pymine_net.types.registry import Registry
 from pymine_net.types import nbt
 
@@ -221,22 +222,15 @@ class Buffer(bytearray):
             from_twos_complement(data >> 12 & 0x3FFFFFF, 26),
         )
 
-    def read_chat(self) -> dict:
+    def read_chat(self) -> Chat:
         """Reads a chat message from the buffer."""
 
-        return self.read_json()
+        return Chat(self.read_json())
 
-    def write_chat(self, value: Union[str, dict]):
+    def write_chat(self, value: Chat) -> Self:
         """Writes a chat message to the buffer."""
 
-        if isinstance(value, str):
-            self.write_json({"text": value})
-        elif isinstance(value, dict):
-            self.write_json(value)
-        else:
-            raise TypeError(f"Invalid type {type(value)}.")
-
-        return self
+        return self.write_json(value.data)
 
     def write_position(self, x: int, y: int, z: int) -> Self:
         """Writes a Minecraft position (x, y, z) to the buffer."""

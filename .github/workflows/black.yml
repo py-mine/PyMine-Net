@@ -15,11 +15,11 @@ jobs:
       - name: autoblack_check
         id: black-check
         continue-on-error: true
-        run: black --diff --check --config pyproject.toml pymine_net 1>.black_diff
+        run: black --diff --check --config pyproject.toml . 1>.black_diff
 
       - name: autoblack_fix
         if: steps.black-check.outcome != 'success' && github.event_name != 'pull_request'
-        run: black --config pyproject.toml pymine_net
+        run: black --config pyproject.toml .
       
       - name: autoblack_publish
         if: steps.black-check.outcome != 'success' && github.event_name != 'pull_request'
