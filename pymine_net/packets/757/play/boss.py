@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import uuid
 
-from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.chat import Chat
+from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 
 __all__ = ("PlayBossBar",)
 
