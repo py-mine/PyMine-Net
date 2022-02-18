@@ -51,14 +51,14 @@ class PlayAdvancementTab(ServerBoundPacket):
 
 
 class PlaySelectAdvancementTab(ClientBoundPacket):
-    """Insert fancy docstring here (server -> client)"""
+    """Sent by the server to indicate that the client should switch advancement tab. Sent either when the client switches tab in the GUI or when an advancement in another tab is made. (server -> client)"""
 
-    id = 0x3C
+    id = 0x40
 
     def __init__(self, identifier: str = None) -> None:
         super().__init__()
 
         self.identifier = identifier
 
-    def encode(self) -> bytes:
-        return Buffer.pack_optional(Buffer.pack_string, self.identifier)
+    def pack(self) -> Buffer:
+        return Buffer.write_optional(Buffer.write_string, self.identifier)
