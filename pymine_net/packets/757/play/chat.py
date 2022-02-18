@@ -13,7 +13,6 @@ __all__ = (
     "PlayChatMessageServerBound",
     "PlayTabCompleteClientBound",
     "PlayTabCompleteServerBound",
-    # "PlayTitle",
 )
 
 
