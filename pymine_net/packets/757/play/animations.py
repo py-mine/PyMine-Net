@@ -34,7 +34,8 @@ class PlayEntityAnimation(ClientBoundPacket):
     def pack(self) -> Buffer:
         return Buffer().write_varint(self.entity_id).write("B", self.animation)
 
-#vvv not confident about this one, pls check :) -emerald
+
+# vvv not confident about this one, pls check :) -emerald
 class PlayBlockBreakAnimation(ClientBoundPacket):
     """Sent to play a block breaking animation. (Server -> Client)
 
@@ -61,7 +62,12 @@ class PlayBlockBreakAnimation(ClientBoundPacket):
         self.stage = stage
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(self.entity_id).write_position(self.x, self.y, self.z).write("b", self.stage)
+        return (
+            Buffer()
+            .write_varint(self.entity_id)
+            .write_position(self.x, self.y, self.z)
+            .write("b", self.stage)
+        )
 
 
 class PlayAnimationServerBound(ServerBoundPacket):
