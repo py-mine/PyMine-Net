@@ -99,10 +99,10 @@ class PlayOpenBook(ClientBoundPacket):
 
     id = 0x2D
 
-    def __init__(self, hand: int) -> None:
+    def __init__(self, hand: int):
         super().__init__()
 
         self.hand = hand
 
-    def pack(self) -> Buffer():
+    def pack(self) -> Buffer:
         return Buffer().write_varint(self.hand)
