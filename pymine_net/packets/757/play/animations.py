@@ -61,7 +61,12 @@ class PlayBlockBreakAnimation(ClientBoundPacket):
         self.stage = stage
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(self.entity_id).write_position(self.x, self.y, self.z).write("b", self.stage)
+        return (
+            Buffer()
+            .write_varint(self.entity_id)
+            .write_position(self.x, self.y, self.z)
+            .write("b", self.stage)
+        )
 
 
 class PlayAnimationServerBound(ServerBoundPacket):
