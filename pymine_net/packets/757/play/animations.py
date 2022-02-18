@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.buffer import Buffer
+from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 
 __all__ = (
     "PlayEntityAnimation",

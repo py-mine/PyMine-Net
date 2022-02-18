@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pymine_net.strict_abc import StrictABC, abstract
-
 from pymine_net.types.buffer import Buffer
 
 __all__ = ("Packet", "ServerBoundPacket", "ClientBoundPacket")

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from pymine_net.types.packet import ClientBoundPacket
 from pymine_net.types.buffer import Buffer
+from pymine_net.types.packet import ClientBoundPacket
 
 __all__ = ("LoginSetCompression",)
 

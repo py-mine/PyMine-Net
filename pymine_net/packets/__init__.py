@@ -1,12 +1,11 @@
-from typing import Dict, List, Union
 import importlib
-import warnings
 import os
+import warnings
+from typing import Dict, List, Union
 
-from pymine_net.types.packet_map import DuplicatePacketIdError, PacketMap, StatePacketMap
-from pymine_net.types.packet import Packet
 from pymine_net.enums import GameState
-from pymine_net.types.packet_map import PacketMap, StatePacketMap
+from pymine_net.types.packet import Packet
+from pymine_net.types.packet_map import DuplicatePacketIdError, PacketMap, StatePacketMap
 
 __all__ = ("load_packet_map",)
 

@@ -1,6 +1,5 @@
 from typing import Optional, Tuple, Type
 
-
 __all__ = ("abstract", "StrictABC")
 
 
