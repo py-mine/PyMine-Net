@@ -36,9 +36,7 @@ class PlayBlockAction(ClientBoundPacket):
 
     id = 0x0B
 
-    def __init__(
-        self, x: int, y: int, z: int, action_id: int, action_param: int, block_type: int
-    ):
+    def __init__(self, x: int, y: int, z: int, action_id: int, action_param: int, block_type: int):
         super().__init__()
 
         self.x, self.y, self.z = x, y, z
@@ -47,7 +45,13 @@ class PlayBlockAction(ClientBoundPacket):
         self.block_type = block_type
 
     def pack(self) -> Buffer:
-        return Buffer().write_position(self.x, self.y, self.z).write("B", self.action_id).write("B", self.action_param).write_varint(self.block_type)
+        return (
+            Buffer()
+            .write_position(self.x, self.y, self.z)
+            .write("B", self.action_id)
+            .write("B", self.action_param)
+            .write_varint(self.block_type)
+        )
 
 
 class PlayBlockChange(ClientBoundPacket):
@@ -214,7 +218,16 @@ class PlayMultiBlockChange(ClientBoundPacket):
         self.blocks = blocks
 
     def pack(self) -> Buffer:
-        buf = Buffer().write_varint(((self.chunk_sect_x & 0x3FFFFF) << 42)| (self.chunk_sect_y & 0xFFFFF)| ((self.chunk_sect_z & 0x3FFFFF) << 20)).write("?", self.trust_edges).write_varint(len(self.blocks))
+        buf = (
+            Buffer()
+            .write_varint(
+                ((self.chunk_sect_x & 0x3FFFFF) << 42)
+                | (self.chunk_sect_y & 0xFFFFF)
+                | ((self.chunk_sect_z & 0x3FFFFF) << 20)
+            )
+            .write("?", self.trust_edges)
+            .write_varint(len(self.blocks))
+        )
 
         for block_id, local_x, local_y, local_z in self.blocks:
             buf.write_varint(block_id << 12 | (local_x << 8 | local_z << 4 | local_y))

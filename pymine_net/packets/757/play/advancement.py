@@ -36,7 +36,7 @@ class PlayAdvancementTab(ServerBoundPacket):
 
 class PlaySelectAdvancementTab(ClientBoundPacket):
     """Sent by the server to indicate that the client should switch advancement tab. Sent either when the client switches tab in the GUI or when an advancement in another tab is made. (Server -> Client)
-    
+
     :param Optional[str] identifier: One of the following: minecraft:story/root, minecraft:nether/root, minecraft:end/root, minecraft:adventure/root, minecraft:husbandry/root.
     :ivar int id: Unique packet ID.
     """
