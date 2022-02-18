@@ -22,8 +22,6 @@ class StatePacketMap:
 
     @classmethod
     def from_list(cls, state: GameState, packets: List[Type[Packet]]) -> StatePacketMap:
-        packets = [p for p in packets if isinstance(p, type)]
-
         return cls(
             state,
             {p.id: p for p in packets if issubclass(p, ServerBoundPacket)},
