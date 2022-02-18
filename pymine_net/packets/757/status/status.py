@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from pymine_net import ServerBoundPacket, ClientBoundPacket, Buffer
+from pymine_net.types.packet import ServerBoundPacket, ClientBoundPacket
+from pymine_net.types.buffer import Buffer
 
 __all__ = ("StatusStatusRequest", "StatusStatusResponse", "StatusStatusPingPong")
 
