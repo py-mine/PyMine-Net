@@ -35,7 +35,7 @@ def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> Packet
             if debug and not hasattr(module, "__all__"):
                 warnings.warn(f"{module.__name__} is missing attribute __all__ and cannot be loaded.")
                 continue
-            
+
             packet_classes = []
 
             for member_name in module.__all__:
