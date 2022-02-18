@@ -13,7 +13,7 @@ class StatusStatusRequest(ServerBoundPacket):
 
     id = 0x00
 
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
 
     @classmethod
@@ -31,7 +31,7 @@ class StatusStatusResponse(ClientBoundPacket):
 
     id = 0x00
 
-    def __init__(self, response_data: dict) -> None:
+    def __init__(self, response_data: dict):
         super().__init__()
 
         self.response_data = response_data
@@ -50,7 +50,7 @@ class StatusStatusPingPong(ServerBoundPacket, ClientBoundPacket):
 
     id = 0x01
 
-    def __init__(self, payload: int) -> None:
+    def __init__(self, payload: int):
         super().__init__()
 
         self.payload = payload

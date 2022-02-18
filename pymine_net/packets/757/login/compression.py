@@ -18,7 +18,7 @@ class LoginSetCompression(ClientBoundPacket):
 
     id = 0x03
 
-    def __init__(self, compression_threshold: int = -1) -> None:
+    def __init__(self, compression_threshold: int = -1):
         super().__init__()
 
         self.compression_threshold = compression_threshold

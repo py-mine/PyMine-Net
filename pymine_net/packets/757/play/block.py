@@ -1,26 +1,10 @@
-# A flexible and fast Minecraft server software written completely in Python.
-# Copyright (C) 2021 PyMine
-
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 """Contains packets related to blocks."""
 
 from __future__ import annotations
 
-from pymine.types.packet import ServerBoundPacket, ClientBoundPacket
-from pymine.types.buffer import Buffer
-import pymine.types.nbt as nbt
+from pymine_net.types.packet import ServerBoundPacket, ClientBoundPacket
+from pymine_net.types.buffer import Buffer
+import pymine_net.types.nbt as nbt
 
 __all__ = (
     "PlayBlockAction",
@@ -54,7 +38,7 @@ class PlayBlockAction(ClientBoundPacket):
 
     def __init__(
         self, x: int, y: int, z: int, action_id: int, action_param: int, block_type: int
-    ) -> None:
+    ):
         super().__init__()
 
         self.x, self.y, self.z = x, y, z
@@ -63,15 +47,10 @@ class PlayBlockAction(ClientBoundPacket):
         self.block_type = block_type
 
     def pack(self) -> Buffer:
-        return (
-            Buffer.write_position(self.x, self.y, self.z)
-            + Buffer.write("B", self.action_id)
-            + Buffer.write("B", self.action_param)
-            + Buffer.write_varint(self.block_type)
-        )
+        return Buffer().write_position(self.x, self.y, self.z).write("B", self.action_id).write("B", self.action_param).write_varint(self.block_type)
 
 
-class PlayBlockChange(ClientBoundBoundPacket):
+class PlayBlockChange(ClientBoundPacket):
     """Fired when a block is changed within the render distance. (Server -> Client)
 
     :param int x: The x coordinate of the location where this occurs.
@@ -87,14 +66,14 @@ class PlayBlockChange(ClientBoundBoundPacket):
 
     id = 0x0C
 
-    def __init__(self, x: int, y: int, z: int, block_id: int) -> None:
+    def __init__(self, x: int, y: int, z: int, block_id: int):
         super().__init__()
 
         self.x, self.y, self.z = x, y, z
         self.block_id = block_id
 
     def pack(self) -> Buffer:
-        return Buffer.write_position(self.x, self.y, self.z) + Buffer.write_varint(self.block_id)
+        return Buffer().write_position(self.x, self.y, self.z).write_varint(self.block_id)
 
 
 class PlayQueryBlockNBT(ServerBoundPacket):
@@ -113,7 +92,7 @@ class PlayQueryBlockNBT(ServerBoundPacket):
 
     id = 0x01
 
-    def __init__(self, transaction_id: int, x: int, y: int, z: int) -> None:
+    def __init__(self, transaction_id: int, x: int, y: int, z: int):
         super().__init__()
 
         self.transaction_id = transaction_id
@@ -161,7 +140,7 @@ class PlayPlayerBlockPlacement(ServerBoundPacket):
         cur_pos_y: float,
         cur_pos_z: float,
         inside_block: bool,
-    ) -> None:
+    ):
         super().__init__()
 
         self.hand = hand
@@ -173,7 +152,7 @@ class PlayPlayerBlockPlacement(ServerBoundPacket):
         self.inside_block = inside_block
 
     @classmethod
-    def unpack(cls, buf: Buffer) -> PlayBlockPlacement:
+    def unpack(cls, buf: Buffer) -> PlayPlayerBlockPlacement:
         return cls(
             buf.read_varint(),
             *buf.read_position(),
@@ -190,14 +169,14 @@ class PlayNBTQueryResponse(ClientBoundPacket):
 
     id = 0x60
 
-    def __init__(self, transaction_id: int, nbt: nbt.TAG) -> None:
+    def __init__(self, transaction_id: int, nbt: nbt.TAG):
         super().__init__()
 
         self.transaction_id = transaction_id
         self.nbt = nbt
 
     def pack(self) -> Buffer:
-        return Buffer.write_varint(self.transaction_id) + Buffer.write_nbt(self.nbt)
+        return Buffer().write_varint(self.transaction_id).write_nbt(self.nbt)
 
 
 class PlayMultiBlockChange(ClientBoundPacket):
@@ -225,7 +204,7 @@ class PlayMultiBlockChange(ClientBoundPacket):
         chunk_sect_z: int,
         trust_edges: bool,
         blocks: list,
-    ) -> None:
+    ):
         super().__init__()
 
         self.chunk_sect_x = chunk_sect_x
@@ -235,17 +214,9 @@ class PlayMultiBlockChange(ClientBoundPacket):
         self.blocks = blocks
 
     def pack(self) -> Buffer:
-        out = (
-            Buffer.write_varint(
-                ((self.chunk_sect_x & 0x3FFFFF) << 42)
-                | (self.chunk_sect_y & 0xFFFFF)
-                | ((self.chunk_sect_z & 0x3FFFFF) << 20)
-            )
-            + Buffer.write("?", self.trust_edges)
-            + Buffer.write_varint(len(self.blocks))
-        )
+        buf = Buffer().write_varint(((self.chunk_sect_x & 0x3FFFFF) << 42)| (self.chunk_sect_y & 0xFFFFF)| ((self.chunk_sect_z & 0x3FFFFF) << 20)).write("?", self.trust_edges).write_varint(len(self.blocks))
 
         for block_id, local_x, local_y, local_z in self.blocks:
-            out += Buffer.write_varint(block_id << 12 | (local_x << 8 | local_z << 4 | local_y))
+            buf.write_varint(block_id << 12 | (local_x << 8 | local_z << 4 | local_y))
 
-        return out
+        return buf
