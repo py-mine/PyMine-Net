@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Dict, List, Tuple, Type, Union
 
 from pymine_net.enums import GameState
-from pymine_net.types.packet import Packet, ClientBoundPacket, ServerBoundPacket
+from pymine_net.types.packet import ClientBoundPacket, Packet, ServerBoundPacket
 
 
 class DuplicatePacketIdError(Exception):
