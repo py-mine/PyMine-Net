@@ -98,7 +98,13 @@ class PlayTabCompleteClientBound(ClientBoundPacket):
         self.matches = matches
 
     def pack(self):
-        buf = Buffer().write_varint(self.id).write_varint(self.start).write_varint(self.length).write_varint(len(self.matches))
+        buf = (
+            Buffer()
+            .write_varint(self.id)
+            .write_varint(self.start)
+            .write_varint(self.length)
+            .write_varint(len(self.matches))
+        )
 
         for m in self.matches:
             buf.write_string(m[0])
