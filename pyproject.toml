@@ -17,6 +17,7 @@ license = "GPLv3"
 [tool.poetry.dependencies]
 python = "^3.8"
 mutf8 = "^1.0.6"
+typing-extensions = "^4.1.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
