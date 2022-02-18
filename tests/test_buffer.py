@@ -1,14 +1,14 @@
-import pytest
 import json
-import sys
 import os
+import sys
+
+import pytest
 
 # fix path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from pymine_net.types.buffer import Buffer
 import pymine_net.types.nbt as nbt
-
+from pymine_net.types.buffer import Buffer
 
 VAR_INT_ERR_MSG = "Value doesn't fit in given range"
 VAR_INT_MAX = (1 << 31) - 1

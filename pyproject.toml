@@ -7,6 +7,11 @@ include = '\.pyi?$'
 addopts = "--full-trace -rxP"
 testpaths = ["tests"]
 
+[tool.isort]
+profile="black"
+line_length=100
+
+
 [tool.poetry]
 name = "pymine-net"
 version = "1.0.0"
@@ -23,6 +28,7 @@ flake8 = "^4.0.1"
 black = "^22.1.0"
 pytest = "^7.0.1"
 colorama = "^0.4.4"
+isort = "^5.10.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

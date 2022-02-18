@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from typing import Callable, Optional, Tuple, Union
-import struct
 import json
+import struct
 import uuid
+from typing import Callable, Optional, Tuple, Union
 
 from pymine_net.enums import Direction, EntityModifier, Pose
+from pymine_net.types import nbt
 from pymine_net.types.chat import Chat
 from pymine_net.types.registry import Registry
-from pymine_net.types import nbt
 
 __all__ = ("Buffer",)
 
