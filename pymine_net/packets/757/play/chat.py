@@ -11,9 +11,9 @@ from pymine_net.types.chat import Chat
 __all__ = (
     "PlayChatMessageClientBound",
     "PlayChatMessageServerBound",
-    #"PlayTabCompleteClientBound",
+    # "PlayTabCompleteClientBound",
     "PlayTabCompleteServerBound",
-    #"PlayTitle",
+    # "PlayTitle",
 )
 
 
