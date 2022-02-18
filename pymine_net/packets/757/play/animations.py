@@ -35,7 +35,6 @@ class PlayEntityAnimation(ClientBoundPacket):
         return Buffer().write_varint(self.entity_id).write("B", self.animation)
 
 
-# vvv not confident about this one, pls check :) -emerald
 class PlayBlockBreakAnimation(ClientBoundPacket):
     """Sent to play a block breaking animation. (Server -> Client)
 
@@ -69,7 +68,7 @@ class PlayBlockBreakAnimation(ClientBoundPacket):
             .write("b", self.stage)
         )
 
-
+# vvv not confident about this one, pls check :) -emerald
 class PlayAnimationServerBound(ServerBoundPacket):
     """Sent when a client's arm swings. (Client -> Server)
 
