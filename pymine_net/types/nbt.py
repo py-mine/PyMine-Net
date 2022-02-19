@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import gzip
 import struct
-import traceback
+from typing import List
 
 from mutf8 import decode_modified_utf8, encode_modified_utf8
 
@@ -25,7 +25,7 @@ __all__ = (
     "unpack",
 )
 
-TYPES = []
+TYPES: List[TAG] = []
 
 
 def unpack(buf, root_is_full: bool = True) -> TAG_Compound:
@@ -71,7 +71,7 @@ class TAG:
 
     id = None
 
-    def __init__(self, name: str = None) -> None:
+    def __init__(self, name: str = None):
         self.id = self.__class__.id
         self.name = "" if name is None else name
 
@@ -117,7 +117,7 @@ class TAG:
 class TAG_End(TAG):
     id = 0
 
-    def __init__(self, *args) -> None:
+    def __init__(self, *args):
         super().__init__(None)
 
     def pack_name(self) -> bytes:
@@ -148,7 +148,7 @@ class TAG_Byte(TAG):
 
     id = 1
 
-    def __init__(self, name: str, data: int) -> None:
+    def __init__(self, name: str, data: int):
         super().__init__(name)
 
         self.data = data
@@ -171,7 +171,7 @@ class TAG_Short(TAG):
 
     id = 2
 
-    def __init__(self, name: str, data: int) -> None:
+    def __init__(self, name: str, data: int):
         super().__init__(name)
 
         self.data = data
@@ -194,7 +194,7 @@ class TAG_Int(TAG):
 
     id = 3
 
-    def __init__(self, name: str, data: int) -> None:
+    def __init__(self, name: str, data: int):
         super().__init__(name)
 
         self.data = data
@@ -217,7 +217,7 @@ class TAG_Long(TAG):
 
     id = 4
 
-    def __init__(self, name: str, data: int) -> None:
+    def __init__(self, name: str, data: int):
         super().__init__(name)
 
         self.data = data
@@ -240,7 +240,7 @@ class TAG_Float(TAG):
 
     id = 5
 
-    def __init__(self, name: str, data: float) -> None:
+    def __init__(self, name: str, data: float):
         super().__init__(name)
 
         self.data = data
@@ -263,7 +263,7 @@ class TAG_Double(TAG):
 
     id = 6
 
-    def __init__(self, name: str, data: float) -> None:
+    def __init__(self, name: str, data: float):
         super().__init__(name)
 
         self.data = data
@@ -286,7 +286,7 @@ class TAG_Byte_Array(TAG, bytearray):
 
     id = 7
 
-    def __init__(self, name: str, data: bytearray) -> None:
+    def __init__(self, name: str, data: bytearray):
         TAG.__init__(self, name)
 
         if isinstance(data, str):
@@ -316,7 +316,7 @@ class TAG_String(TAG):
 
     id = 8
 
-    def __init__(self, name: str, data: str) -> None:
+    def __init__(self, name: str, data: str):
         super().__init__(name)
 
         self.data = data
@@ -343,7 +343,7 @@ class TAG_List(TAG, list):
 
     id = 9
 
-    def __init__(self, name: str, data: list) -> None:
+    def __init__(self, name: str, data: List[TAG]):
         TAG.__init__(self, name)
         list.__init__(self, data)
 
@@ -358,16 +358,11 @@ class TAG_List(TAG, list):
         return BufferUtil.pack("b", 0) + BufferUtil.pack("i", 0)
 
     @staticmethod
-    def unpack_data(buf) -> list:
+    def unpack_data(buf) -> List[TAG]:
         tag = TYPES[buf.read("b")]
         length = buf.read("i")
 
-        out = []
-
-        for _ in range(length):
-            out.append(tag(None, tag.unpack_data(buf)))
-
-        return out
+        return [tag(None, tag.unpack_data(buf)) for _ in range(length)]
 
     def pretty(self, indent: int = 0) -> str:
         tab = " " * 4 * indent
@@ -386,7 +381,7 @@ class TAG_Compound(TAG, dict):
 
     id = 10
 
-    def __init__(self, name: str, data: list) -> None:
+    def __init__(self, name: str, data: List[TAG]):
         TAG.__init__(self, name)
         dict.__init__(self, [(t.name, t) for t in data])
 
@@ -394,7 +389,7 @@ class TAG_Compound(TAG, dict):
     def data(self):
         return self.values()
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: TAG):
         value.name = key
         dict.__setitem__(self, key, value)
 
@@ -408,7 +403,7 @@ class TAG_Compound(TAG, dict):
         return b"".join([tag.pack() for tag in self.values()]) + b"\x00"
 
     @staticmethod
-    def unpack_data(buf) -> list:
+    def unpack_data(buf) -> List[TAG]:
         out = []
 
         while True:
@@ -438,7 +433,7 @@ class TAG_Int_Array(TAG, list):
 
     id = 11
 
-    def __init__(self, name: str, data: list) -> None:
+    def __init__(self, name: str, data: list):
         TAG.__init__(self, name)
         list.__init__(self, data)
 
@@ -448,7 +443,7 @@ class TAG_Int_Array(TAG, list):
         )
 
     @staticmethod
-    def unpack_data(buf) -> list:
+    def unpack_data(buf) -> List[int]:
         return [buf.read("i") for _ in range(buf.read("i"))]
 
     def pretty(self, indent: int = 0) -> str:
@@ -467,7 +462,7 @@ class TAG_Long_Array(TAG, list):
 
     id = 12
 
-    def __init__(self, name: str, data: list) -> None:
+    def __init__(self, name: str, data: List[int]):
         TAG.__init__(self, name)
         list.__init__(self, data)
 
