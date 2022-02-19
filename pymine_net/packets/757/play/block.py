@@ -1,6 +1,7 @@
 """Contains packets related to blocks."""
 
 from __future__ import annotations
+
 from typing import List, Tuple
 
 import pymine_net.types.nbt as nbt
