@@ -1,8 +1,8 @@
 """Contains packets related to the chat."""
 
 from __future__ import annotations
-from typing import List, Optional, Tuple
 
+from typing import List, Optional, Tuple
 from uuid import UUID
 
 from pymine_net.types.buffer import Buffer
