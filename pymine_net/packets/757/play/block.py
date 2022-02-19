@@ -169,18 +169,23 @@ class PlayPlayerBlockPlacement(ServerBoundPacket):
 
 
 class PlayNBTQueryResponse(ClientBoundPacket):
-    """Insert fancy docstring here (server -> client)"""
+    """Sent by the client when it places a block. (Server -> Client)
+
+    :param int transaction_id:
+    :param nbt.TAG nbt_tag:
+    :ivar int id: Unique packet ID.
+    """
 
     id = 0x60
 
-    def __init__(self, transaction_id: int, nbt: nbt.TAG):
+    def __init__(self, transaction_id: int, nbt_tag: nbt.TAG):
         super().__init__()
 
         self.transaction_id = transaction_id
-        self.nbt = nbt
+        self.nbt_tag = nbt_tag
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(self.transaction_id).write_nbt(self.nbt)
+        return Buffer().write_varint(self.transaction_id).write_nbt(self.nbt_tag)
 
 
 class PlayMultiBlockChange(ClientBoundPacket):

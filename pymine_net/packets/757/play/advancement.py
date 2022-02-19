@@ -39,6 +39,7 @@ class PlaySelectAdvancementTab(ClientBoundPacket):
 
     :param Optional[str] identifier: One of the following: minecraft:story/root, minecraft:nether/root, minecraft:end/root, minecraft:adventure/root, minecraft:husbandry/root.
     :ivar int id: Unique packet ID.
+    :ivar Optional[str] identifier:
     """
 
     id = 0x40

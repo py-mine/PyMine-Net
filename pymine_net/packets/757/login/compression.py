@@ -13,7 +13,7 @@ class LoginSetCompression(ClientBoundPacket):
 
     :param int compression_threshold: Compression level of future packets, -1 to disable compression.
     :ivar int id: Unique packet ID.
-    :ivar comp_thresh:
+    :ivar compression_threshold:
     """
 
     id = 0x03
