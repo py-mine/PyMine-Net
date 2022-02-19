@@ -1,6 +1,7 @@
 """Contains packets related to blocks."""
 
 from __future__ import annotations
+from typing import List, Tuple
 
 import pymine_net.types.nbt as nbt
 from pymine_net.types.buffer import Buffer
@@ -212,7 +213,7 @@ class PlayMultiBlockChange(ClientBoundPacket):
         chunk_sect_y: int,
         chunk_sect_z: int,
         trust_edges: bool,
-        blocks: list,
+        blocks: List[Tuple[int, int, int, int]],
     ):
         super().__init__()
 
