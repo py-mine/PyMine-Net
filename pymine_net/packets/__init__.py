@@ -26,6 +26,8 @@ def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> Packet
     for state, state_name in GAME_STATES.items():
         module_base = ["packets", str(protocol), state_name]
 
+        packet_classes: List[Packet] = []
+
         # iterate through the files in the <state> folder
         for file_name in os.listdir(os.path.join(FILE_DIR, *module_base)):
             if not file_name.endswith(".py"):
@@ -35,12 +37,8 @@ def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> Packet
             module = importlib.import_module(".".join(["pymine_net", *module_base, file_name[:-3]]))
 
             if debug and not hasattr(module, "__all__"):
-                warnings.warn(
-                    f"{module.__name__} is missing attribute __all__ and cannot be loaded."
-                )
+                warnings.warn(f"{module.__name__} is missing member __all__ and cannot be loaded.")
                 continue
-
-            packet_classes: List[Packet] = []
 
             # iterate through object names in module.__all__
             for member_name in module.__all__:
@@ -56,12 +54,10 @@ def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> Packet
                     if issubclass(obj, Packet):
                         packet_classes.append(obj)
 
-            # attempt to create the StatePacketMap from the list of loaded packets.
-            try:
-                packets[state] = StatePacketMap.from_list(
-                    state, packet_classes, check_duplicates=debug
-                )
-            except DuplicatePacketIdError as e:  # re-raise with protocol included in exception
-                raise DuplicatePacketIdError(protocol, e.state, e.packet_id, e.direction)
+        # attempt to create the StatePacketMap from the list of loaded packets.
+        try:
+            packets[state] = StatePacketMap.from_list(state, packet_classes, check_duplicates=debug)
+        except DuplicatePacketIdError as e:  # re-raise with protocol included in exception
+            raise DuplicatePacketIdError(protocol, e.state, e.packet_id, e.direction)
 
     return PacketMap(protocol, packets)

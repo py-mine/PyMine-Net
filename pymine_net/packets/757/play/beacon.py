@@ -11,8 +11,8 @@ __all__ = ("PlaySetBeaconEffect",)
 class PlaySetBeaconEffect(ServerBoundPacket):
     """Changes the effect of the current beacon. (Client -> Server)
 
-    :param int primary_effect: Description of parameter `primary_effect`.
-    :param int secondary_effect: Description of parameter `secondary_effect`.
+    :param int primary_effect: A potion ID (https://minecraft.gamepedia.com/Data_values#Potions).
+    :param int secondary_effect: A potion ID (https://minecraft.gamepedia.com/Data_values#Potions).
     :ivar int id: Unique packet ID.
     :ivar primary_effect:
     :ivar secondary_effect:

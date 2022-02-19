@@ -1,6 +1,7 @@
 """Contains packets related to blocks."""
 
 from __future__ import annotations
+from typing import List, Tuple
 
 import pymine_net.types.nbt as nbt
 from pymine_net.types.buffer import Buffer
@@ -169,18 +170,23 @@ class PlayPlayerBlockPlacement(ServerBoundPacket):
 
 
 class PlayNBTQueryResponse(ClientBoundPacket):
-    """Insert fancy docstring here (server -> client)"""
+    """Sent by the client when it places a block. (Server -> Client)
+
+    :param int transaction_id:
+    :param nbt.TAG nbt_tag:
+    :ivar int id: Unique packet ID.
+    """
 
     id = 0x60
 
-    def __init__(self, transaction_id: int, nbt: nbt.TAG):
+    def __init__(self, transaction_id: int, nbt_tag: nbt.TAG):
         super().__init__()
 
         self.transaction_id = transaction_id
-        self.nbt = nbt
+        self.nbt_tag = nbt_tag
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(self.transaction_id).write_nbt(self.nbt)
+        return Buffer().write_varint(self.transaction_id).write_nbt(self.nbt_tag)
 
 
 class PlayMultiBlockChange(ClientBoundPacket):
@@ -207,7 +213,7 @@ class PlayMultiBlockChange(ClientBoundPacket):
         chunk_sect_y: int,
         chunk_sect_z: int,
         trust_edges: bool,
-        blocks: list,
+        blocks: List[Tuple[int, int, int, int]],
     ):
         super().__init__()
 

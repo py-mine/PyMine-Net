@@ -50,7 +50,7 @@ class LoginEncryptionRequest(ClientBoundPacket):
 
     def __init__(
         self, public_key: bytes, verify_token: bytes
-    ):  # https://wiki.vg/Protocol#Encryption_Request
+    ):
         super().__init__()
 
         self.public_key = public_key

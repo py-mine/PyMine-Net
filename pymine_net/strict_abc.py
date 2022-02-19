@@ -1,3 +1,11 @@
+"""
+Contains a "strict" implementation of abc.ABC, as only Python 3.10+ actually enforces abc.ABC.
+
+- Subclasses of abstract classes must implement all abstract methods/classmethods/staticmethods
+- A method's typehints are also enforced, if abstract method a has a return annotation of MyClass,
+    the implemented method must have a return annotation of MyClass or a subclass of MyClass.
+"""
+
 from typing import Optional, Tuple, Type
 
 __all__ = ("abstract", "StrictABC")
@@ -26,7 +34,7 @@ def check_annotations(a: dict, b: dict) -> bool:
         if not issubclass(b[k], v):
             return False
 
-    return a.keys() == b.keys()
+    return True
 
 
 class UnimplementedAbstractError(Exception):
