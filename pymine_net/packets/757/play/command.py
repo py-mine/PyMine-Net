@@ -20,17 +20,15 @@ class PlayDeclareCommands(ClientBoundPacket):
 
     id = 0x12
 
-    def __init__(
-        self, nodes: List[dict]
-    ) -> None:
+    def __init__(self, nodes: List[dict]) -> None:
         super().__init__()
 
         self.nodes = nodes
 
     def pack(self) -> Buffer:
         buf = Buffer().write_varint(len(self.nodes))
-        
+
         for node in self.nodes:
             buf.write_node(node)
-        
+
         return buf.write_varint(0)

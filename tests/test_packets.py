@@ -36,7 +36,9 @@ CHECKABLE_ANNOS.update({a.__name__ for a in CHECKABLE_ANNOS})
         ],
     ),
 )
-def test_ensure_all_packets(capsys, protocol: Union[int, str], config: Dict[GameState, Tuple[Optional[int], Optional[int]]]):
+def test_ensure_all_packets(
+    capsys, protocol: Union[int, str], config: Dict[GameState, Tuple[Optional[int], Optional[int]]]
+):
     packet_map = load_packet_map(protocol, debug=True)
     initial_check = True
 
