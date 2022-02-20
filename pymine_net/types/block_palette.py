@@ -1,17 +1,17 @@
-from abc import ABC, abstractmethod
+from strict_abc import StrictABC, abstract
 
 __all__ = ("BlockPalette",)
 
 
-class BlockPalette(ABC):
-    @abstractmethod
+class BlockPalette(StrictABC):
+    @abstract
     def get_bits_per_block(self) -> int:
         pass
 
-    @abstractmethod
+    @abstract
     def encode(self, block: str, props: dict = None) -> int:
         pass
 
-    @abstractmethod
+    @abstract
     def decode(self, state: int) -> dict:
         pass
