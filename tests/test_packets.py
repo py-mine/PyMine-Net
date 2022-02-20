@@ -6,8 +6,8 @@ from typing import Dict, Optional, Tuple, Union
 import colorama
 import pytest
 
-from pymine_net.types.chat import Chat
 from pymine_net.types.buffer import Buffer
+from pymine_net.types.chat import Chat
 
 colorama.init(autoreset=True)
 
