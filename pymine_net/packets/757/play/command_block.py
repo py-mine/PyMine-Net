@@ -42,7 +42,7 @@ class PlayUpdateCommandBlock(ServerBoundPacket):
 
     @classmethod
     def unpack(cls, buf: Buffer) -> PlayUpdateCommandBlock:
-        return cls(buf.read_position().read_string().read_varint().read("b"))
+        return cls(buf.read_position(), buf.read_string(), buf.read_varint(), buf.read("b"))
 
 
 class PlayUpdateCommandBlockMinecart(ServerBoundPacket):
@@ -68,4 +68,4 @@ class PlayUpdateCommandBlockMinecart(ServerBoundPacket):
 
     @classmethod
     def unpack(cls, buf: Buffer) -> PlayUpdateCommandBlockMinecart:
-        return cls(buf.read_varint().read_string().read("?"))
+        return cls(buf.read_varint(), buf.read_string(), buf.read("?"))
