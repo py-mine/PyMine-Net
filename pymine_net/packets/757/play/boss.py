@@ -36,7 +36,9 @@ class PlayBossBar(ClientBoundPacket):
         buf = Buffer.write_uuid(self.uuid).write_varint(self.action)
 
         if self.action == 0:
-            buf.write_chat(self.data["title"]).write("f", self.data["health"]).write_varint(self.data["color"]).write_varint(self.data["division"]).write("B", self.data["flags"])
+            buf.write_chat(self.data["title"]).write("f", self.data["health"]).write_varint(
+                self.data["color"]
+            ).write_varint(self.data["division"]).write("B", self.data["flags"])
         elif self.action == 2:
             buf.write("f", self.data["health"])
         elif self.action == 3:
