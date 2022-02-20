@@ -48,9 +48,7 @@ class LoginEncryptionRequest(ClientBoundPacket):
 
     id = 0x01
 
-    def __init__(
-        self, public_key: bytes, verify_token: bytes
-    ):
+    def __init__(self, public_key: bytes, verify_token: bytes):
         super().__init__()
 
         self.public_key = public_key

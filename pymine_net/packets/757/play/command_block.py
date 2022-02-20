@@ -11,7 +11,6 @@ __all__ = (
 )
 
 
-
 class PlayUpdateCommandBlock(ServerBoundPacket):
     """Used when a client updates a command block. (Client -> Server)
 
