@@ -1,10 +1,11 @@
 """Contains packets related to crafting and recipes."""
 
 from __future__ import annotations
+
 from typing import Dict, List
 
-from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.buffer import Buffer
+from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 
 __all__ = (
     "PlayCraftRecipeRequest",

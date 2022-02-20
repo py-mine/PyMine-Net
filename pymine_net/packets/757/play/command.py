@@ -1,10 +1,11 @@
 """Contains packets related to commands"""
 
 from __future__ import annotations
+
 from typing import List
 
-from pymine_net.types.packet import ClientBoundPacket
 from pymine_net.types.buffer import Buffer
+from pymine_net.types.packet import ClientBoundPacket
 
 __all__ = ("PlayDeclareCommands",)
 
