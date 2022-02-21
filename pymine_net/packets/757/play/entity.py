@@ -161,21 +161,19 @@ class PlayEntityStatus(ClientBoundPacket):
         return Buffer.write("i", self.entity_id) + Buffer.write("b", self.entity_status)
 
 
-class PlayEntityAction(Packet):
+class PlayEntityAction(ServerBoundPacket):
     """Sent by the client to indicate it has performed a certain action. (Client -> Server)
 
     :param int entity_id: The ID of the entity.
     :param int action_id: The action occurring, see here: https://wiki.vg/Protocol#Entity_Action.
     :param int jump_boost: Used with jumping while riding a horse.
     :ivar int id: Unique packet ID.
-    :ivar int to: Packet direction.
     :ivar entity_id:
     :ivar action_id:
     :ivar jump_boost:
     """
 
-    id = 0x1C
-    to = 0
+    id = 0x1B
 
     def __init__(self, entity_id: int, action_id: int, jump_boost: int) -> None:
         super().__init__()
@@ -185,8 +183,8 @@ class PlayEntityAction(Packet):
         self.jump_boost = jump_boost
 
     @classmethod
-    def decode(cls, buf: Buffer) -> PlayEntityAction:
-        return cls(buf.unpack_varint(), buf.unpack_varint(), buf.unpack_varint())
+    def unpack(cls, buf: Buffer) -> PlayEntityAction:
+        return cls(buf.read_varint(), buf.read_varint(), buf.read_varint())
 
 
 class PlayEntityPosition(Packet):
