@@ -4,12 +4,12 @@ import uuid
 from typing import Dict, Optional, Tuple, Union
 
 import colorama
-from pymine_net.strict_abc import is_abstract
-from pymine_net.types.packet import ServerBoundPacket
 import pytest
 
+from pymine_net.strict_abc import is_abstract
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.chat import Chat
+from pymine_net.types.packet import ServerBoundPacket
 
 colorama.init(autoreset=True)
 
