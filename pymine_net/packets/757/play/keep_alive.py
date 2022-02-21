@@ -7,7 +7,7 @@ from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 
 __all__ = (
     "PlayKeepAliveClientBound",
-    "PlayKeepAliveServerBound",
+    "PlayKeepAliveServerBound"
 )
 
 
@@ -21,7 +21,7 @@ class PlayKeepAliveClientBound(ClientBoundPacket):
 
     id = 0x21
 
-    def __init__(self, keep_alive_id: int) -> None:
+    def __init__(self, keep_alive_id: int):
         super().__init__()
 
         self.keep_alive_id = keep_alive_id
@@ -40,7 +40,7 @@ class PlayKeepAliveServerBound(ServerBoundPacket):
 
     id = 0x0F
 
-    def __init__(self, keep_alive_id: int) -> None:
+    def __init__(self, keep_alive_id: int):
         super().__init__()
 
         self.keep_alive_id = keep_alive_id

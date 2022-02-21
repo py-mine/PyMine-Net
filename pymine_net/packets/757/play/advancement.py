@@ -7,7 +7,7 @@ from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 
 __all__ = (
     "PlayAdvancementTab",
-    "PlaySelectAdvancementTab",
+    "PlaySelectAdvancementTab"
 )
 
 

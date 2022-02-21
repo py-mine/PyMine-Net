@@ -8,7 +8,7 @@ from pymine_net.types.packet import ClientBoundPacket
 __all__ = (
     "PlayEffect",
     "PlayEntityEffect",
-    "PlaySoundEffect",
+    "PlaySoundEffect"
 )
 
 
@@ -38,7 +38,9 @@ class PlayEffect(ClientBoundPacket):
         super().__init__()
 
         self.effect_id = effect_id
-        self.x, self.y, self.z = x, y, z
+        self.x = x
+        self.y = y
+        self.z = z
         self.data = data
         self.disable_relative_volume = disable_relative_volume
 
@@ -117,7 +119,9 @@ class PlaySoundEffect(ClientBoundPacket):
 
         self.sound_id = sound_id
         self.category = category
-        self.x, self.y, self.z = x, y, z
+        self.x = x
+        self.y = y
+        self.z = z
         self.volume = volume
         self.pitch = pitch
 

@@ -74,7 +74,7 @@ class PlayTabCompleteServerBound(ServerBoundPacket):
 
     id = 0x06
 
-    def __init__(self, transaction_id: int, text: str) -> None:
+    def __init__(self, transaction_id: int, text: str):
         super().__init__()
 
         self.transaction_id = transaction_id

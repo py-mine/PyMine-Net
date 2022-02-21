@@ -15,6 +15,8 @@ class PlaySetCooldown(ClientBoundPacket):
     :param int item_id: The unique id of the type of affected items.
     :param int cooldown_ticks: The length of the cooldown in in-game ticks.
     :ivar int id: The unique ID of the packet.
+    :ivar item_id:
+    :ivar cooldown_ticks:
     """
 
     id = 0x17
