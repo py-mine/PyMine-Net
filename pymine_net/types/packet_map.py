@@ -4,9 +4,9 @@ import zlib
 from typing import Dict, List, Tuple, Type, Union
 
 from pymine_net.enums import GameState, PacketDirection
+from pymine_net.errors import DuplicatePacketIdError, UnknownPacketIdError
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.packet import ClientBoundPacket, Packet, ServerBoundPacket
-from pymine_net.errors import UnknownPacketIdError, DuplicatePacketIdError
 
 
 class StatePacketMap:
