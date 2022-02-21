@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pymine_net.types.packet import Packet
+from pymine_net.types.packet import ServerBoundPacket, ClientBoundPacket
 from pymine_net.types.buffer import Buffer
 import pymine_net.types.nbt as nbt
 
@@ -27,7 +27,7 @@ __all__ = (
 )
 
 
-class PlayBlockEntityData(Packet):
+class PlayBlockEntityData(ClientBoundPacket):
     """Sets the block entity associated with the block at the given location. (Server -> Client).
 
     :param int x: The x coordinate of the position.
@@ -36,7 +36,6 @@ class PlayBlockEntityData(Packet):
     :param int action: The action to be carried out (see https://wiki.vg/Protocol#Block_Entity_Data).
     :param nbt.TAG nbt_data: The nbt data associated with the action/block.
     :ivar int id: Unique packet ID.
-    :ivar int to: Packet direction.
     :ivar x:
     :ivar y:
     :ivar z:
@@ -44,8 +43,7 @@ class PlayBlockEntityData(Packet):
     :ivar nbt_data:
     """
 
-    id = 0x09
-    to = 1
+    id = 0x0A
 
     def __init__(self, x: int, y: int, z: int, action: int, nbt_data: nbt.TAG) -> None:
         super().__init__()
@@ -54,11 +52,11 @@ class PlayBlockEntityData(Packet):
         self.action = action
         self.nbt_data = nbt_data
 
-    def encode(self) -> bytes:
+    def write(self) -> Buffer:
         return (
-            Buffer.pack_position(self.x, self.y, self.z)
-            + Buffer.pack("B", self.action)
-            + Buffer.pack_nbt(self.nbt_data)
+            Buffer.write_position(self.x, self.y, self.z)
+            + Buffer.write("B", self.action)
+            + Buffer.write_nbt(self.nbt_data)
         )
 
 
