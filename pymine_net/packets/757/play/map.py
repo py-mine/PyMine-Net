@@ -1,11 +1,12 @@
 """Contains packets related to the in-game map item."""
 
 from __future__ import annotations
+
 from typing import List, Optional, Tuple
 
-from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.chat import Chat
+from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 
 __all__ = ("PlayMapData",)
 
