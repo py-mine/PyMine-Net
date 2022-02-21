@@ -4,6 +4,8 @@ import uuid
 from typing import Dict, Optional, Tuple, Union
 
 import colorama
+from pymine_net.strict_abc import is_abstract
+from pymine_net.types.packet import ServerBoundPacket
 import pytest
 
 from pymine_net.types.buffer import Buffer
@@ -91,7 +93,15 @@ def test_pack_clientbound_packets(protocol: Union[int, str]):
 
     # iterate through each packet class in the state list
     for state in STATE_LIST:
-        for packet_class in packet_map.packets[state].client_bound.values():
+        packet_classes = {**packet_map.packets[state].client_bound, **packet_map.packets[state].server_bound}.values()
+        
+        for packet_class in packet_classes:
+            # since ServerBoundPacket.pack(...) is an optional abstract method we have to
+            # check if a ServerBoundPacket's pack() method is actually implemented or not
+            if issubclass(packet_class, ServerBoundPacket):
+                if is_abstract(packet_class.pack):
+                    continue
+
             annos = packet_class.__init__.__annotations__.copy()
 
             # get rid of return annotation if there is one

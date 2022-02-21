@@ -31,6 +31,10 @@ def optionalabstract(obj):
     return obj
 
 
+def is_abstract(obj) -> bool:
+    return hasattr(obj, "__abstract__")
+
+
 def check_annotations(a: dict, b: dict) -> bool:
     for k, v in a.items():
         if k not in b:
