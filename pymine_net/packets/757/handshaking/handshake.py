@@ -31,7 +31,13 @@ class HandshakeHandshake(ServerBoundPacket):
         self.next_state = next_state
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(self.protocol).write_string(self.address).write("H", self.port).write_varint(self.next_state)
+        return (
+            Buffer()
+            .write_varint(self.protocol)
+            .write_string(self.address)
+            .write("H", self.port)
+            .write_varint(self.next_state)
+        )
 
     @classmethod
     def unpack(cls, buf: Buffer) -> HandshakeHandshake:

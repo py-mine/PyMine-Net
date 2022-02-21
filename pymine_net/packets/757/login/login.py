@@ -71,10 +71,7 @@ class LoginEncryptionRequest(ClientBoundPacket):
     def unpack(cls, buf: Buffer) -> LoginEncryptionRequest:
         buf.read_string()
 
-        return cls(
-            buf.read_bytes(buf.read_varint()),
-            buf.read_bytes(buf.read_varint())
-        )
+        return cls(buf.read_bytes(buf.read_varint()), buf.read_bytes(buf.read_varint()))
 
 
 class LoginEncryptionResponse(ServerBoundPacket):
@@ -96,7 +93,13 @@ class LoginEncryptionResponse(ServerBoundPacket):
         self.verify_token = verify_token
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(len(self.shared_key)).write_bytes(self.shared_key).write_varint(len(self.verify_token)).write_bytes(self.verify_token)
+        return (
+            Buffer()
+            .write_varint(len(self.shared_key))
+            .write_bytes(self.shared_key)
+            .write_varint(len(self.verify_token))
+            .write_bytes(self.verify_token)
+        )
 
     @classmethod
     def unpack(cls, buf: Buffer) -> LoginEncryptionResponse:
@@ -174,11 +177,7 @@ class LoginPluginRequest(ClientBoundPacket):
 
     @classmethod
     def unpack(cls, buf: Buffer) -> LoginPluginRequest:
-        return cls(
-            buf.read_varint(),
-            buf.read_string(),
-            buf.read_bytes()
-        )
+        return cls(buf.read_varint(), buf.read_string(), buf.read_bytes())
 
 
 class LoginPluginResponse(ServerBoundPacket):

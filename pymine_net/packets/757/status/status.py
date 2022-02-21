@@ -42,7 +42,7 @@ class StatusStatusResponse(ClientBoundPacket):
 
     def pack(self) -> Buffer:
         return Buffer().write_json(self.data)
-        
+
     @classmethod
     def unpack(cls, buf: Buffer) -> StatusStatusResponse:
         return cls(buf.read_json())
