@@ -23,9 +23,12 @@ class ServerBoundPacket(Packet):
     :param int id: Packet identification number. Defaults to None.
     :ivar id:
     """
+    
+    def pack(self) -> Buffer:
+        raise NotImplementedError
 
-    @classmethod
     @abstract
+    @classmethod
     def unpack(cls, buf: Buffer) -> ServerBoundPacket:
         pass
 
@@ -36,7 +39,11 @@ class ClientBoundPacket(Packet):
     :param int id: Packet identification number. Defaults to None.
     :ivar id:
     """
-
+    
     @abstract
     def pack(self) -> Buffer:
         pass
+
+    @classmethod
+    def unpack(cls, buf: Buffer) -> ServerBoundPacket:
+        raise NotImplementedError
