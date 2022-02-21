@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Union
 
 
@@ -7,3 +9,6 @@ class Chat:
             self.data = {"text": data}
         else:
             self.data = data
+
+    def __eq__(self, other: Chat) -> bool:
+        return self.data == other.data

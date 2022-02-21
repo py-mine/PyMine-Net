@@ -18,7 +18,7 @@ from pymine_net import load_packet_map
 from pymine_net.enums import GameState
 
 STATE_LIST = [GameState.HANDSHAKING, GameState.STATUS, GameState.LOGIN, GameState.PLAY]
-CHECKABLE_ANNOS = {bool, int, float, str, uuid.UUID, Chat}
+CHECKABLE_ANNOS = {bool, int, float, bytes, str, uuid.UUID, Chat}
 CHECKABLE_ANNOS.update({a.__name__ for a in CHECKABLE_ANNOS})
 
 
@@ -106,20 +106,32 @@ def test_pack_clientbound_packets(protocol: Union[int, str]):
                     kwargs[anno_name] = 1
                 elif anno_type is float or anno_type == "float":
                     kwargs[anno_name] = 123.123
+                elif anno_type is bytes or anno_type == "bytes":
+                    kwargs[anno_name] = b"abc\x01\x02\x03"
                 elif anno_type is str or anno_type == "str":
                     kwargs[anno_name] = "test string123 !@#$%^&*()-_=+"
                 elif anno_type is uuid.UUID or anno_type == "UUID":
                     kwargs[anno_name] = uuid.uuid4()
                 elif anno_type is Chat or anno_type == "Chat":
-                    kwargs[anno_name] = Chat("test chat message")
+                    kwargs[anno_name] = Chat("test chat message 123")
 
+            # not all args could have dummy values generated, so we can't test this packet
             if len(kwargs) != len(annos):
                 continue
 
-            packet = packet_class(**kwargs)
-            buffer = packet.pack()
+            packet = packet_class(**kwargs)  # create instance of packet from dummy data
+            buffer = packet.pack()  # pack packet into a Buffer
 
             assert isinstance(buffer, Buffer)
+
+            # some clientbound packets have a corresponding unpack method, so we can try to test that
+            try:
+                decoded_packet = packet_class.unpack(buffer)
+
+                assert isinstance(decoded_packet, packet_class)
+                assert decoded_packet.__dict__ == packet.__dict__
+            except NotImplementedError:
+                pass
 
             # some packets don't take any arguments and the data sent is just the packet id
             if len(kwargs) > 0:
