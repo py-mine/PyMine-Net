@@ -43,12 +43,18 @@ class PlayEffect(ClientBoundPacket):
         self.disable_relative_volume = disable_relative_volume
 
     def pack(self) -> Buffer:
-        return Buffer().write("i", self.effect_id).write_position(self.x, self.y, self.z).write("i", self.data).write("?", self.disable_relative_volume)
+        return (
+            Buffer()
+            .write("i", self.effect_id)
+            .write_position(self.x, self.y, self.z)
+            .write("i", self.data)
+            .write("?", self.disable_relative_volume)
+        )
 
 
 class PlayEntityEffect(ClientBoundPacket):
     """Gives a specific entity an effect. (Server -> Client)
-    
+
     :param int entity_id: The ID of the entity to give the effect to.
     :param int effect_id: The ID of the effect to give.
     :param int amplifier: Amplification amount of effect.
@@ -72,7 +78,14 @@ class PlayEntityEffect(ClientBoundPacket):
         self.flags = flags
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(self.entity_id).write_byte(self.effect_id).write_byte(self.amplifier).write_varint(self.duration).write_byte(self.flags)
+        return (
+            Buffer()
+            .write_varint(self.entity_id)
+            .write_byte(self.effect_id)
+            .write_byte(self.amplifier)
+            .write_varint(self.duration)
+            .write_byte(self.flags)
+        )
 
 
 class PlaySoundEffect(ClientBoundPacket):
@@ -109,4 +122,13 @@ class PlaySoundEffect(ClientBoundPacket):
         self.pitch = pitch
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(self.sound_id).write_varint(self.category).write("i", self.x * 8).write("i", self.y * 8).write("i", self.z * 8).write("f", self.volume).write("f", self.pitch)
+        return (
+            Buffer()
+            .write_varint(self.sound_id)
+            .write_varint(self.category)
+            .write("i", self.x * 8)
+            .write("i", self.y * 8)
+            .write("i", self.z * 8)
+            .write("f", self.volume)
+            .write("f", self.pitch)
+        )

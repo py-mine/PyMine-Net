@@ -56,7 +56,12 @@ class PlayBlockEntityData(ClientBoundPacket):
         self.nbt_data = nbt_data
 
     def pack(self) -> Buffer:
-        return Buffer().write_position(self.x, self.y, self.z).write("B", self.action).write_nbt(self.nbt_data)
+        return (
+            Buffer()
+            .write_position(self.x, self.y, self.z)
+            .write("B", self.action)
+            .write_nbt(self.nbt_data)
+        )
 
 
 class PlayQueryEntityNBT(ServerBoundPacket):
@@ -203,9 +208,7 @@ class PlayEntityPosition(ClientBoundPacket):
 
     id = 0x29
 
-    def __init__(
-        self, entity_id: int, dx: int, dy: int, dz: int, on_ground: bool
-    ):
+    def __init__(self, entity_id: int, dx: int, dy: int, dz: int, on_ground: bool):
         super().__init__()
 
         self.entity_id = entity_id
@@ -213,7 +216,14 @@ class PlayEntityPosition(ClientBoundPacket):
         self.on_ground = on_ground
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(self.entity_id).write("h", self.dx).write("h", self.dy).write("h", self.dz).write("?", self.on_ground)
+        return (
+            Buffer()
+            .write_varint(self.entity_id)
+            .write("h", self.dx)
+            .write("h", self.dy)
+            .write("h", self.dz)
+            .write("?", self.on_ground)
+        )
 
 
 class PlayEntityPositionAndRotation(ClientBoundPacket):
@@ -318,7 +328,7 @@ class PlayRemoveEntityEffect(ClientBoundPacket):
 
 class PlayEntityHeadLook(ClientBoundPacket):
     """Changes the horizontal direction an entity's head is facing. (Server -> Client)
-    
+
     :param int entity_id: The ID of the entity.
     :param int head_yaw: The new head yaw angle, the value being x/256 of a full rotation.
     :ivar int id: Unique packet ID.
@@ -340,7 +350,7 @@ class PlayEntityHeadLook(ClientBoundPacket):
 
 class PlayAttachEntity(ClientBoundPacket):
     """Sent when one entity has been leashed to another entity. (Server -> Client)
-    
+
     :param int attached_entity_id: The ID of the entity attached to the leash.
     :param int holding_entity_id: The ID of the entity holding the leash.
     :ivar int id: Unique packet ID.
@@ -362,7 +372,7 @@ class PlayAttachEntity(ClientBoundPacket):
 
 class PlayEntityVelocity(ClientBoundPacket):
     """Sends the velocity of an entity in units of 1/8000 of a block per server tick. (Server -> Client)
-    
+
     :param int entity_id: The ID of the entity.
     :param int velocity_x: The velocity in units of 1/8000 of a block per server tick in the x axis.
     :param int velocity_y: The velocity in units of 1/8000 of a block per server tick in the y axis.
@@ -385,12 +395,18 @@ class PlayEntityVelocity(ClientBoundPacket):
         self.velocity_z = velocity_z
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(self.entity_id).write("h", self.velocity_x).write("h", self.velocity_y).write("h", self.velocity_z)
+        return (
+            Buffer()
+            .write_varint(self.entity_id)
+            .write("h", self.velocity_x)
+            .write("h", self.velocity_y)
+            .write("h", self.velocity_z)
+        )
 
 
 class PlayEntityTeleport(ClientBoundPacket):
     """Sent when an entity moves more than 8 blocks. (Server -> Client)
-    
+
     :param int entity_id: The ID of the entity.
     :param float x: The new x coordinate of the entity.
     :param float y: The new y coordinate of the entity.
@@ -422,12 +438,21 @@ class PlayEntityTeleport(ClientBoundPacket):
         self.on_ground = on_ground
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(self.entity_id).write("d", self.x).write("d", self.y).write("d", self.z).write("i", self.yaw).write("i", self.pitch).write("?", self.on_ground)
+        return (
+            Buffer()
+            .write_varint(self.entity_id)
+            .write("d", self.x)
+            .write("d", self.y)
+            .write("d", self.z)
+            .write("i", self.yaw)
+            .write("i", self.pitch)
+            .write("?", self.on_ground)
+        )
 
 
 class PlayDestroyEntities(ClientBoundPacket):
     """Sent by the server when one or more entities are to be destroyed on the client. (Server -> Client)
-    
+
     :param List[int] entity_ids: List of entity IDs for the client to destroy.
     :ivar int id: Unique packet ID.
     :ivar entity_ids:
@@ -472,7 +497,7 @@ class PlayEntityMetadata(ClientBoundPacket):
 
 
 class PlayEntityEquipment(ClientBoundPacket):
-    """Sends data about the entity's equipped equipment. 
+    """Sends data about the entity's equipped equipment.
 
     :param int entity_id: The ID of the entity the equipment data is for.
     :param List[Tuple[int, Dict[str, Union[int, nbt.TAG]]]] equipment: An array of equipment, see here: https://wiki.vg/Protocol#Entity_Equipment
@@ -494,13 +519,13 @@ class PlayEntityEquipment(ClientBoundPacket):
 
         for (slot_id, equipment) in self.equipment:
             buf.write("b", slot_id).write_slot(**equipment)
-        
+
         return buf
 
 
 class PlayEntityProperties(ClientBoundPacket):
     """Sends information about certain attributes on an entity. (Server -> Client)
-    
+
     :param int entity_id: The ID of the entity.
     :param List[dict] properties: Properties of the entity.
     :ivar int id: Unique packet ID.
@@ -520,7 +545,9 @@ class PlayEntityProperties(ClientBoundPacket):
         buf = Buffer().write_varint(self.entity_id)
 
         for prop in self.properties:
-            buf.write_string(prop["key"]).write("d", prop["value"]).write_varint(len(prop["modifiers"]))
+            buf.write_string(prop["key"]).write("d", prop["value"]).write_varint(
+                len(prop["modifiers"])
+            )
 
             for prop_modifier in prop["modifiers"]:
                 buf.write_modifier(prop_modifier)
