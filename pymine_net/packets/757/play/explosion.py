@@ -1,6 +1,7 @@
 """Contains packets related to entities."""
 
 from __future__ import annotations
+
 from typing import List, Tuple
 
 from pymine_net.types.buffer import Buffer
