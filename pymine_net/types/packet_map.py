@@ -39,7 +39,9 @@ class StatePacketMap:
                 ]
 
                 if len(found) > 1:
-                    raise DuplicatePacketIdError("unknown", state, packet_id, PacketDirection.SERVERBOUND)
+                    raise DuplicatePacketIdError(
+                        "unknown", state, packet_id, PacketDirection.SERVERBOUND
+                    )
 
             for packet_id in self.client_bound.keys():
                 found = [
@@ -47,7 +49,9 @@ class StatePacketMap:
                 ]
 
                 if len(found) > 1:
-                    raise DuplicatePacketIdError("unknown", state, packet_id, PacketDirection.CLIENTBOUND)
+                    raise DuplicatePacketIdError(
+                        "unknown", state, packet_id, PacketDirection.CLIENTBOUND
+                    )
 
         return self
 
@@ -72,7 +76,9 @@ class PacketMap:
 
         return Buffer().write_varint(len(buf)).extend(buf)
 
-    def decode_packet(self, buf: Buffer, state: GameState, compression_threshold: int = -1) -> ServerBoundPacket:
+    def decode_packet(
+        self, buf: Buffer, state: GameState, compression_threshold: int = -1
+    ) -> ServerBoundPacket:
         """Decodes and (if necessary) decompresses a ServerBoundPacket."""
 
         # decompress packet if necessary
@@ -89,6 +95,5 @@ class PacketMap:
             packet_class = self.packets[state].server_bound[packet_id]
         except KeyError:
             raise UnknownPacketIdError(self.protocol, state, packet_id, PacketDirection.SERVERBOUND)
-        
+
         return packet_class.unpack(buf)
-    
