@@ -51,11 +51,10 @@ class PlayEffect(ClientBoundPacket):
         )
 
 
-class PlayEntityEffect(Packet):
+class PlayEntityEffect(ClientBoundPacket):
     """Insert fancy docstring here (server -> client)"""
 
-    id = 0x59
-    to = 1
+    id = 0x65
 
     def __init__(self, eid: int, effect_id: bytes, amp: bytes, duration: int, flags: bytes) -> None:
         super().__init__()
@@ -66,12 +65,12 @@ class PlayEntityEffect(Packet):
         self.duration = duration
         self.flags = flags
 
-    def encode(self) -> bytes:
+    def pack(self) -> Buffer:
         return (
-            Buffer.pack_varint(self.eid)
+            Buffer.write_varint(self.eid)
             + self.effect_id
             + self.amp
-            + Buffer.pack_varint(self.duration)
+            + Buffer.write_varint(self.duration)
             + self.flags
         )
 
