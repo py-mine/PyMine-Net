@@ -199,7 +199,7 @@ class Buffer(bytearray):
     def read_uuid(self) -> uuid.UUID:
         """Reads a UUID from the buffer."""
 
-        return uuid.UUID(bytes=self.read_bytes(16))
+        return uuid.UUID(bytes=bytes(self.read_bytes(16)))
 
     def write_uuid(self, value: uuid.UUID) -> Buffer:
         """Writes a UUID to the buffer."""
