@@ -24,8 +24,11 @@ class ServerBoundPacket(Packet):
     :ivar id:
     """
 
-    @classmethod
+    def pack(self) -> Buffer:
+        raise NotImplementedError
+
     @abstract
+    @classmethod
     def unpack(cls, buf: Buffer) -> ServerBoundPacket:
         pass
 
@@ -40,3 +43,7 @@ class ClientBoundPacket(Packet):
     @abstract
     def pack(self) -> Buffer:
         pass
+
+    @classmethod
+    def unpack(cls, buf: Buffer) -> ServerBoundPacket:
+        raise NotImplementedError
