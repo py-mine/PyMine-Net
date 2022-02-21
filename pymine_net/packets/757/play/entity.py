@@ -52,7 +52,7 @@ class PlayBlockEntityData(ClientBoundPacket):
         self.action = action
         self.nbt_data = nbt_data
 
-    def write(self) -> Buffer:
+    def pack(self) -> Buffer:
         return (
             Buffer.write_position(self.x, self.y, self.z)
             + Buffer.write("B", self.action)
