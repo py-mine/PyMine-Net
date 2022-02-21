@@ -60,19 +60,17 @@ class PlayBlockEntityData(ClientBoundPacket):
         )
 
 
-class PlayQueryEntityNBT(Packet):
+class PlayQueryEntityNBT(ServerBoundPacket):
     """Sent by the client when Shift+F3+I is used. (Client -> Server)
 
     :param int transaction_id: Incremental ID used so the client can verify responses.
     :param int entity_id: The ID of the entity to query.
     :ivar int id: Unique packet ID.
-    :ivar int to: Packet direction.
     :ivar transaction_id:
     :ivar entity_id:
     """
 
-    id = 0x0D
-    to = 0
+    id = 0x0C
 
     def __init__(self, transaction_id: int, entity_id: int) -> None:
         super().__init__()
@@ -81,11 +79,11 @@ class PlayQueryEntityNBT(Packet):
         self.entity_id = entity_id
 
     @classmethod
-    def decode(cls, buf: Buffer) -> PlayQueryEntityNBT:
-        return cls(buf.unpack_varint(), buf.unpack_varint())
+    def unpack(cls, buf: Buffer) -> PlayQueryEntityNBT:
+        return cls(buf.read_varint(), buf.read_varint())
 
 
-class PlayInteractEntity(Packet):
+class PlayInteractEntity(ServerBoundPacket):
     """Sent when a client clicks another entity, see here: https://wiki.vg/Protocol#Interact_Entity. (Client -> Server)
 
     :param int entity_id: The ID of the entity interacted with.
@@ -96,7 +94,6 @@ class PlayInteractEntity(Packet):
     :param int hand: The hand used.
     :param bool sneaking: Whether the client was sneaking or not.
     :ivar int id: Unique packet ID.
-    :ivar int to: Packet direction.
     :ivar entity_id:
     :ivar type_:
     :ivar target_x:
@@ -106,8 +103,7 @@ class PlayInteractEntity(Packet):
     :ivar sneaking:
     """
 
-    id = 0x0E
-    to = 0
+    id = 0x0D
 
     def __init__(
         self,
@@ -130,15 +126,15 @@ class PlayInteractEntity(Packet):
         self.sneaking = sneaking
 
     @classmethod
-    def decode(cls, buf: Buffer) -> PlayInteractEntity:
+    def unpack(cls, buf: Buffer) -> PlayInteractEntity:
         return cls(
-            buf.unpack_varint(),
-            buf.unpack_varint(),
-            buf.unpack_optional(buf.unpack_varint),
-            buf.unpack_optional(buf.unpack_varint),
-            buf.unpack_optional(buf.unpack_varint),
-            buf.unpack_optional(buf.unpack_varint),
-            buf.unpack("?"),
+            buf.read_varint(),
+            buf.read_varint(),
+            buf.read_optional(buf.read_varint),
+            buf.read_optional(buf.read_varint),
+            buf.read_optional(buf.read_varint),
+            buf.read_optional(buf.read_varint),
+            buf.read("?"),
         )
 
 
