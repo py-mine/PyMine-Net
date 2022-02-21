@@ -31,7 +31,7 @@ TYPES: List[TAG] = []
 def unpack(buf, root_is_full: bool = True) -> TAG_Compound:
     try:
         data = gzip.decompress(buf)
-    except Exception:
+    except gzip.BadGzipFile:
         pass
     else:
         buf.clear()
