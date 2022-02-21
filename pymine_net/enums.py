@@ -1,6 +1,11 @@
-from enum import IntEnum
+from enum import Enum, IntEnum
 
 __all__ = ("GameState", "Direction", "Pose", "EntityModifier")
+
+
+class PacketDirection(Enum):
+    CLIENTBOUND = "CLIENT-BOUND"
+    SERVERBOUND = "SERVER-BOUND"
 
 
 class GameState(IntEnum):

@@ -1,13 +1,25 @@
 from __future__ import annotations
 
 from typing import Dict, List, Tuple, Type, Union
+import zlib
 
-from pymine_net.enums import GameState
+from pymine_net.enums import GameState, PacketDirection
+from pymine_net.types.buffer import Buffer
 from pymine_net.types.packet import ClientBoundPacket, Packet, ServerBoundPacket
 
 
+class UnknownPacketIdError(Exception):
+    def __init__(self, protocol: Union[str, int], state: GameState, packet_id: int, direction: PacketDirection):
+        super().__init__(f"Unknown packet ID 0x{packet_id:02X} (protocol={protocol}, state={state.name}, {direction.value})")
+
+        self.protocol = protocol
+        self.state = state
+        self.packet_id = packet_id
+        self.direction = direction
+
+
 class DuplicatePacketIdError(Exception):
-    def __init__(self, protocol: Union[str, int], state: GameState, packet_id: int, direction: str):
+    def __init__(self, protocol: Union[str, int], state: GameState, packet_id: int, direction: PacketDirection):
         super().__init__(
             f"Duplicate packet ID found (protocol={protocol}, state={state.name}, {direction}): 0x{packet_id:02X}"
         )
@@ -48,7 +60,7 @@ class StatePacketMap:
                 ]
 
                 if len(found) > 1:
-                    raise DuplicatePacketIdError("unknown", state, packet_id, "SERVER-BOUND")
+                    raise DuplicatePacketIdError("unknown", state, packet_id, PacketDirection.SERVERBOUND)
 
             for packet_id in self.client_bound.keys():
                 found = [
@@ -56,7 +68,7 @@ class StatePacketMap:
                 ]
 
                 if len(found) > 1:
-                    raise DuplicatePacketIdError("unknown", state, packet_id, "CLIENT-BOUND")
+                    raise DuplicatePacketIdError("unknown", state, packet_id, PacketDirection.CLIENTBOUND)
 
         return self
 
@@ -68,17 +80,36 @@ class PacketMap:
         self.protocol = protocol
         self.packets = packets
 
-    def get_server_bound(self, state: GameState, packet_id: int):
-        """Gets a server bound packet by its GameState and packet id."""
+    def encode_packet(self, packet: ClientBoundPacket, compression_threshold: int = -1) -> Buffer:
+        """Encodes and (if necessary) compresses a ClientBoundPacket."""
 
-        return self.packets[state].server_bound[packet_id]
+        buf = Buffer().write_varint(packet.id).extend(packet.pack())
 
-    def get_client_bound(self, state: GameState, packet_id: int):
-        """Gets a client bound packet by its GameState and packet id."""
+        if compression_threshold >= 1:
+            if len(buf) >= compression_threshold:
+                buf = Buffer().write_varint(len(buf)).extend(zlib.compress(buf))
+            else:
+                buf = Buffer().write_varint(0).extend(buf)
 
-        return self.packets[state].client_bound[packet_id]
+        return Buffer().write_varint(len(buf)).extend(buf)
 
-    def __getitem__(self, key: Tuple[GameState, int]) -> Type[ServerBoundPacket]:
-        """Shortcut for get_server_bound(...)"""
+    def decode_packet(self, buf: Buffer, state: GameState, compression_threshold: int = -1) -> ServerBoundPacket:
+        """Decodes and (if necessary) decompresses a ServerBoundPacket."""
 
-        return self.get_server_bound(*key)
+        # decompress packet if necessary
+        if compression_threshold >= 0:
+            uncompressed_length = buf.read_varint()
+
+            if uncompressed_length > 0:
+                buf = Buffer(zlib.decompress(buf.read_bytes()))
+
+        packet_id = buf.read_varint()
+
+        # attempt to get packet class from given state and packet id
+        try:
+            packet_class = self.packets[state].server_bound[packet_id]
+        except KeyError:
+            raise UnknownPacketIdError(self.protocol, state, packet_id, PacketDirection.SERVERBOUND)
+        
+        return packet_class.unpack(buf)
+    
