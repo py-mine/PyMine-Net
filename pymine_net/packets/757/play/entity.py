@@ -205,7 +205,9 @@ class PlayEntityPosition(ClientBoundPacket):
 
     id = 0x29
 
-    def __init__(self, entity_id: int, dx: int, dy: int, dz: int, on_ground: bool) -> None: # TODO: This needs pitch and yaw, I don't know how to encode angles though.
+    def __init__(
+        self, entity_id: int, dx: int, dy: int, dz: int, on_ground: bool
+    ) -> None:  # TODO: This needs pitch and yaw, I don't know how to encode angles though.
         super().__init__()
 
         self.entity_id = entity_id
