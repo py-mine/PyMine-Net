@@ -93,8 +93,11 @@ def test_pack_clientbound_packets(protocol: Union[int, str]):
 
     # iterate through each packet class in the state list
     for state in STATE_LIST:
-        packet_classes = {**packet_map.packets[state].client_bound, **packet_map.packets[state].server_bound}.values()
-        
+        packet_classes = {
+            **packet_map.packets[state].client_bound,
+            **packet_map.packets[state].server_bound,
+        }.values()
+
         for packet_class in packet_classes:
             # since ServerBoundPacket.pack(...) is an optional abstract method we have to
             # check if a ServerBoundPacket's pack() method is actually implemented or not

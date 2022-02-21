@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from pymine_net.types.buffer import Buffer
-from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
+from pymine_net.types.packet import ClientBoundPacket
 
 __all__ = ("PlayExplosion",)
 
 
 class PlayExplosion(ClientBoundPacket):
-    """Sent when an explosion occurs (creepers, TNT, and ghast fireballs).                          Each block in Records is set to air. Coordinates for each axis in record is int(X) + record. (Server -> Client)"""
+    """Sent when an explosion occurs (creepers, TNT, and ghast fireballs). Each block in Records is set to air. Coordinates for each axis in record is int(X) + record. (Server -> Client)"""
 
     id = 0x1C
 

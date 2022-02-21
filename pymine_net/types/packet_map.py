@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import zlib
-from typing import Dict, List, Tuple, Type, Union
+from typing import Dict, List, Type, Union
 
 from pymine_net.enums import GameState, PacketDirection
 from pymine_net.errors import DuplicatePacketIdError, UnknownPacketIdError
