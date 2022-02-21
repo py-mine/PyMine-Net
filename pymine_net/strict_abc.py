@@ -23,9 +23,13 @@ def abstract(obj):
     obj.__abstract__ = AbstractObjData(annotations=getattr(obj, "__annotations__", None))
     return obj
 
+
 def optionalabstract(obj):
-    obj.__abstract__ = AbstractObjData(optional=True, annotations=getattr(obj, "__annotations__", None))
+    obj.__abstract__ = AbstractObjData(
+        optional=True, annotations=getattr(obj, "__annotations__", None)
+    )
     return obj
+
 
 def check_annotations(a: dict, b: dict) -> bool:
     for k, v in a.items():
