@@ -138,20 +138,18 @@ class PlayInteractEntity(ServerBoundPacket):
         )
 
 
-class PlayEntityStatus(Packet):
+class PlayEntityStatus(ClientBoundPacket):
     """Usually used to trigger an animation for an entity. (Server -> Client)
 
 
     :param int entity_id: The ID of the entity the status is for.
     :param int entity_status: Depends on the type of entity, see here: https://wiki.vg/Protocol#Entity_Status.
     :ivar int id: Unique packet ID.
-    :ivar int to: Packet direction.
     :ivar entity_id:
     :ivar entity_status:
     """
 
-    id = 0x1A
-    to = 1
+    id = 0x1B
 
     def __init__(self, entity_id: int, entity_status: int) -> None:
         super().__init__()
@@ -159,8 +157,8 @@ class PlayEntityStatus(Packet):
         self.entity_id = entity_id
         self.entity_status = entity_status
 
-    def encode(self) -> bytes:
-        return Buffer.pack("i", self.entity_id) + Buffer.pack("b", self.entity_status)
+    def pack(self) -> Buffer:
+        return Buffer.write("i", self.entity_id) + Buffer.write("b", self.entity_status)
 
 
 class PlayEntityAction(Packet):
