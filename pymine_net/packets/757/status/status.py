@@ -17,6 +17,9 @@ class StatusStatusRequest(ServerBoundPacket):
     def __init__(self):
         super().__init__()
 
+    def pack(self) -> Buffer:
+        return Buffer()
+
     @classmethod
     def unpack(cls, buf: Buffer) -> StatusStatusRequest:
         return cls()
@@ -25,20 +28,24 @@ class StatusStatusRequest(ServerBoundPacket):
 class StatusStatusResponse(ClientBoundPacket):
     """Returns server status data back to the requesting client. (Server -> Client)
 
-    :param dict response_data: JSON response data sent back to the client.
+    :param dict data: JSON response data sent back to the client.
     :ivar int id: Unique packet ID.
-    :ivar response_data:
+    :ivar data:
     """
 
     id = 0x00
 
-    def __init__(self, response_data: dict):
+    def __init__(self, data: dict):
         super().__init__()
 
-        self.response_data = response_data
+        self.data = data
 
     def pack(self) -> Buffer:
-        return Buffer().write_json(self.response_data)
+        return Buffer().write_json(self.data)
+        
+    @classmethod
+    def unpack(cls, buf: Buffer) -> StatusStatusResponse:
+        return cls(buf.read_json())
 
 
 class StatusStatusPingPong(ServerBoundPacket, ClientBoundPacket):
