@@ -1,8 +1,13 @@
 import os
 import sys
+import uuid
+from typing import Dict, Optional, Tuple, Union
 
 import colorama
 import pytest
+
+from pymine_net.types.buffer import Buffer
+from pymine_net.types.chat import Chat
 
 colorama.init(autoreset=True)
 
@@ -11,6 +16,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from pymine_net import load_packet_map
 from pymine_net.enums import GameState
+
+STATE_LIST = [GameState.HANDSHAKING, GameState.STATUS, GameState.LOGIN, GameState.PLAY]
+CHECKABLE_ANNOS = {bool, int, float, str, uuid.UUID, Chat}
+CHECKABLE_ANNOS.update({a.__name__ for a in CHECKABLE_ANNOS})
 
 
 @pytest.mark.parametrize(  # GameState: (clientbound, serverbound)
@@ -27,13 +36,15 @@ from pymine_net.enums import GameState
         ],
     ),
 )
-def test_ensure_all_packets(capsys, protocol, config):
+def test_ensure_all_packets(
+    capsys, protocol: Union[int, str], config: Dict[GameState, Tuple[Optional[int], Optional[int]]]
+):
     packet_map = load_packet_map(protocol, debug=True)
     initial_check = True
 
     print(f"PACKET CHECK (protocol={protocol}): ", end="")
 
-    for state in [GameState.HANDSHAKING, GameState.STATUS, GameState.LOGIN, GameState.PLAY]:
+    for state in STATE_LIST:
         missing_clientbound = []
         missing_serverbound = []
 
@@ -72,3 +83,44 @@ def test_ensure_all_packets(capsys, protocol, config):
     else:
         reason = "Missing packets\n" + capsys.readouterr().out
         pytest.xfail(reason=reason)
+
+
+@pytest.mark.parametrize("protocol", (757,))
+def test_pack_clientbound_packets(protocol: Union[int, str]):
+    packet_map = load_packet_map(protocol)
+
+    # iterate through each packet class in the state list
+    for state in STATE_LIST:
+        for packet_class in packet_map.packets[state].client_bound.values():
+            annos = packet_class.__init__.__annotations__.copy()
+
+            # get rid of return annotation if there is one
+            annos.pop("return", None)
+
+            kwargs = {}
+
+            for anno_name, anno_type in annos.items():
+                if anno_type is bool or anno_type == "bool":
+                    kwargs[anno_name] = True
+                elif anno_type is int or anno_type == "int":
+                    kwargs[anno_name] = 1
+                elif anno_type is float or anno_type == "float":
+                    kwargs[anno_name] = 123.123
+                elif anno_type is str or anno_type == "str":
+                    kwargs[anno_name] = "test string123 !@#$%^&*()-_=+"
+                elif anno_type is uuid.UUID or anno_type == "UUID":
+                    kwargs[anno_name] = uuid.uuid4()
+                elif anno_type is Chat or anno_type == "Chat":
+                    kwargs[anno_name] = Chat("test chat message")
+
+            if len(kwargs) != len(annos):
+                continue
+
+            packet = packet_class(**kwargs)
+            buffer = packet.pack()
+
+            assert isinstance(buffer, Buffer)
+
+            # some packets don't take any arguments and the data sent is just the packet id
+            if len(kwargs) > 0:
+                assert len(buffer) >= 1

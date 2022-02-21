@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import struct
 import uuid
-from typing import Callable, Optional, Tuple, Union
+from typing import Callable, Dict, Optional, Tuple, Union
 
 from pymine_net.enums import Direction, EntityModifier, Pose
 from pymine_net.types import nbt
@@ -260,12 +260,8 @@ class Buffer(bytearray):
             "tag": self.read_nbt(),
         }
 
-    def write_slot(
-        self, registry: Registry, item: str = None, count: int = 1, tag: nbt.TAG = None
-    ) -> Buffer:
+    def write_slot(self, item_id: int = None, count: int = 1, tag: nbt.TAG = None) -> Buffer:
         """Writes an inventory / container slot to the buffer."""
-
-        item_id = registry.encode(item)
 
         if item_id is None:
             self.write("?", False)
@@ -441,7 +437,7 @@ class Buffer(bytearray):
 
         return self
 
-    def write_entity_metadata(self, value: dict) -> Buffer:
+    def write_entity_metadata(self, value: Dict[Tuple[int, int], object]) -> Buffer:
         #  index, type, value
         for (i, t), v in value.items():
             self.write("B", i).write_varint(t)
