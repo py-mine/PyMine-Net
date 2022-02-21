@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from pymine.types.packet import ServerBoundPacket, ClientBoundPacket
 from pymine.types.buffer import Buffer
+from pymine.types.packet import ClientBoundPacket, ServerBoundPacket
 
 __all__ = (
     "PlayEffect",
