@@ -30,17 +30,15 @@ class PlayKeepAliveClientBound(ClientBoundPacket):
         return Buffer().write("q", self.keep_alive_id)
 
 
-class PlayKeepAliveServerBound(Packet):
+class PlayKeepAliveServerBound(ServerBoundPacket):
     """Sent by client in order to maintain connection with server. (Client -> Server)
 
     :param int keep_alive_id: A randomly generated (by the server) integer/long.
     :ivar int id: Unique packet ID.
-    :ivar int to: Packet direction.
     :ivar keep_alive_id:
     """
 
-    id = 0x10
-    to = 0
+    id = 0x0F
 
     def __init__(self, keep_alive_id: int) -> None:
         super().__init__()
@@ -48,5 +46,5 @@ class PlayKeepAliveServerBound(Packet):
         self.keep_alive_id = keep_alive_id
 
     @classmethod
-    def decode(cls, buf: Buffer) -> PlayKeepAliveServerBound:
-        return cls(buf.unpack("q"))
+    def unpack(cls, buf: Buffer) -> PlayKeepAliveServerBound:
+        return cls(buf.read("q"))
