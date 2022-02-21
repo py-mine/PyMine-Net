@@ -8,8 +8,16 @@ class PyMineNetError(Exception):
 
 
 class UnknownPacketIdError(Exception):
-    def __init__(self, protocol: Union[str, int], state: GameState, packet_id: int, direction: PacketDirection):
-        super().__init__(f"Unknown packet ID 0x{packet_id:02X} (protocol={protocol}, state={state.name}, {direction.value})")
+    def __init__(
+        self,
+        protocol: Union[str, int],
+        state: GameState,
+        packet_id: int,
+        direction: PacketDirection,
+    ):
+        super().__init__(
+            f"Unknown packet ID 0x{packet_id:02X} (protocol={protocol}, state={state.name}, {direction.value})"
+        )
 
         self.protocol = protocol
         self.state = state
@@ -18,7 +26,13 @@ class UnknownPacketIdError(Exception):
 
 
 class DuplicatePacketIdError(Exception):
-    def __init__(self, protocol: Union[str, int], state: GameState, packet_id: int, direction: PacketDirection):
+    def __init__(
+        self,
+        protocol: Union[str, int],
+        state: GameState,
+        packet_id: int,
+        direction: PacketDirection,
+    ):
         super().__init__(
             f"Duplicate packet ID found (protocol={protocol}, state={state.name}, {direction}): 0x{packet_id:02X}"
         )
