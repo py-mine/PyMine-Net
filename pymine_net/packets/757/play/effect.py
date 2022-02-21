@@ -75,7 +75,7 @@ class PlayEntityEffect(ClientBoundPacket):
         )
 
 
-class PlaySoundEffect(Packet):
+class PlaySoundEffect(ClientBoundPacket):
     """Used to play a hardcoded sound event. (Server -> Client)
 
     :param int sound_id: The ID of the sound to be played.
@@ -86,7 +86,6 @@ class PlaySoundEffect(Packet):
     :param float volume: Volume of the sound to be played, between 0.0 and 1.0.
     :param float pitch: The pitch that the sound should be played at, between 0.5 and 2.0.
     :ivar int id: Unique packet ID.
-    :ivar int to: Packet direction.
     :ivar sound_id:
     :ivar category:
     :ivar x:
@@ -96,8 +95,7 @@ class PlaySoundEffect(Packet):
     :ivar pitch:
     """
 
-    id = 0x51
-    to = 1
+    id = 0x5D
 
     def __init__(
         self, sound_id: int, category: int, x: int, y: int, z: int, volume: float, pitch: float
@@ -110,13 +108,13 @@ class PlaySoundEffect(Packet):
         self.volume = volume
         self.pitch = pitch
 
-    def encode(self) -> bytes:
+    def pack(self) -> Buffer:
         return (
-            Buffer.pack_varint(self.sound_id)
-            + Buffer.pack_varint(self.category)
-            + Buffer.pack("i", self.x * 8)
-            + Buffer.pack("i", self.y * 8)
-            + Buffer.pack("i", self.z * 8)
-            + Buffer.pack("f", self.volume)
-            + Buffer.pack("f", self.pitch)
+            Buffer.write_varint(self.sound_id)
+            + Buffer.write_varint(self.category)
+            + Buffer.write("i", self.x * 8)
+            + Buffer.write("i", self.y * 8)
+            + Buffer.write("i", self.z * 8)
+            + Buffer.write("f", self.volume)
+            + Buffer.write("f", self.pitch)
         )
