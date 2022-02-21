@@ -8,4 +8,4 @@
 ## Features
 - Buffer class with methods for dealing with various types and data formats used by Minecraft
 - High level abstractions for packets with a system to seperate different protocol's packets
-- Miscellanious classes for dealing with different Minecraft data structures relevant to networking
+- Miscellaneous classes for dealing with different Minecraft data structures relevant to networking
