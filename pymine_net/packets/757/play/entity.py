@@ -187,7 +187,7 @@ class PlayEntityAction(ServerBoundPacket):
         return cls(buf.read_varint(), buf.read_varint(), buf.read_varint())
 
 
-class PlayEntityPosition(Packet):
+class PlayEntityPosition(ClientBoundPacket):
     """Sent by the server when an entity moves less than 8 blocks. (Server -> Client)
 
     :param int entity_id: The id of the entity moving.
@@ -196,7 +196,6 @@ class PlayEntityPosition(Packet):
     :param int dz: Delta (change in) z, -8 <-> 8.
     :param bool on_ground: Whether entity is on ground or not.
     :ivar int id: Unique packet ID.
-    :ivar int to: Packet direction.
     :ivar entity_id:
     :ivar dx:
     :ivar dy:
@@ -204,23 +203,22 @@ class PlayEntityPosition(Packet):
     :ivar on_ground:
     """
 
-    id = 0x27
-    to = 1
+    id = 0x29
 
-    def __init__(self, entity_id: int, dx: int, dy: int, dz: int, on_ground: bool) -> None:
+    def __init__(self, entity_id: int, dx: int, dy: int, dz: int, on_ground: bool) -> None: # TODO: This needs pitch and yaw, I don't know how to encode angles though.
         super().__init__()
 
         self.entity_id = entity_id
         self.dx, self.dy, self.dz = dx, dy, dz
         self.on_ground = on_ground
 
-    def encode(self) -> bytes:
+    def write(self) -> Buffer:
         return (
-            Buffer.pack_varint(self.entity_id)
-            + Buffer.pack("h", self.dx)
-            + Buffer.pack("h", self.dy)
-            + Buffer.pack("h", self.dz)
-            + Buffer.pack("?", self.on_ground)
+            Buffer.write_varint(self.entity_id)
+            + Buffer.write("h", self.dx)
+            + Buffer.write("h", self.dy)
+            + Buffer.write("h", self.dz)
+            + Buffer.write("?", self.on_ground)
         )
 
 
