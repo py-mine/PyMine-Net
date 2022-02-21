@@ -36,14 +36,11 @@ class PlayExplosion(ClientBoundPacket):
         self.pmz = pmz
 
     def pack(self) -> Buffer:
-        return (
-            Buffer.write("f", self.x)
-            + Buffer.write("f", self.y)
-            + Buffer.write("f", self.z)
-            + Buffer.write("f", self.strength)
-            + Buffer.write("i", self.record_count)
-            + b"".join([Buffer.write("b", r) for r in self.records])
-            + Buffer.write("f", self.pmx)
-            + Buffer.write("f", self.pmy)
-            + Buffer.write("f", self.pmz)
-        )
+
+         buf = Buffer().write("f", self.x).write("f", self.y).write("f", self.z).write("f", self.strength).write("i", self.record_count)
+
+        for r in self.records:
+            buf.write("b", r)
+        buf.write("f", self.pmx).write("f", self.pmy).write("f", self.pmz)
+        return buf
+
