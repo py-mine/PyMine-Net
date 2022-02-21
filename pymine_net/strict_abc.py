@@ -12,16 +12,20 @@ __all__ = ("abstract", "StrictABC")
 
 
 class AbstractObjData:
-    __slots__ = ("annotations",)
+    __slots__ = ("optional", "annotations")
 
-    def __init__(self, annotations: dict = None):
+    def __init__(self, optional: bool = False, annotations: dict = None):
+        self.optional = optional
         self.annotations = annotations
 
 
 def abstract(obj):
-    obj.__abstract__ = AbstractObjData(getattr(obj, "__annotations__", None))
+    obj.__abstract__ = AbstractObjData(annotations=getattr(obj, "__annotations__", None))
     return obj
 
+def optionalabstract(obj):
+    obj.__abstract__ = AbstractObjData(optional=True, annotations=getattr(obj, "__annotations__", None))
+    return obj
 
 def check_annotations(a: dict, b: dict) -> bool:
     for k, v in a.items():
@@ -72,10 +76,10 @@ class StrictABCMeta(type):
                 # check if it's an abstract object
                 if abstract_data is not None:
                     # check to see if this class implements that abstract object
-                    if hasattr(self_obj, "__abstract__"):
+                    if hasattr(self_obj, "__abstract__") and not abstract_data.optional:
                         raise UnimplementedAbstractError(self.__name__, obj.__name__)
 
-                    if type(self_obj) is not type(obj):
+                    if type(self_obj) is not type(obj) and not abstract_data.optional:
                         raise UnimplementedAbstractError(self.__name__, obj.__name__)
 
                     # check annotations if there are any

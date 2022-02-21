@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pymine_net.strict_abc import StrictABC, abstract
+from pymine_net.strict_abc import StrictABC, abstract, optionalabstract
 from pymine_net.types.buffer import Buffer
 
 __all__ = ("Packet", "ServerBoundPacket", "ClientBoundPacket")
@@ -24,6 +24,7 @@ class ServerBoundPacket(Packet):
     :ivar id:
     """
 
+    @optionalabstract
     def pack(self) -> Buffer:
         raise NotImplementedError
 
@@ -45,5 +46,6 @@ class ClientBoundPacket(Packet):
         pass
 
     @classmethod
+    @optionalabstract
     def unpack(cls, buf: Buffer) -> ServerBoundPacket:
         raise NotImplementedError
