@@ -37,10 +37,17 @@ class PlayExplosion(ClientBoundPacket):
 
     def pack(self) -> Buffer:
 
-         buf = Buffer().write("f", self.x).write("f", self.y).write("f", self.z).write("f", self.strength).write("i", self.record_count)
+        buf = (
+            Buffer()
+            .write("f", self.x)
+            .write("f", self.y)
+            .write("f", self.z)
+            .write("f", self.strength)
+            .write("i", self.record_count)
+        )
 
         for r in self.records:
             buf.write("b", r)
+
         buf.write("f", self.pmx).write("f", self.pmy).write("f", self.pmz)
         return buf
-
