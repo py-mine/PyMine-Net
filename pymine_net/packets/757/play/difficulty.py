@@ -24,14 +24,14 @@ class PlayServerDifficulty(ClientBoundPacket):
 
     id = 0x0E
 
-    def __init__(self, difficulty: int, locked: bool) -> None:
+    def __init__(self, difficulty: int, locked: bool):
         super().__init__()
 
         self.difficulty = difficulty
         self.locked = locked
 
     def pack(self) -> Buffer:
-        return Buffer.write("B", self.difficulty) + Buffer.write("?", self.locked)
+        return Buffer().write("B", self.difficulty).write("?", self.locked)
 
 
 class PlaySetDifficulty(ServerBoundPacket):

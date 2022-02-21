@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pymine_net.types.buffer import Buffer
-from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
+from pymine_net.types.packet import ClientBoundPacket
 
 __all__ = (
     "PlayEffect",
@@ -34,7 +34,7 @@ class PlayEffect(ClientBoundPacket):
 
     def __init__(
         self, effect_id: int, x: int, y: int, z: int, data: int, disable_relative_volume: bool
-    ) -> None:
+    ):
         super().__init__()
 
         self.effect_id = effect_id
@@ -43,36 +43,36 @@ class PlayEffect(ClientBoundPacket):
         self.disable_relative_volume = disable_relative_volume
 
     def pack(self) -> Buffer:
-        return (
-            Buffer.write("i", self.effect_id)
-            + Buffer.write_position(self.x, self.y, self.z)
-            + Buffer.write("i", self.data)
-            + Buffer.write("?", self.disable_relative_volume)
-        )
+        return Buffer().write("i", self.effect_id).write_position(self.x, self.y, self.z).write("i", self.data).write("?", self.disable_relative_volume)
 
 
 class PlayEntityEffect(ClientBoundPacket):
-    """Insert fancy docstring here (server -> client)"""
+    """Gives a specific entity an effect. (Server -> Client)
+    
+    :param int entity_id: The ID of the entity to give the effect to.
+    :param int effect_id: The ID of the effect to give.
+    :param int amplifier: Amplification amount of effect.
+    :param int duration: The duration of the effect in ticks.
+    :param int flags: Bit field, see https://wiki.vg/Protocol#Entity_Effect
+    :ivar int id: Unique packet ID.
+    :ivar entity_id:
+    :ivar effect_id:
+    :ivar amplifier:
+    :ivar duration:
+    :ivar flags:
+    """
 
     id = 0x65
 
-    def __init__(self, eid: int, effect_id: bytes, amp: bytes, duration: int, flags: bytes) -> None:
-        super().__init__()
-
-        self.eid = eid
+    def __init__(self, entity_id: int, effect_id: int, amplifier: int, duration: int, flags: int):
+        self.entity_id = entity_id
         self.effect_id = effect_id
-        self.amp = amp
+        self.amplifier = amplifier
         self.duration = duration
         self.flags = flags
 
     def pack(self) -> Buffer:
-        return (
-            Buffer.write_varint(self.eid)
-            + self.effect_id
-            + self.amp
-            + Buffer.write_varint(self.duration)
-            + self.flags
-        )
+        return Buffer().write_varint(self.entity_id).write_byte(self.effect_id).write_byte(self.amplifier).write_varint(self.duration).write_byte(self.flags)
 
 
 class PlaySoundEffect(ClientBoundPacket):
@@ -99,7 +99,7 @@ class PlaySoundEffect(ClientBoundPacket):
 
     def __init__(
         self, sound_id: int, category: int, x: int, y: int, z: int, volume: float, pitch: float
-    ) -> None:
+    ):
         super().__init__()
 
         self.sound_id = sound_id
@@ -109,12 +109,4 @@ class PlaySoundEffect(ClientBoundPacket):
         self.pitch = pitch
 
     def pack(self) -> Buffer:
-        return (
-            Buffer.write_varint(self.sound_id)
-            + Buffer.write_varint(self.category)
-            + Buffer.write("i", self.x * 8)
-            + Buffer.write("i", self.y * 8)
-            + Buffer.write("i", self.z * 8)
-            + Buffer.write("f", self.volume)
-            + Buffer.write("f", self.pitch)
-        )
+        return Buffer().write_varint(self.sound_id).write_varint(self.category).write("i", self.x * 8).write("i", self.y * 8).write("i", self.z * 8).write("f", self.volume).write("f", self.pitch)

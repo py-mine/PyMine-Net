@@ -16,7 +16,6 @@ __all__ = (
     "PlayEntityPosition",
     "PlayEntityPositionAndRotation",
     "PlayEntityRotation",
-    "PlayEntityMovement",
     "PlayRemoveEntityEffect",
     "PlayEntityHeadLook",
     "PlayAttachEntity",
@@ -212,7 +211,7 @@ class PlayEntityPosition(ClientBoundPacket):
         self.dx, self.dy, self.dz = dx, dy, dz
         self.on_ground = on_ground
 
-    def write(self) -> Buffer:
+    def pack(self) -> Buffer:
         return Buffer().write_varint(self.entity_id).write("h", self.dx).write("h", self.dy).write("h", self.dz).write("?", self.on_ground)
 
 
