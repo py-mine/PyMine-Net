@@ -5,10 +5,7 @@ from __future__ import annotations
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 
-__all__ = (
-    "PlayAdvancementTab",
-    "PlaySelectAdvancementTab"
-)
+__all__ = ("PlayAdvancementTab", "PlaySelectAdvancementTab")
 
 
 class PlayAdvancementTab(ServerBoundPacket):

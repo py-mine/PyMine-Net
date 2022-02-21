@@ -12,7 +12,7 @@ __all__ = ("PlayExplosion",)
 
 class PlayExplosion(ClientBoundPacket):
     """Sent when an explosion occurs (creepers, TNT, and ghast fireballs). (Server -> Client)
-    
+
     :param float x: The x coordinate of the explosion.
     :param float y: The y coordinate of the explosion.
     :param float z: The z coordinate of the explosion.
@@ -68,5 +68,5 @@ class PlayExplosion(ClientBoundPacket):
 
         for rx, ry, rz in self.records:
             buf.write_byte(rx).write_byte(ry).write_byte(rz)
-        
+
         return buf.write("f", self.pmx).write("f", self.pmy).write("f", self.pmz)

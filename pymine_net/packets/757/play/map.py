@@ -13,7 +13,7 @@ __all__ = ("PlayMapData",)
 
 class PlayMapData(ClientBoundPacket):
     """Updates a rectangular area on a map item. (Server -> Client)
-    
+
     :param int map_id: ID of the map to be modified.
     :param int scale: Zoom of the map (0 fully zoomed in - 4 fully zoomed out).
     :param bool locked: Whether the map has been locked in a cartography table or not.
@@ -77,8 +77,7 @@ class PlayMapData(ClientBoundPacket):
 
         for (icon_type, x, z, direction, display_name) in self.icons:
             (
-                buf
-                .write_varint(icon_type)
+                buf.write_varint(icon_type)
                 .write_byte(x)
                 .write_byte(z)
                 .write_byte(direction)
@@ -90,4 +89,10 @@ class PlayMapData(ClientBoundPacket):
         if len(self.columns) < 1:
             return buf
 
-        return buf.write("B", self.rows).write_byte(self.x).write_byte(self.y).write_varint(len(self.data)).write_bytes(self.data)
+        return (
+            buf.write("B", self.rows)
+            .write_byte(self.x)
+            .write_byte(self.y)
+            .write_varint(len(self.data))
+            .write_bytes(self.data)
+        )

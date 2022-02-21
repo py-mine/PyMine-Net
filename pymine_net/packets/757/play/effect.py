@@ -5,11 +5,7 @@ from __future__ import annotations
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.packet import ClientBoundPacket
 
-__all__ = (
-    "PlayEffect",
-    "PlayEntityEffect",
-    "PlaySoundEffect"
-)
+__all__ = ("PlayEffect", "PlayEntityEffect", "PlaySoundEffect")
 
 
 class PlayEffect(ClientBoundPacket):
