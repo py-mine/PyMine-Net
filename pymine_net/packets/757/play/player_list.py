@@ -8,7 +8,7 @@ __all__ = ("PlayPlayerListHeaderAndFooter",)
 
 
 class PlayPlayerListHeaderAndFooter(ClientBoundPacket):
-    """Sent to display additional information above/below the client's player list.
+    """Sent to display additional information above/below the client's player list. (Server -> Client)
 
     :param Chat header: Content to display above player list.
     :param Chat footer: Content to display below player list.
