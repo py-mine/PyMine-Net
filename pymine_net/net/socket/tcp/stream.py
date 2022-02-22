@@ -7,6 +7,8 @@ from cryptography.hazmat.primitives.ciphers import Cipher
 from pymine_net.net.stream import AbstractTCPStream
 from pymine_net.types.buffer import Buffer
 
+__all__ = ("SocketTCPStream", "EncryptedSocketTCPStream")
+
 
 class SocketTCPStream(AbstractTCPStream, socket.socket):
     """Used for reading and writing from/to a connected client, wraps a socket.socket.
