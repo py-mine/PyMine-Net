@@ -23,7 +23,7 @@ repository = "https://github.com/py-mine/pymine-net"
 keywords = ["Minecraft", "protocol", "networking"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 mutf8 = "^1.0.6"
 
 [tool.poetry.dev-dependencies]
