@@ -19,9 +19,7 @@ GAME_STATES = {
 # the directory this file is contained in
 FILE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-PROTOCOL_MAP = {
-    757: "v_1_18_1"
-}
+PROTOCOL_MAP = {757: "v_1_18_1"}
 
 
 def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> PacketMap:
