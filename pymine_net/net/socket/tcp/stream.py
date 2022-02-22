@@ -1,12 +1,14 @@
 import socket
+import struct
 from typing import Tuple, Union
 
 from cryptography.hazmat.primitives.ciphers import Cipher
+from pymine_net.net.stream import AbstractTCPStream
 
 from pymine_net.types.buffer import Buffer
 
 
-class SocketTCPStream(socket.socket):
+class SocketTCPStream(AbstractTCPStream, socket.socket):
     """Used for reading and writing from/to a connected client, wraps a socket.socket.
 
     :param socket.socket sock: A socket.socket instance.
@@ -14,8 +16,11 @@ class SocketTCPStream(socket.socket):
     :ivar sock:
     """
 
+    __slots__ = ("sock",)
+
     def __init__(self, sock: socket.socket):
         self.sock = sock
+        
         self.remote: Tuple[str, int] = sock.getsockname()
 
     def read(self, length: int) -> bytearray:
@@ -36,6 +41,29 @@ class SocketTCPStream(socket.socket):
 
     def close(self) -> None:
         self.sock.close()
+
+    def read_varint(self) -> int:
+        value = 0
+
+        for i in range(10):
+            byte = struct.unpack(">B", self.read(1))
+            value |= (byte & 0x7F) << 7 * i
+
+            if not byte & 0x80:
+                break
+
+        if value & (1 << 31):
+            value -= 1 << 32
+
+        value_max = (1 << (32 - 1)) - 1
+        value_min = -1 << (32 - 1)
+
+        if not (value_min <= value <= value_max):
+            raise ValueError(
+                f"Value doesn't fit in given range: {value_min} <= {value} < {value_max}"
+            )
+
+        return value
 
 
 class EncryptedSocketTCPStream(SocketTCPStream):

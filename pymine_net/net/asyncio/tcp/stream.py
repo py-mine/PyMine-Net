@@ -1,13 +1,14 @@
 from asyncio import StreamWriter
-from ctypes import Union
-from typing import Tuple
+import struct
+from typing import Tuple, Union
 
 from cryptography.hazmat.primitives.ciphers import Cipher
+from pymine_net.net.stream import AbstractTCPStream
 
 from pymine_net.types.buffer import Buffer
 
 
-class AsyncTCPStream(StreamWriter):
+class AsyncTCPStream(AbstractTCPStream, StreamWriter):
     """Used for reading and writing from/to a connected client, merges functions of a StreamReader and StreamWriter.
 
     :param StreamReader reader: An asyncio.StreamReader instance.
@@ -31,6 +32,29 @@ class AsyncTCPStream(StreamWriter):
 
     async def readuntil(self, separator: bytes = b"\n") -> Buffer:
         return Buffer(await self._reader.readuntil(separator))
+
+    async def read_varint(self) -> int:
+        value = 0
+
+        for i in range(10):
+            byte = struct.unpack(">B", await self.readexactly(1))
+            value |= (byte & 0x7F) << 7 * i
+
+            if not byte & 0x80:
+                break
+
+        if value & (1 << 31):
+            value -= 1 << 32
+
+        value_max = (1 << (32 - 1)) - 1
+        value_min = -1 << (32 - 1)
+
+        if not (value_min <= value <= value_max):
+            raise ValueError(
+                f"Value doesn't fit in given range: {value_min} <= {value} < {value_max}"
+            )
+
+        return value
 
 
 class AsyncEncryptedTCPStream(AsyncTCPStream):

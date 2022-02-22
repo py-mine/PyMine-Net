@@ -30,8 +30,8 @@ class AbstractTCPClient(StrictABC):
         pass
     
     @staticmethod
-    def encode_packet(packet: ClientBoundPacket, compression_threshold: int = -1) -> Buffer:
-        """Encodes and (if necessary) compresses a ClientBoundPacket."""
+    def _encode_packet(packet: ServerBoundPacket, compression_threshold: int = -1) -> Buffer:
+        """Encodes and (if necessary) compresses a ServerBoundPacket."""
 
         buf = Buffer().write_varint(packet.id).extend(packet.pack())
 
@@ -43,7 +43,7 @@ class AbstractTCPClient(StrictABC):
 
         return Buffer().write_varint(len(buf)).extend(buf)
 
-    def decode_packet(self, buf: Buffer) -> ClientBoundPacket:
+    def _decode_packet(self, buf: Buffer) -> ClientBoundPacket:
         # decompress packet if necessary
         if self.compression_threshold >= 0:
             uncompressed_length = buf.read_varint()
@@ -60,10 +60,6 @@ class AbstractTCPClient(StrictABC):
             raise UnknownPacketIdError(None, self.state, packet_id, PacketDirection.CLIENTBOUND)
 
         return packet_class.unpack(buf)
-
-    @abstract
-    def read_packet_length(self) -> int:
-        pass
 
     @abstract
     def read_packet(self) -> ClientBoundPacket:

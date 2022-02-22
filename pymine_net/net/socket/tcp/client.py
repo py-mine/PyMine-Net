@@ -24,32 +24,9 @@ class SocketTCPClient(AbstractTCPClient):
     def close(self) -> None:
         self.stream.close()
 
-    def read_packet_length(self) -> int:
-        value = 0
-
-        for i in range(10):
-            byte = struct.unpack(">B", self.stream.read(1))
-            value |= (byte & 0x7F) << 7 * i
-
-            if not byte & 0x80:
-                break
-
-        if value & (1 << 31):
-            value -= 1 << 32
-
-        value_max = (1 << (32 - 1)) - 1
-        value_min = -1 << (32 - 1)
-
-        if not (value_min <= value <= value_max):
-            raise ValueError(
-                f"Value doesn't fit in given range: {value_min} <= {value} < {value_max}"
-            )
-
-        return value
-
     def read_packet(self) -> ClientBoundPacket:
-        packet_length = self.read_packet_length()
-        return self.decode_packet(self.stream.read(packet_length))
+        packet_length = self.stream.read_varint()
+        return self._decode_packet(self.stream.read(packet_length))
 
     def write_packet(self, packet: ServerBoundPacket) -> None:
-        self.stream.write(self.encode_packet(packet))
+        self.stream.write(self._encode_packet(packet))
