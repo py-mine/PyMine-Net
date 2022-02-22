@@ -1,6 +1,6 @@
-from typing import Dict, Tuple, Union
 import selectors
 import socket
+from typing import Dict, Tuple, Union
 
 from pymine_net.net.server import AbstractTCPServer, AbstractTCPServerClient
 from pymine_net.net.socket.tcp.stream import SocketTCPStream
@@ -42,14 +42,13 @@ class SocketTCPServer(AbstractTCPServer):
 
                 key.data(key.fileobj, mask)
 
-
     async def stop(self) -> None:
         self.server.close()
 
     def read_packet(self, client: SocketTCPServerClient) -> ServerBoundPacket:
         length = client.stream.read_varint()
         return self._decode_packet(client, client.stream.read(length))
-        
+
     def write_packet(self, client: SocketTCPServerClient, packet: ClientBoundPacket) -> None:
         client.stream.write(self._encode_packet(packet, client.compression_threshold))
 
