@@ -25,3 +25,7 @@ class LoginSetCompression(ClientBoundPacket):
 
     def pack(self) -> Buffer:
         return Buffer().write_varint(self.compression_threshold)
+
+    @classmethod
+    def unpack(cls, buf: Buffer) -> LoginSetCompression:
+        return cls(buf.read_varint())

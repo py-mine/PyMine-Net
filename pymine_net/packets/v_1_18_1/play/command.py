@@ -14,8 +14,8 @@ class PlayDeclareCommands(ClientBoundPacket):
     """Tells the clients what commands there are. (Server -> Client)
 
     :param List[dict] nodes: The command nodes, a list of dictionaries. The first item is assumed to be the root node.
-    :attr int id: Unique packet ID.
-    :attr nodes:
+    :ivar int id: Unique packet ID.
+    :ivar nodes:
     """
 
     id = 0x12
