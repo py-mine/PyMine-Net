@@ -36,12 +36,14 @@ class AsyncTCPServer(AbstractTCPServer):
     async def read_packet(self, client: AsyncTCPServerClient) -> ServerBoundPacket:
         length = await client.stream.read_varint()
         return self._decode_packet(client, await client.stream.readexactly(length))
-        
+
     async def write_packet(self, client: AsyncTCPServerClient, packet: ClientBoundPacket) -> None:
         client.stream.write(self._encode_packet(packet, client.compression_threshold))
         await client.stream.drain()
 
-    async def _client_connected_cb(self, _: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+    async def _client_connected_cb(
+        self, _: asyncio.StreamReader, writer: asyncio.StreamWriter
+    ) -> None:
         client = AsyncTCPServerClient(AsyncTCPStream(writer))
 
         self.connected_clients[client.stream.remote] = client

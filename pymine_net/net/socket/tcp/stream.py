@@ -22,7 +22,7 @@ class SocketTCPStream(AbstractTCPStream, socket.socket):
 
     def __init__(self, sock: socket.socket):
         self.sock = sock
-        
+
         self.remote: Tuple[str, int] = sock.getsockname()
 
     def read(self, length: int) -> bytearray:
