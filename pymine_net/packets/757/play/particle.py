@@ -10,7 +10,7 @@ __all__ = ("PlayParticle",)
 
 class PlayParticle(ClientBoundPacket):
     """Sent by server to make the client display particles.
-    
+
     :param int particle_id: ID of the particle.
     :param bool long_distance: If true, particle distance increases to 65536 from 256.
     :param int x: X coordinate of the particle.

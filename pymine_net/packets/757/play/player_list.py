@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from pymine_net.types.packet import ClientBoundPacket
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.chat import Chat
+from pymine_net.types.packet import ClientBoundPacket
 
 __all__ = ("PlayPlayerListHeaderAndFooter",)
 
 
 class PlayPlayerListHeaderAndFooter(ClientBoundPacket):
     """Sent to display additional information above/below the client's player list.
-    
+
     :param Chat header: Content to display above player list.
     :param Chat footer: Content to display below player list.
     :ivar int id: Unique packet ID.
