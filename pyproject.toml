@@ -26,6 +26,7 @@ keywords = ["Minecraft", "protocol", "networking"]
 python = "^3.7"
 mutf8 = "^1.0.6"
 pytest = "^7.0.1"
+cryptography = "^36.0.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"

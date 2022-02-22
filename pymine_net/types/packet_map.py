@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import zlib
-from typing import Dict, List, Type, Union
+from typing import Dict, List, Tuple, Type, Union
 
 from pymine_net.enums import GameState, PacketDirection
 from pymine_net.errors import DuplicatePacketIdError, UnknownPacketIdError
@@ -63,37 +63,10 @@ class PacketMap:
         self.protocol = protocol
         self.packets = packets
 
-    def encode_packet(self, packet: ClientBoundPacket, compression_threshold: int = -1) -> Buffer:
-        """Encodes and (if necessary) compresses a ClientBoundPacket."""
+    def __getitem__(self, key: Tuple[PacketDirection, int, int]) -> Packet:
+        direction, state, packet_id = key
 
-        buf = Buffer().write_varint(packet.id).extend(packet.pack())
+        if direction == PacketDirection.CLIENTBOUND:
+            return self.packets[state].client_bound[packet_id]
 
-        if compression_threshold >= 1:
-            if len(buf) >= compression_threshold:
-                buf = Buffer().write_varint(len(buf)).extend(zlib.compress(buf))
-            else:
-                buf = Buffer().write_varint(0).extend(buf)
-
-        return Buffer().write_varint(len(buf)).extend(buf)
-
-    def decode_packet(
-        self, buf: Buffer, state: GameState, compression_threshold: int = -1
-    ) -> ServerBoundPacket:
-        """Decodes and (if necessary) decompresses a ServerBoundPacket."""
-
-        # decompress packet if necessary
-        if compression_threshold >= 0:
-            uncompressed_length = buf.read_varint()
-
-            if uncompressed_length > 0:
-                buf = Buffer(zlib.decompress(buf.read_bytes()))
-
-        packet_id = buf.read_varint()
-
-        # attempt to get packet class from given state and packet id
-        try:
-            packet_class = self.packets[state].server_bound[packet_id]
-        except KeyError:
-            raise UnknownPacketIdError(self.protocol, state, packet_id, PacketDirection.SERVERBOUND)
-
-        return packet_class.unpack(buf)
+        return self.packets[state].server_bound[packet_id]
