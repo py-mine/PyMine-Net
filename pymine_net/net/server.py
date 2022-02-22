@@ -69,3 +69,11 @@ class AbstractTCPServer:
             raise UnknownPacketIdError(None, client.state, packet_id, PacketDirection.SERVERBOUND)
 
         return packet_class.unpack(buf)
+        
+    @abstract
+    def read_packet(self, client: AbstractTCPServerClient) -> ServerBoundPacket:
+        pass
+
+    @abstract
+    def write_packet(self, client: AbstractTCPServerClient, packet: ClientBoundPacket) -> None:
+        pass
