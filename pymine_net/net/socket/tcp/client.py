@@ -1,10 +1,11 @@
 import socket
-import struct
 from typing import Union
 
 from pymine_net.net.client import AbstractTCPClient
 from pymine_net.net.socket.tcp.stream import SocketTCPStream
 from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
+
+__all__ = ("SocketTCPClient",)
 
 
 class SocketTCPClient(AbstractTCPClient):

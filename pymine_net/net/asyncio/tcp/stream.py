@@ -7,6 +7,8 @@ from cryptography.hazmat.primitives.ciphers import Cipher
 from pymine_net.net.stream import AbstractTCPStream
 from pymine_net.types.buffer import Buffer
 
+__all__ = ("AsyncTCPStream", "EncryptedAsyncTCPStream")
+
 
 class AsyncTCPStream(AbstractTCPStream, StreamWriter):
     """Used for reading and writing from/to a connected client, merges functions of a StreamReader and StreamWriter.
@@ -57,7 +59,7 @@ class AsyncTCPStream(AbstractTCPStream, StreamWriter):
         return value
 
 
-class AsyncEncryptedTCPStream(AsyncTCPStream):
+class EncryptedAsyncTCPStream(AsyncTCPStream):
     """An encrypted version of an AsyncTCPStream, automatically encrypts and decrypts outgoing and incoming data.
 
     :param AsyncTCPStream stream: The original, stream-compatible object.

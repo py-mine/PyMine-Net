@@ -7,6 +7,8 @@ from cryptography.hazmat.primitives.ciphers import Cipher
 from pymine_net.net.stream import AbstractTCPStream
 from pymine_net.types.buffer import Buffer
 
+__all__ = ("SocketTCPStream", "EncryptedSocketTCPStream")
+
 
 class SocketTCPStream(AbstractTCPStream, socket.socket):
     """Used for reading and writing from/to a connected client, wraps a socket.socket.
@@ -20,7 +22,7 @@ class SocketTCPStream(AbstractTCPStream, socket.socket):
 
     def __init__(self, sock: socket.socket):
         self.sock = sock
-        
+
         self.remote: Tuple[str, int] = sock.getsockname()
 
     def read(self, length: int) -> bytearray:

@@ -17,7 +17,7 @@ class AbstractTCPClient(StrictABC):
         self.port = port
 
         self.packet_map = load_packet_map(protocol)
-        
+
         self.state = GameState.HANDSHAKING
         self.compression_threshold = -1
 
@@ -28,7 +28,7 @@ class AbstractTCPClient(StrictABC):
     @abstract
     def close(self) -> None:
         pass
-    
+
     @staticmethod
     def _encode_packet(packet: ServerBoundPacket, compression_threshold: int = -1) -> Buffer:
         """Encodes and (if necessary) compresses a ServerBoundPacket."""
@@ -55,7 +55,9 @@ class AbstractTCPClient(StrictABC):
 
         # attempt to get packet class from given state and packet id
         try:
-            packet_class: Type[ClientBoundPacket] = self.packet_map[PacketDirection.CLIENTBOUND, self.state, packet_id]
+            packet_class: Type[ClientBoundPacket] = self.packet_map[
+                PacketDirection.CLIENTBOUND, self.state, packet_id
+            ]
         except KeyError:
             raise UnknownPacketIdError(None, self.state, packet_id, PacketDirection.CLIENTBOUND)
 

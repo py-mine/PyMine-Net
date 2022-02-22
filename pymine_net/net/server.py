@@ -29,7 +29,7 @@ class AbstractTCPServer:
         self.packet_map = packet_map
 
         self.connected_clients: Dict[Tuple[str, int], AbstractTCPServerClient] = {}
-        
+
     @abstract
     def run(self) -> None:
         pass
@@ -37,7 +37,7 @@ class AbstractTCPServer:
     @abstract
     def close(self) -> None:
         pass
-    
+
     @staticmethod
     def _encode_packet(packet: ClientBoundPacket, compression_threshold: int = -1) -> Buffer:
         """Encodes and (if necessary) compresses a ClientBoundPacket."""
@@ -64,7 +64,9 @@ class AbstractTCPServer:
 
         # attempt to get packet class from given state and packet id
         try:
-            packet_class: Type[ClientBoundPacket] = self.packet_map[PacketDirection.SERVERBOUND, client.state, packet_id]
+            packet_class: Type[ClientBoundPacket] = self.packet_map[
+                PacketDirection.SERVERBOUND, client.state, packet_id
+            ]
         except KeyError:
             raise UnknownPacketIdError(None, client.state, packet_id, PacketDirection.SERVERBOUND)
 
