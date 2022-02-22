@@ -5,7 +5,6 @@ from pymine_net.net.asyncio.tcp.stream import AsyncTCPStream
 from pymine_net.net.client import AbstractTCPClient
 from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 
-
 __all__ = ("AsyncTCPClient",)
 
 
