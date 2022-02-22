@@ -1,11 +1,13 @@
-from typing import Type, Union
 import zlib
+from typing import Type, Union
+
 from pymine_net.enums import GameState, PacketDirection
 from pymine_net.errors import UnknownPacketIdError
 from pymine_net.packets import load_packet_map
+from pymine_net.strict_abc import StrictABC, abstract
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
-from pymine_net.strict_abc import StrictABC, abstract
+
 
 class AbstractTCPClient(StrictABC):
     """Abstract class for a connection over a TCP socket for reading + writing Minecraft packets."""

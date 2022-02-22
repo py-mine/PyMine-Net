@@ -1,7 +1,8 @@
+from asyncio import StreamWriter
 from ctypes import Union
 from typing import Tuple
+
 from cryptography.hazmat.primitives.ciphers import Cipher
-from asyncio import StreamWriter
 
 from pymine_net.types.buffer import Buffer
 

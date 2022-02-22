@@ -1,5 +1,6 @@
 import socket
 from typing import Tuple, Union
+
 from cryptography.hazmat.primitives.ciphers import Cipher
 
 from pymine_net.types.buffer import Buffer
