@@ -1,7 +1,4 @@
-import time
 from concurrent.futures import ThreadPoolExecutor
-
-import pytest
 
 from pymine_net.enums import GameState
 from pymine_net.net.socket import SocketProtocolServer, SocketProtocolServerClient, SocketTCPClient
@@ -12,7 +9,6 @@ from pymine_net.packets.v_1_18_1.status.status import (
     StatusStatusRequest,
     StatusStatusResponse,
 )
-from pymine_net.types.packet import ServerBoundPacket
 
 TESTING_PROTOCOL = 757
 TESTING_HOST = "localhost"

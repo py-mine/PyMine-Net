@@ -64,14 +64,7 @@ class Buffer(bytearray):
     def read(self, fmt: str) -> Union[object, Tuple[object]]:
         """Using the given format, reads from the buffer and returns the unpacked value."""
 
-        try:
-            unpacked = struct.unpack(">" + fmt, self.read_bytes(struct.calcsize(fmt)))
-        except Exception as e:
-            # print(f"Read from internal buffer ({size}): {data} (caused error {e})")
-            raise
-        else:
-            # print(f"Read from internal buffer ({size}): {data} (else)")
-            pass
+        unpacked = struct.unpack(">" + fmt, self.read_bytes(struct.calcsize(fmt)))
 
         if len(unpacked) == 1:
             return unpacked[0]
