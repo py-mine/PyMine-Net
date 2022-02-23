@@ -1,5 +1,5 @@
-import threading
 import socket
+import threading
 from typing import Dict, List, Tuple, Union
 
 from pymine_net.net.server import AbstractProtocolServer, AbstractProtocolServerClient
@@ -45,7 +45,7 @@ class SocketProtocolServer(AbstractProtocolServer):
 
     def close(self) -> None:
         self.sock.close()
-        
+
         for thread in self.threads:
             thread.join(0.1)
 

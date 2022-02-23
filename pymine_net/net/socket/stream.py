@@ -48,7 +48,7 @@ class SocketTCPStream(AbstractTCPStream, socket.socket):
         value = 0
 
         for i in range(10):
-            byte, = struct.unpack(">B", self.read(1))
+            (byte,) = struct.unpack(">B", self.read(1))
             value |= (byte & 0x7F) << 7 * i
 
             if not byte & 0x80:

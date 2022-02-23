@@ -49,7 +49,9 @@ class AbstractProtocolServerClient(StrictABC):
                 PacketDirection.SERVERBOUND, self.state, packet_id
             ]
         except KeyError:
-            raise UnknownPacketIdError(self.packet_map.protocol, self.state, packet_id, PacketDirection.SERVERBOUND)
+            raise UnknownPacketIdError(
+                self.packet_map.protocol, self.state, packet_id, PacketDirection.SERVERBOUND
+            )
 
         return packet_class.unpack(buf)
 

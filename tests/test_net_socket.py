@@ -1,39 +1,32 @@
-from concurrent.futures import ThreadPoolExecutor
-from pymine_net.types.packet import ServerBoundPacket
-import pytest
 import time
+from concurrent.futures import ThreadPoolExecutor
 
-from pymine_net.packets import load_packet_map
-from pymine_net.net.socket import SocketProtocolServer, SocketTCPClient, SocketProtocolServerClient
-from pymine_net.packets.v_1_18_1.handshaking.handshake import HandshakeHandshake
+import pytest
+
 from pymine_net.enums import GameState
-from pymine_net.packets.v_1_18_1.status.status import StatusStatusPingPong, StatusStatusRequest, StatusStatusResponse
-
-
+from pymine_net.net.socket import SocketProtocolServer, SocketProtocolServerClient, SocketTCPClient
+from pymine_net.packets import load_packet_map
+from pymine_net.packets.v_1_18_1.handshaking.handshake import HandshakeHandshake
+from pymine_net.packets.v_1_18_1.status.status import (
+    StatusStatusPingPong,
+    StatusStatusRequest,
+    StatusStatusResponse,
+)
+from pymine_net.types.packet import ServerBoundPacket
 
 TESTING_PROTOCOL = 757
 TESTING_HOST = "localhost"
 TESTING_PORT = 12345
 TESTING_RANDOM_LONG = 1234567890
 TESTING_STATUS_JSON = {
-    "version": {
-        "name": "1.18.1",
-        "protocol": TESTING_PROTOCOL
-    },
+    "version": {"name": "1.18.1", "protocol": TESTING_PROTOCOL},
     "players": {
         "max": 20,
         "online": 0,
-        "sample": [
-            {
-                "name": "Iapetus11",
-                "id": "cbcfa252-867d-4bda-a214-776c881cf370"
-            }
-        ]
+        "sample": [{"name": "Iapetus11", "id": "cbcfa252-867d-4bda-a214-776c881cf370"}],
     },
-    "description": {
-        "text": "Hello world"
-    },
-    "favicon": None
+    "description": {"text": "Hello world"},
+    "favicon": None,
 }
 
 
@@ -48,7 +41,7 @@ def test_socket_net_status():
             assert packet.next_state == GameState.STATUS
 
             client.state = packet.next_state
-            
+
             packet = client.read_packet()
             assert isinstance(packet, StatusStatusRequest)
 
@@ -67,8 +60,10 @@ def test_socket_net_status():
 
     client = SocketTCPClient(TESTING_HOST, TESTING_PORT, TESTING_PROTOCOL, packet_map)
     client.connect()
-    
-    client.write_packet(HandshakeHandshake(TESTING_PROTOCOL, TESTING_HOST, TESTING_PORT, GameState.STATUS))
+
+    client.write_packet(
+        HandshakeHandshake(TESTING_PROTOCOL, TESTING_HOST, TESTING_PORT, GameState.STATUS)
+    )
     client.state = GameState.STATUS
 
     client.write_packet(StatusStatusRequest())
