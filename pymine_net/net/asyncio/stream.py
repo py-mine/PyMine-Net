@@ -20,7 +20,7 @@ class AsyncTCPStream(AbstractTCPStream, StreamWriter):
 
     def __init__(self, writer: StreamWriter):
         super().__init__(writer._transport, writer._protocol, writer._reader, writer._loop)
-
+        
         self.remote: Tuple[str, int] = self.get_extra_info("peername")
 
     async def read(self, length: int = -1) -> Buffer:
@@ -35,11 +35,14 @@ class AsyncTCPStream(AbstractTCPStream, StreamWriter):
     async def readuntil(self, separator: bytes = b"\n") -> Buffer:
         return Buffer(await self._reader.readuntil(separator))
 
+    def write(self, data):
+        super().write(data)
+
     async def read_varint(self) -> int:
         value = 0
 
         for i in range(10):
-            byte = struct.unpack(">B", await self.readexactly(1))
+            byte, = struct.unpack(">B", await self.readexactly(1))
             value |= (byte & 0x7F) << 7 * i
 
             if not byte & 0x80:

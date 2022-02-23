@@ -10,51 +10,32 @@ from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.packet_map import PacketMap
 
 
-class AbstractTCPServerClient(StrictABC):
-    __slots__ = ("stream", "state", "compression_threshold")
+class AbstractProtocolServerClient(StrictABC):
+    __slots__ = ("stream", "packet_map", "state", "compression_threshold")
 
-    def __init__(self, stream: AbstractTCPStream):
+    def __init__(self, stream: AbstractTCPStream, packet_map: PacketMap):
         self.stream = stream
+        self.packet_map = packet_map
         self.state = GameState.HANDSHAKING
         self.compression_threshold = -1
 
-
-class AbstractTCPServer:
-    """Abstract class for a TCP server that handles Minecraft packets."""
-
-    def __init__(self, host: str, port: int, protocol: Union[int, str], packet_map: PacketMap):
-        self.host = host
-        self.port = port
-        self.protocol = protocol
-        self.packet_map = packet_map
-
-        self.connected_clients: Dict[Tuple[str, int], AbstractTCPServerClient] = {}
-
-    @abstract
-    def run(self) -> None:
-        pass
-
-    @abstract
-    def close(self) -> None:
-        pass
-
-    @staticmethod
-    def _encode_packet(packet: ClientBoundPacket, compression_threshold: int = -1) -> Buffer:
+    def _encode_packet(self, packet: ClientBoundPacket) -> Buffer:
         """Encodes and (if necessary) compresses a ClientBoundPacket."""
 
         buf = Buffer().write_varint(packet.id).extend(packet.pack())
 
-        if compression_threshold >= 1:
-            if len(buf) >= compression_threshold:
+        if self.compression_threshold >= 1:
+            if len(buf) >= self.compression_threshold:
                 buf = Buffer().write_varint(len(buf)).extend(zlib.compress(buf))
             else:
                 buf = Buffer().write_varint(0).extend(buf)
 
-        return Buffer().write_varint(len(buf)).extend(buf)
+        buf = Buffer().write_varint(len(buf)).extend(buf)
+        return buf
 
-    def _decode_packet(self, client: AbstractTCPServerClient, buf: Buffer) -> ServerBoundPacket:
+    def _decode_packet(self, buf: Buffer) -> ServerBoundPacket:
         # decompress packet if necessary
-        if client.compression_threshold >= 0:
+        if self.compression_threshold >= 0:
             uncompressed_length = buf.read_varint()
 
             if uncompressed_length > 0:
@@ -65,17 +46,37 @@ class AbstractTCPServer:
         # attempt to get packet class from given state and packet id
         try:
             packet_class: Type[ClientBoundPacket] = self.packet_map[
-                PacketDirection.SERVERBOUND, client.state, packet_id
+                PacketDirection.SERVERBOUND, self.state, packet_id
             ]
         except KeyError:
-            raise UnknownPacketIdError(None, client.state, packet_id, PacketDirection.SERVERBOUND)
+            raise UnknownPacketIdError(self.packet_map.protocol, self.state, packet_id, PacketDirection.SERVERBOUND)
 
         return packet_class.unpack(buf)
 
     @abstract
-    def read_packet(self, client: AbstractTCPServerClient) -> ServerBoundPacket:
+    def read_packet(self) -> ServerBoundPacket:
         pass
 
     @abstract
-    def write_packet(self, client: AbstractTCPServerClient, packet: ClientBoundPacket) -> None:
+    def write_packet(self, packet: ClientBoundPacket) -> None:
+        pass
+
+
+class AbstractProtocolServer(StrictABC):
+    """Abstract class for a TCP server that handles Minecraft packets."""
+
+    def __init__(self, host: str, port: int, protocol: Union[int, str], packet_map: PacketMap):
+        self.host = host
+        self.port = port
+        self.protocol = protocol
+        self.packet_map = packet_map
+
+        self.connected_clients: Dict[Tuple[str, int], AbstractProtocolServerClient] = {}
+
+    @abstract
+    def run(self) -> None:
+        pass
+
+    @abstract
+    def close(self) -> None:
         pass

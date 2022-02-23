@@ -7,16 +7,17 @@ from pymine_net.packets import load_packet_map
 from pymine_net.strict_abc import StrictABC, abstract
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
+from pymine_net.types.packet_map import PacketMap
 
 
 class AbstractTCPClient(StrictABC):
     """Abstract class for a connection over a TCP socket for reading + writing Minecraft packets."""
 
-    def __init__(self, host: str, port: int, protocol: Union[int, str]):
+    def __init__(self, host: str, port: int, protocol: Union[int, str], packet_map: PacketMap):
         self.host = host
         self.port = port
-
-        self.packet_map = load_packet_map(protocol)
+        self.protocol = protocol
+        self.packet_map = packet_map
 
         self.state = GameState.HANDSHAKING
         self.compression_threshold = -1

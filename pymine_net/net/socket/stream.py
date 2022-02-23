@@ -25,8 +25,8 @@ class SocketTCPStream(AbstractTCPStream, socket.socket):
 
         self.remote: Tuple[str, int] = sock.getsockname()
 
-    def read(self, length: int) -> bytearray:
-        result = bytearray()
+    def read(self, length: int) -> Buffer:
+        result = Buffer()
 
         while len(result) < length:
             read_bytes = self.sock.recv(length - len(result))
@@ -39,7 +39,7 @@ class SocketTCPStream(AbstractTCPStream, socket.socket):
         return result
 
     def write(self, data: bytes) -> None:
-        self.sock.send(data)
+        self.sock.sendall(data)
 
     def close(self) -> None:
         self.sock.close()
@@ -48,7 +48,7 @@ class SocketTCPStream(AbstractTCPStream, socket.socket):
         value = 0
 
         for i in range(10):
-            byte = struct.unpack(">B", self.read(1))
+            byte, = struct.unpack(">B", self.read(1))
             value |= (byte & 0x7F) << 7 * i
 
             if not byte & 0x80:

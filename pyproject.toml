@@ -6,11 +6,11 @@ include = '\.pyi?$'
 [tool.pytest.ini_options]
 addopts = "--full-trace -rxP"
 testpaths = ["tests"]
+asyncio_mode = "auto"
 
 [tool.isort]
 profile="black"
 line_length=100
-
 
 [tool.poetry]
 name = "pymine-net"
@@ -33,6 +33,7 @@ black = "^22.1.0"
 pytest = "^7.0.1"
 colorama = "^0.4.4"
 isort = "^5.10.1"
+pytest-asyncio = "^0.18.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

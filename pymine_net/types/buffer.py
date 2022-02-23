@@ -21,9 +21,7 @@ class Buffer(bytearray):
     def write_bytes(self, data: Union[bytes, bytearray]) -> Buffer:
         """Writes bytes to the buffer."""
 
-        self.extend(data)
-
-        return self
+        return self.extend(data)
 
     def read_bytes(self, length: int = None) -> bytearray:
         """Reads bytes from the buffer, if length is None then all bytes are read."""
@@ -47,6 +45,10 @@ class Buffer(bytearray):
 
         self.pos = 0
 
+    def extend(self, data: Union[Buffer, bytes, bytearray]) -> Buffer:
+        super().extend(data)
+        return self
+
     def read_byte(self) -> int:
         """Reads a singular byte as an integer from the buffer."""
 
@@ -57,13 +59,19 @@ class Buffer(bytearray):
     def write_byte(self, value: int) -> Buffer:
         """Writes a singular byte to the buffer."""
 
-        self.extend(struct.pack(">b", value))
-        return self
+        return self.extend(struct.pack(">b", value))
 
     def read(self, fmt: str) -> Union[object, Tuple[object]]:
         """Using the given format, reads from the buffer and returns the unpacked value."""
 
-        unpacked = struct.unpack(">" + fmt, self.read_bytes(struct.calcsize(fmt)))
+        try:
+            unpacked = struct.unpack(">" + fmt, self.read_bytes(struct.calcsize(fmt)))
+        except Exception as e:
+            # print(f"Read from internal buffer ({size}): {data} (caused error {e})")
+            raise
+        else:
+            # print(f"Read from internal buffer ({size}): {data} (else)")
+            pass
 
         if len(unpacked) == 1:
             return unpacked[0]
