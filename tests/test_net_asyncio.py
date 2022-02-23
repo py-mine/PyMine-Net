@@ -3,7 +3,11 @@ import asyncio
 import pytest
 
 from pymine_net.enums import GameState
-from pymine_net.net.asyncio import AsyncProtocolServer, AsyncProtocolServerClient, AsyncProtocolClient
+from pymine_net.net.asyncio import (
+    AsyncProtocolClient,
+    AsyncProtocolServer,
+    AsyncProtocolServerClient,
+)
 from pymine_net.packets import load_packet_map
 from pymine_net.packets.v_1_18_1.handshaking.handshake import HandshakeHandshake
 from pymine_net.packets.v_1_18_1.status.status import (
