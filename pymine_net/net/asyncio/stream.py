@@ -35,9 +35,6 @@ class AsyncTCPStream(AbstractTCPStream, StreamWriter):
     async def readuntil(self, separator: bytes = b"\n") -> Buffer:
         return Buffer(await self._reader.readuntil(separator))
 
-    def write(self, data):
-        super().write(data)
-
     async def read_varint(self) -> int:
         value = 0
 

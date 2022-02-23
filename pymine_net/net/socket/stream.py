@@ -38,7 +38,7 @@ class SocketTCPStream(AbstractTCPStream, socket.socket):
 
         return result
 
-    def write(self, data: bytes) -> None:
+    def write(self, data: Union[Buffer, bytes, bytearray]) -> None:
         self.sock.sendall(data)
 
     def close(self) -> None:

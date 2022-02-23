@@ -12,7 +12,7 @@ from pymine_net.types.packet_map import PacketMap
 class SocketProtocolServerClient(AbstractProtocolServerClient):
     def __init__(self, stream: SocketTCPStream, packet_map: PacketMap):
         super().__init__(stream, packet_map)
-        self.stream = stream  # redefine this cause tyephints
+        self.stream = stream  # redefine this cause typehints
 
     def read_packet(self) -> ServerBoundPacket:
         length = self.stream.read_varint()
