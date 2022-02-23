@@ -14,7 +14,7 @@ line_length=100
 
 [tool.poetry]
 name = "pymine-net"
-version = "0.2.1"
+version = "0.2.2"
 description = "Networking library for Minecraft in Python"
 authors = ["PyMine-Net Developers & Contributors"]
 license = "LGPLv3"
