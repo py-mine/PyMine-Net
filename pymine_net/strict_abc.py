@@ -43,8 +43,12 @@ def check_annotations(a: dict, b: dict) -> bool:
         if type(v) is str:
             return type(b[k]) is str and v == b[k]
 
-        if not issubclass(b[k], v):
-            return False
+        try:
+            if not issubclass(b[k], v):
+                return False
+        except TypeError:
+            if b[k] is not v:
+                return False
 
     return True
 

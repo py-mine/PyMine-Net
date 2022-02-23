@@ -176,6 +176,8 @@ class PlayNBTQueryResponse(ClientBoundPacket):
     :param int transaction_id:
     :param nbt.TAG nbt_tag:
     :ivar int id: Unique packet ID.
+    :ivar transaction_id:
+    :ivar nbt_tag:
     """
 
     id = 0x60

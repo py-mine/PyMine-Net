@@ -51,7 +51,7 @@ class PlaySetDifficulty(ServerBoundPacket):
 
     @classmethod
     def unpack(cls, buf: Buffer) -> PlaySetDifficulty:
-        return cls(buf.read("b"))
+        return cls(buf.read_byte())
 
 
 class PlayLockDifficulty(ServerBoundPacket):
@@ -64,7 +64,7 @@ class PlayLockDifficulty(ServerBoundPacket):
 
     id = 0x10
 
-    def __init__(self, locked: bool) -> None:
+    def __init__(self, locked: bool):
         super().__init__()
 
         self.locked = locked

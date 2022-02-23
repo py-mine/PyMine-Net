@@ -47,5 +47,5 @@ class ClientBoundPacket(Packet):
 
     @classmethod
     @optionalabstract
-    def unpack(cls, buf: Buffer) -> ServerBoundPacket:
+    def unpack(cls, buf: Buffer) -> ClientBoundPacket:
         raise NotImplementedError
