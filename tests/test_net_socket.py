@@ -1,7 +1,11 @@
 from concurrent.futures import ThreadPoolExecutor
 
 from pymine_net.enums import GameState
-from pymine_net.net.socket import SocketProtocolServer, SocketProtocolServerClient, SocketProtocolClient
+from pymine_net.net.socket import (
+    SocketProtocolClient,
+    SocketProtocolServer,
+    SocketProtocolServerClient,
+)
 from pymine_net.packets import load_packet_map
 from pymine_net.packets.v_1_18_1.handshaking.handshake import HandshakeHandshake
 from pymine_net.packets.v_1_18_1.status.status import (
