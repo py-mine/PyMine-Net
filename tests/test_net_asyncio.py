@@ -3,7 +3,7 @@ import asyncio
 import pytest
 
 from pymine_net.enums import GameState
-from pymine_net.net.asyncio import AsyncProtocolServer, AsyncProtocolServerClient, AsyncTCPClient
+from pymine_net.net.asyncio import AsyncProtocolServer, AsyncProtocolServerClient, AsyncProtocolClient
 from pymine_net.packets import load_packet_map
 from pymine_net.packets.v_1_18_1.handshaking.handshake import HandshakeHandshake
 from pymine_net.packets.v_1_18_1.status.status import (
@@ -63,7 +63,7 @@ async def test_asyncio_net_status():
     server = TestAsyncTCPServer(TESTING_HOST, TESTING_PORT, TESTING_PROTOCOL, packet_map)
     server_task = asyncio.create_task(server.run())
 
-    client = AsyncTCPClient(TESTING_HOST, TESTING_PORT, TESTING_PROTOCOL, packet_map)
+    client = AsyncProtocolClient(TESTING_HOST, TESTING_PORT, TESTING_PROTOCOL, packet_map)
     await client.connect()
 
     await client.write_packet(
