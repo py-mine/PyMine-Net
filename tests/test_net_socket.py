@@ -59,7 +59,7 @@ def test_socket_net_status():
     threadpool.submit(server.run)
 
     client = SocketProtocolClient(TESTING_HOST, TESTING_PORT, TESTING_PROTOCOL, packet_map)
-    
+
     # retry connection a couple times before failing because the server takes some time to startup
     for i in range(3):
         try:
