@@ -9,7 +9,7 @@ from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.packet_map import PacketMap
 
 
-class AbstractTCPClient(StrictABC):
+class AbstractProtocolClient(StrictABC):
     """Abstract class for a connection over a TCP socket for reading + writing Minecraft packets."""
 
     def __init__(self, host: str, port: int, protocol: Union[int, str], packet_map: PacketMap):

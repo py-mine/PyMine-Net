@@ -1,7 +1,11 @@
 from concurrent.futures import ThreadPoolExecutor
 
 from pymine_net.enums import GameState
-from pymine_net.net.socket import SocketProtocolServer, SocketProtocolServerClient, SocketTCPClient
+from pymine_net.net.socket import (
+    SocketProtocolClient,
+    SocketProtocolServer,
+    SocketProtocolServerClient,
+)
 from pymine_net.packets import load_packet_map
 from pymine_net.packets.v_1_18_1.handshaking.handshake import HandshakeHandshake
 from pymine_net.packets.v_1_18_1.status.status import (
@@ -54,8 +58,16 @@ def test_socket_net_status():
     threadpool = ThreadPoolExecutor()
     threadpool.submit(server.run)
 
-    client = SocketTCPClient(TESTING_HOST, TESTING_PORT, TESTING_PROTOCOL, packet_map)
-    client.connect()
+    client = SocketProtocolClient(TESTING_HOST, TESTING_PORT, TESTING_PROTOCOL, packet_map)
+    
+    # retry connection a couple times before failing because the server takes some time to startup
+    for i in range(3):
+        try:
+            client.connect()
+            break
+        except ConnectionError:
+            if i >= 2:
+                raise
 
     client.write_packet(
         HandshakeHandshake(TESTING_PROTOCOL, TESTING_HOST, TESTING_PORT, GameState.STATUS)

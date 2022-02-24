@@ -1,15 +1,15 @@
 import socket
 from typing import Union
 
-from pymine_net.net.client import AbstractTCPClient
+from pymine_net.net.client import AbstractProtocolClient
 from pymine_net.net.socket.stream import SocketTCPStream
 from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.packet_map import PacketMap
 
-__all__ = ("SocketTCPClient",)
+__all__ = ("SocketProtocolClient",)
 
 
-class SocketTCPClient(AbstractTCPClient):
+class SocketProtocolClient(AbstractProtocolClient):
     """A connection over a TCP socket for reading + writing Minecraft packets."""
 
     def __init__(self, host: str, port: int, protocol: Union[int, str], packet_map: PacketMap):
