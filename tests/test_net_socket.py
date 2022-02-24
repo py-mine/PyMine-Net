@@ -59,7 +59,15 @@ def test_socket_net_status():
     threadpool.submit(server.run)
 
     client = SocketProtocolClient(TESTING_HOST, TESTING_PORT, TESTING_PROTOCOL, packet_map)
-    client.connect()
+    
+    # retry connection a couple times before failing because the server takes some time to startup
+    for i in range(3):
+        try:
+            client.connect()
+            break
+        except ConnectionError:
+            if i >= 2:
+                raise
 
     client.write_packet(
         HandshakeHandshake(TESTING_PROTOCOL, TESTING_HOST, TESTING_PORT, GameState.STATUS)
