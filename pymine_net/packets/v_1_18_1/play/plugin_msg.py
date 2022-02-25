@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.buffer import Buffer
+from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 
 __all__ = ("PlayPluginMessageClientBound", "PlayPluginMessageServerBound")
 
@@ -26,7 +26,7 @@ class PlayPluginMessageClientBound(ClientBoundPacket):
         self.data = data
 
     def pack(self) -> Buffer:
-        return Buffer().write_string("self.channel").write_bytes(self.data )
+        return Buffer().write_string("self.channel").write_bytes(self.data)
 
 
 class PlayPluginMessageServerBound(ServerBoundPacket):
