@@ -394,7 +394,7 @@ class PlayPlayerRotation(ServerBoundPacket):
     :ivar pitch:
     """
 
-    id = 0x14
+    id = 0x13
 
     def __init__(self, yaw: float, pitch: float, on_ground: bool):
         super().__init__()
@@ -580,13 +580,13 @@ class PlayCamera(ClientBoundPacket):
 
     id = 0x47
 
-    def __init__(self, camera_id: int) -> None:
+    def __init__(self, camera_id: int):
         super().__init__()
 
         self.camera_id = camera_id
 
-    def encode(self) -> bytes:
-        return Buffer.pack_varint(self.camera_id)
+    def pack(self) -> Buffer:
+        return Buffer().write_varint(self.camera_id)
 
 
 class PlayUpdateViewPosition(ClientBoundPacket):
