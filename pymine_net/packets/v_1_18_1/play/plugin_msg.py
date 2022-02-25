@@ -29,18 +29,16 @@ class PlayPluginMessageClientBound(ClientBoundPacket):
         return Buffer().write_string("self.channel").write_bytes(self.data )
 
 
-class PlayPluginMessageServerBound(Packet):
+class PlayPluginMessageServerBound(ServerBoundPacket):
     """Used to send plugin data to the server (Client -> Server)
 
     :param str channel: The plugin channel being used.
     :param bytes data: Data to be sent to the client.
     :ivar int id: Unique packet ID.
-    :ivar int to: Packet direction.
     :ivar data:
     """
 
-    id = 0x0B
-    to = 0
+    id = 0x0A
 
     def __init__(self, channel: str, data: bytes) -> None:
         super().__init__()
@@ -48,5 +46,6 @@ class PlayPluginMessageServerBound(Packet):
         self.channel = channel
         self.data = data
 
-    def decode(self, buf: Buffer) -> PlayPluginMessageServerBound:
-        return PlayPluginMessageServerBound(buf.unpack_string(), Buffer(buf.read()))
+    @classmethod
+    def unpack(cls, buf: Buffer) -> PlayPluginMessageServerBound:
+        return cls(buf.read_string(), buf.read_bytes())
