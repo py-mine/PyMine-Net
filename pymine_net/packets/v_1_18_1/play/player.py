@@ -1,16 +1,16 @@
 """Contains packets related to players."""
 
 from __future__ import annotations
+
 from typing import List
-
 from uuid import UUID
-from pymine_net.enums import GameMode, PlayerInfoAction
 
-from pymine_net.types.player import Player
-from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
+import pymine_net.types.nbt as nbt
+from pymine_net.enums import GameMode, PlayerInfoAction
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.chat import Chat
-import pymine_net.types.nbt as nbt
+from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
+from pymine_net.types.player import Player
 
 __all__ = (
     "PlayPlayerDigging",
@@ -104,12 +104,18 @@ class PlayAcknowledgePlayerDigging(ClientBoundPacket):
         self.successful = successful
 
     def pack(self) -> Buffer:
-        return Buffer().write_position(self.x, self.y, self.z).write_varint(self.block).write_varint(self.status).write("?", self.successful)
+        return (
+            Buffer()
+            .write_position(self.x, self.y, self.z)
+            .write_varint(self.block)
+            .write_varint(self.status)
+            .write("?", self.successful)
+        )
 
 
 class PlayDisconnect(ClientBoundPacket):
     """Sent by the server before it disconnects a client. Client assumes that server has closed the connection by the time the packet arrives. (Server -> Client)
-    
+
     :param Chat reason: The reason for the kick.
     :ivar int id: Unique packet ID.
     :ivar reason:
@@ -148,7 +154,13 @@ class PlayPlayerAbilitiesClientBound(ClientBoundPacket):
         self.fov_modifier = fov_modifier
 
     def pack(self) -> Buffer:
-        return Buffer().write_byte(self.flags).write("f", self.flying_speed).write("f", self.fov_modifier)
+        return (
+            Buffer()
+            .write_byte(self.flags)
+            .write("f", self.flying_speed)
+            .write("f", self.fov_modifier)
+        )
+
 
 class PlayPlayerAbilitiesServerBound(ServerBoundPacket):
     """Tells the server whether the client is flying or not. (Client -> Server)
@@ -262,8 +274,7 @@ class PlayJoinGame(ClientBoundPacket):
             buf.write_string(dimension_name)
 
         return (
-            buf
-            .write_nbt(self.dimension_codec)
+            buf.write_nbt(self.dimension_codec)
             .write_nbt(self.dimension)
             .write_string(self.dimension_name)
             .write("q", self.hashed_seed)
@@ -572,7 +583,7 @@ class PlaySpectate(ServerBoundPacket):
 
 class PlayCamera(ClientBoundPacket):
     """Sets the entity that the player renders from. (Server -> Client)
-    
+
     :param int camera_id: The ID of the entity to set the client's camera to.
     :ivar int id: Unique packet ID.
     :ivar camera_id:
@@ -591,7 +602,7 @@ class PlayCamera(ClientBoundPacket):
 
 class PlayUpdateViewPosition(ClientBoundPacket):
     """Sent whenever a client crosses a chunk border and for >1 block changes in the y axis, used to determine what chunks should be loaded or unloaded. (Server -> Client)
-    
+
     :param int chunk_x: x chunk coordinate of the player's position.
     :param int chunk_z: z chunk coordinate of the player's position.
     :ivar int id: Unique packet ID.
@@ -613,7 +624,7 @@ class PlayUpdateViewPosition(ClientBoundPacket):
 
 class PlayUpdateViewDistance(ClientBoundPacket):
     """Sent by server when player reappears in the overworld after leaving the end. (Server -> Client)
-    
+
     :param int view_distance: The render distance.
     :ivar int id: Unique packet ID.
     :ivar view_distance:
@@ -632,7 +643,7 @@ class PlayUpdateViewDistance(ClientBoundPacket):
 
 class PlaySetExperience(ClientBoundPacket):
     """Sent by the server to change a client's XP levels. (Server -> Client)
-    
+
     :param float xp_bar: The value of the XP bar, between 0 and 1.
     :param int level: Level of the player.
     :param int total_xp: Total experience that the player has.
@@ -657,7 +668,7 @@ class PlaySetExperience(ClientBoundPacket):
 
 class PlayUpdateHealth(ClientBoundPacket):
     """Sent by server to update health, hunger, and saturation of player. (Server -> Client)
-    
+
     :param float health: New health of the player.
     :param int food: New food/hunger level of the player.
     :param float food_saturation: New food/hunger saturation of the player.
@@ -677,7 +688,12 @@ class PlayUpdateHealth(ClientBoundPacket):
         self.food_saturation = food_saturation
 
     def pack(self) -> Buffer:
-        return Buffer().write("f", self.health).write_varint(self.food).write("f", self.food_saturation)
+        return (
+            Buffer()
+            .write("f", self.health)
+            .write_varint(self.food)
+            .write("f", self.food_saturation)
+        )
 
 
 class PlayDeathCombatEvent(ClientBoundPacket):
@@ -700,7 +716,12 @@ class PlayDeathCombatEvent(ClientBoundPacket):
         self.message = message
 
     def pack(self) -> Buffer:
-        return Buffer().write_varint(self.player_id).write("i", self.killer_id).write_chat(self.message)
+        return (
+            Buffer()
+            .write_varint(self.player_id)
+            .write("i", self.killer_id)
+            .write_chat(self.message)
+        )
 
 
 class PlayPlayerInfo(ClientBoundPacket):
@@ -726,14 +747,19 @@ class PlayPlayerInfo(ClientBoundPacket):
 
         if self.action == PlayerInfoAction.ADD_PLAYER:
             for player in self.players:
-                buf.write_uuid(player.uuid).write_string(player.username).write_varint(len(player.properties))
+                buf.write_uuid(player.uuid).write_string(player.username).write_varint(
+                    len(player.properties)
+                )
 
                 for prop in player.properties:
-                    buf.write_string(prop.name).write_string(prop.value).write_optional(buf.write_string, prop.signature)
+                    buf.write_string(prop.name).write_string(prop.value).write_optional(
+                        buf.write_string, prop.signature
+                    )
 
                 display_name_chat = Chat(player.display_name) if player.display_name else None
-                buf.write_varint(player.gamemode).write_varint(player.latency).write_optional(buf.write_chat, display_name_chat)
-
+                buf.write_varint(player.gamemode).write_varint(player.latency).write_optional(
+                    buf.write_chat, display_name_chat
+                )
 
         elif self.action == PlayerInfoAction.UPDATE_GAMEMODE:
             for player in self.players:
