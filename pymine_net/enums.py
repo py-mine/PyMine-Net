@@ -38,3 +38,39 @@ class EntityModifier(IntEnum):
     MODIFY = 0  # add / subtract amount
     MODIFY_PERCENT = 1  # add / subtract amount percent of the current value
     MODIFY_MULTIPLY_PERCENT = 2  # multiply by percent amount
+
+
+class MainHand(IntEnum):
+    LEFT = 0
+    RIGHT = 1
+
+
+class ChatMode(IntEnum):
+    ENABLED = 0
+    COMMANDS_ONLY = 1
+    HIDDEN = 2
+
+
+class SkinPart(IntEnum):
+    CAPE = 0x01
+    JACKET = 0x02
+    LEFT_SLEEVE = 0x04
+    RIGHT_SLEEVE = 0x08
+    LEFT_PANTS_LEG = 0x10
+    RIGHT_PANTS_LEG = 0x20
+    HAT = 0x40
+
+
+class GameMode(IntEnum):
+    SURVIVAL = 0
+    CREATIVE = 1
+    ADVENTURE = 2
+    SPECTATOR = 3
+
+
+class PlayerInfoAction(IntEnum):
+    ADD_PLAYER = 0
+    UPDATE_GAMEMODE = 1
+    UPDATE_LATENCY = 2
+    UPDATE_DISPLAY_NAME = 3
+    REMOVE_PLAYER = 4

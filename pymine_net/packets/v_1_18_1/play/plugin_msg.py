@@ -19,7 +19,7 @@ class PlayPluginMessageClientBound(ClientBoundPacket):
 
     id = 0x18
 
-    def __init__(self, channel: str, data: bytes) -> None:
+    def __init__(self, channel: str, data: bytes):
         super().__init__()
 
         self.channel = channel
@@ -40,7 +40,7 @@ class PlayPluginMessageServerBound(ServerBoundPacket):
 
     id = 0x0A
 
-    def __init__(self, channel: str, data: bytes) -> None:
+    def __init__(self, channel: str, data: bytes):
         super().__init__()
 
         self.channel = channel
