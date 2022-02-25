@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import struct
 import random
+import struct
 from typing import Dict, List, Optional, Set
 from uuid import UUID
-from pymine_net.enums import ChatMode, GameMode, MainHand, SkinPart
 
 import pymine_net.types.nbt as nbt
-from pymine_net.types.vector import Vector3, Rotation
+from pymine_net.enums import ChatMode, GameMode, MainHand, SkinPart
+from pymine_net.types.vector import Rotation, Vector3
 
 
 class PlayerProperty:
@@ -86,15 +86,29 @@ class Player:
 
     @position.setter
     def position(self, position: Vector3) -> None:
-        self["Pos"] = nbt.TAG_List("Pos", [nbt.TAG_Double(None, position.x), nbt.TAG_Double(None, position.y), nbt.TAG_Double(None, position.z)])
+        self["Pos"] = nbt.TAG_List(
+            "Pos",
+            [
+                nbt.TAG_Double(None, position.x),
+                nbt.TAG_Double(None, position.y),
+                nbt.TAG_Double(None, position.z),
+            ],
+        )
 
     @property
     def motion(self) -> Vector3:
         return Vector3(*[t.data for t in self["Motion"]])
 
     @motion.setter
-    def motion(self, motion: Vector3) -> None:        
-        self["Motion"] = nbt.TAG_List("Motion", [nbt.TAG_Double(None, motion.x), nbt.TAG_Double(None, motion.y), nbt.TAG_Double(None, motion.z)])
+    def motion(self, motion: Vector3) -> None:
+        self["Motion"] = nbt.TAG_List(
+            "Motion",
+            [
+                nbt.TAG_Double(None, motion.x),
+                nbt.TAG_Double(None, motion.y),
+                nbt.TAG_Double(None, motion.z),
+            ],
+        )
 
     @property
     def rotation(self) -> Rotation:
@@ -102,7 +116,9 @@ class Player:
 
     @rotation.setter
     def rotation(self, rotation: Rotation) -> None:
-        self["Rotation"] = nbt.TAG_List("Rotation", [nbt.TAG_Float(None, rotation.yaw), nbt.TAG_Float(None, rotation.pitch)])
+        self["Rotation"] = nbt.TAG_List(
+            "Rotation", [nbt.TAG_Float(None, rotation.yaw), nbt.TAG_Float(None, rotation.pitch)]
+        )
 
     @property
     def gamemode(self) -> GameMode:
@@ -117,7 +133,7 @@ class Player:
         return cls(entity_id, cls.new_nbt(uuid, spawn, dimension))
 
     def __repr__(self) -> str:
-        return 
+        return
 
     @staticmethod
     def new_nbt(uuid: UUID, spawn: Vector3, dimension: str) -> nbt.TAG:
@@ -126,7 +142,11 @@ class Player:
             [
                 nbt.TAG_List(
                     "Pos",
-                    [nbt.TAG_Double(None, spawn.x), nbt.TAG_Double(None, spawn.y), nbt.TAG_Double(None, spawn.z)],
+                    [
+                        nbt.TAG_Double(None, spawn.x),
+                        nbt.TAG_Double(None, spawn.y),
+                        nbt.TAG_Double(None, spawn.z),
+                    ],
                 ),
                 nbt.TAG_List(
                     "Motion",
