@@ -16,7 +16,13 @@ if TYPE_CHECKING:
 
 
 
-__all__ = ("StrictABC", )
+__all__ = ("StrictABC", "optionalabstractmethod")
+
+
+def optionalabstractmethod(funcobj: Callable) -> Callable:
+    funcobj.__isabstractmethod__ = True  # Mimics abc.abstractmethod behavior
+    funcobj.__isoptionalabstractmethod__ = True
+    return funcobj
 
 
 class StrictABCMeta(ABCMeta):
@@ -44,8 +50,14 @@ class StrictABCMeta(ABCMeta):
         cls = super().__new__(mcls, name, bases, dct)
 
         if definition_check and len(cls.__abstractmethods__) > 0:
-            missing_methods = ", ".join(cls.__abstractmethods__)
-            raise TypeError(f"Can't define class '{name}' with unimplemented abstract methods: {missing_methods}.")
+            missing_methods = []
+            for ab_method_name in cls.__abstractmethods__:
+                ab_method = getattr(cls, ab_method_name)
+                if getattr(ab_method, "__isoptionalabstractmethod__", False):
+                    missing_methods.append(ab_method_name)
+
+            missing_methods_str = ", ".join(cls.__abstractmethods__)
+            raise TypeError(f"Can't define class '{name}' with unimplemented abstract methods: {missing_methods_str}.")
         if typing_check:
             abc_classes = []
             for base_cls in bases:
