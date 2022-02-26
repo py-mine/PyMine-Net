@@ -58,7 +58,7 @@ class StrictABCMeta(ABCMeta):
 
     @classmethod
     def _check_annotations(mcls, cls: Self, abc_classes: List[Self]) -> None:
-        """Make sure all overidden methods in the class match the original definitions in ABCs.
+        """Make sure all overridden methods in the class match the original definitions in ABCs.
 
         This works by finding every abstract method in the ABC classes (present in the classe's MRO),
         getting their type annotations and comparing them with the annotations in the overridden methods.
