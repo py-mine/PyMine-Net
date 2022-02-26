@@ -1,6 +1,6 @@
 import asyncio
-from typing import Dict, Tuple, Union
 from abc import abstractmethod
+from typing import Dict, Tuple, Union
 
 from pymine_net.net.asyncio.stream import AsyncTCPStream
 from pymine_net.net.server import AbstractProtocolServer, AbstractProtocolServerClient

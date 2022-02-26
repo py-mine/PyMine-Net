@@ -1,7 +1,7 @@
 import socket
 import threading
-from typing import Dict, List, Tuple, Union
 from abc import abstractmethod
+from typing import Dict, List, Tuple, Union
 
 from pymine_net.net.server import AbstractProtocolServer, AbstractProtocolServerClient
 from pymine_net.net.socket.stream import SocketTCPStream

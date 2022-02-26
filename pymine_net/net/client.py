@@ -1,6 +1,6 @@
 import zlib
-from typing import Type, Union
 from abc import abstractmethod
+from typing import Type, Union
 
 from pymine_net.enums import GameState, PacketDirection
 from pymine_net.errors import UnknownPacketIdError

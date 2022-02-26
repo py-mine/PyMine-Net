@@ -9,11 +9,10 @@ from __future__ import annotations
 
 import inspect
 from abc import ABCMeta
-from typing import Tuple, List, Callable, Type, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, List, Tuple, Type
 
 if TYPE_CHECKING:
     from typing_extensions import Self
-
 
 
 __all__ = ("StrictABC", "optionalabstractmethod", "is_abstract")
@@ -35,7 +34,6 @@ def optionalabstractmethod(funcobj: Callable) -> Callable:
 def is_abstract(funcobj: Callable) -> bool:
     """Checks whether a given function is an abstract function."""
     return getattr(funcobj, "__isabstractmethod__", False)
-
 
 
 class StrictABCMeta(ABCMeta):
@@ -70,7 +68,9 @@ class StrictABCMeta(ABCMeta):
                     missing_methods.append(ab_method_name)
 
             missing_methods_str = ", ".join(cls.__abstractmethods__)
-            raise TypeError(f"Can't define class '{name}' with unimplemented abstract methods: {missing_methods_str}.")
+            raise TypeError(
+                f"Can't define class '{name}' with unimplemented abstract methods: {missing_methods_str}."
+            )
         if typing_check:
             abc_classes = []
             for base_cls in bases:
@@ -96,7 +96,9 @@ class StrictABCMeta(ABCMeta):
             for abc_method_name in abc_cls.__abstractmethods__:
                 abc_method = getattr(abc_cls, abc_method_name)
                 if not callable(abc_method):
-                    raise TypeError(f"Expected '{abc_method_name}' to be an abstractmethod, but it isn't callable.")
+                    raise TypeError(
+                        f"Expected '{abc_method_name}' to be an abstractmethod, but it isn't callable."
+                    )
                 abc_methods.append((abc_method_name, abc_method))
 
         # Get matching overridden methods in the class, to the collected abstract methods
@@ -108,7 +110,9 @@ class StrictABCMeta(ABCMeta):
                 continue  # Skip unoverridden abstract methods
 
             if not callable(defined_method):
-                raise TypeError(f"Expected '{abc_method_name}' to be an abstractmethod, but it isn't callable.")
+                raise TypeError(
+                    f"Expected '{abc_method_name}' to be an abstractmethod, but it isn't callable."
+                )
 
             # Compare the annotations
             mcls._compare_annotations(abc_method, defined_method, abc_method_name)
@@ -143,11 +147,16 @@ class StrictABCMeta(ABCMeta):
             return
 
         if len(compare_ann) == 0:
-            raise TypeError(err_msg + f" Compare method has no annotations, but some were expected ({expected_ann}).")
+            raise TypeError(
+                err_msg
+                + f" Compare method has no annotations, but some were expected ({expected_ann})."
+            )
 
         for key, exp_val in expected_ann.items():
             if key not in compare_ann:
-                raise TypeError(err_msg + f" Annotation for '{key}' not present, should be {exp_val}.")
+                raise TypeError(
+                    err_msg + f" Annotation for '{key}' not present, should be {exp_val}."
+                )
 
             cmp_val = compare_ann[key]
 
@@ -159,11 +168,15 @@ class StrictABCMeta(ABCMeta):
                     cmp_val = getattr(cmp_val, "__name__", None)
                     if cmp_val is None:
                         raise TypeError(
-                            err_msg + f" Can't compare annotations for '{key}', unable to evaluate the string forward reference"
+                            err_msg
+                            + f" Can't compare annotations for '{key}', unable to evaluate the string forward reference"
                             f", and '__name__' of the compare function isn't available."
                         )
                 if exp_val != cmp_val:
-                    raise TypeError(err_msg + f" Forward reference annotations for '{key}' don't match ({exp_val!r} != {cmp_val!r})")
+                    raise TypeError(
+                        err_msg
+                        + f" Forward reference annotations for '{key}' don't match ({exp_val!r} != {cmp_val!r})"
+                    )
 
                 # If we know the strings in the forward reference annotations are the same,
                 # we can assume that they mean the same thing and mark the type check as passing,
@@ -173,12 +186,18 @@ class StrictABCMeta(ABCMeta):
 
             try:
                 if not issubclass(cmp_val, exp_val):
-                    raise TypeError(err_msg + f" Annotation for '{key}' isn't compatible, should be {exp_val}, got {cmp_val}.")
+                    raise TypeError(
+                        err_msg
+                        + f" Annotation for '{key}' isn't compatible, should be {exp_val}, got {cmp_val}."
+                    )
             except TypeError:
                 # This can happen when cmp_val isn't a class, for example with it set to `None`
                 # Do a literal 'is' comparison here when that happens
                 if cmp_val is not exp_val:
-                    raise TypeError(err_msg + f" Annotation for '{key} isn't compatible, should be {exp_val}, got {cmp_val}.")
+                    raise TypeError(
+                        err_msg
+                        + f" Annotation for '{key} isn't compatible, should be {exp_val}, got {cmp_val}."
+                    )
 
 
 class StrictABC(metaclass=StrictABCMeta):
@@ -208,4 +227,5 @@ class StrictABC(metaclass=StrictABCMeta):
     >>> # No issues here
 
     For more info, check StrictABCMeta's doocstring."""
+
     __slots__ = ()
