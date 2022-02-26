@@ -213,7 +213,7 @@ class StrictABCMeta(ABCMeta):
                 if cmp_val is not exp_val:
                     raise TypeError(
                         err_msg
-                        + f" Annotation for '{key} isn't compatible, should be {exp_val}, got {cmp_val}."
+                        + f" Annotation for '{key}' isn't compatible, should be {exp_val}, got {cmp_val}."
                     )
 
 
