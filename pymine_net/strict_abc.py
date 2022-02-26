@@ -153,29 +153,28 @@ class StrictABCMeta(ABCMeta):
 class StrictABC(metaclass=StrictABCMeta):
     """Strict implementation of abc.ABC, including definition time checks and typing checks.
 
+    Example:
+    >>> class AbstractTest(StrinctABC):
+    ...     @abstractmethod
+    ...     def foo(self, x: int) -> int:
+    ...         pass
+    >>> class Test(AbstractTest):
+    ...     def foo(self, x: int) -> int
+    ...         return 2 + x
+    >>> class NotTest(AbstractTest):
+    ...     def bar(self, x: int) -> int:
+    ...         return 5 + x
+    TypeError: Can't define class 'NotTest' with unimplemented abstract methods: foo.
+    >>> class NotTest2(AbstractTest):
+    ...     def foo(self, x: str) -> str:
+    ...         return "hi " + x
+    TypeError: Mismatched annotations in 'foo'. Annotation for 'x' isn't compatible, should be int, got str.
+    >>> class ExtendedAbstractTest(StrictABC, definition_check=False):
+    ...     @classmethod
+    ...     @abstractmethod
+    ...     def bar(cls, x: str) -> str:
+    ...         pass
+    >>> # No issues here
+
     For more info, check StrictABCMeta's doocstring."""
     __slots__ = ()
-
-
-# Example:
-# class AbstractTest(StrictABC):
-#     def __init__(self, something):
-#         self.something = something
-
-# class AbstractTest2(AbstractTest):
-#     @abstract
-#     def my_abstract_method(self, a: str):
-#         print("in abstract method")
-
-#     @classmethod
-#     @abstract
-#     def my_abstract_classmethod(self, a: str):
-#         print("in abstract classmethod")
-
-# class Test(AbstractTest2):
-#     def my_abstract_method(self, a: str):
-#         print("in method")
-
-#     @classmethod
-#     def my_abstract_classmethod(self, a: str):
-#         print("in classmethod")
