@@ -96,6 +96,12 @@ class StrictABCMeta(ABCMeta):
         - If the second (compare) function doesn't have any annotations, check fails (TypeError).
         - If the second (compare) function's signature isn't compatible the expected signature, check fails (TypeError).
         - Otherwise, if the signatures are compatible, the check is passed (returns None).
+
+        NOTE: This check works, but it's not at all reliable, and it's behavior with forward references is very much
+        incomplete and inaccurate, and it will never be accurate, because doing type-enforcing on runtime like this
+        simply isn't something that the python's typing system was designed for, types should be ensured with a proper
+        type-checker, not with runtime checks. This also completely lacks support for subtypes which don't pass issubclass
+        check, such as protocols. This is only here temporarily, until a type-checker is added which will replace this.
         """
         try:
             expected_ann = inspect.get_annotations(expected_f, eval_str=True)
