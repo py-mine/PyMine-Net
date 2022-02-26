@@ -60,21 +60,26 @@ class StrictABCMeta(ABCMeta):
     ):
         cls = super().__new__(mcls, name, bases, dct)
 
-        if definition_check and len(cls.__abstractmethods__) > 0:
-            missing_methods = []
-            for ab_method_name in cls.__abstractmethods__:
-                ab_method = getattr(cls, ab_method_name)
-                if getattr(ab_method, "__isoptionalabstractmethod__", False):
-                    missing_methods.append(ab_method_name)
+        # Find all abstract methods and optional abstract methods which are still present and weren't overridden
+        # excluding those defined in this class directly, since if a class defines new abstract method in it,
+        # we obviously don't expect it to be implemented in that class.
+        ab_methods = {method_name for method_name in cls.__abstractmethods__ if method_name not in cls.__dict__}
+        optional_ab_methods = {
+            method_name for method_name in dir(cls)
+            if getattr(getattr(cls, method_name), "__isoptionalabstractmethod__", False) and method_name not in cls.__dict__
+        }
 
-            missing_methods_str = ", ".join(cls.__abstractmethods__)
+        if definition_check and len(ab_methods) > 0:
+            missing_methods_str = ", ".join(ab_methods)
+            if len(optional_ab_methods) > 0:
+                missing_methods_str += ", and optionally also: " + ", ".join(optional_ab_methods)
             raise TypeError(
                 f"Can't define class '{name}' with unimplemented abstract methods: {missing_methods_str}."
             )
         if typing_check:
             abc_classes = []
             for base_cls in bases:
-                if isinstance(base_cls, mcls) and base_cls is not mcls:
+                if isinstance(base_cls, mcls) and base_cls not in {mcls, cls}:
                     abc_classes.append(base_cls)
 
             mcls._check_annotations(cls, abc_classes)
