@@ -45,7 +45,7 @@ class StrictABCMeta(ABCMeta):
 
         if definition_check and len(cls.__abstractmethods__) > 0:
             missing_methods = ", ".join(cls.__abstractmethods__)
-            raise TypeError(f"Can't define abstract class Bar with unimplemented abstract methods: {missing_methods}")
+            raise TypeError(f"Can't define class '{name}' with unimplemented abstract methods: {missing_methods}.")
         if typing_check:
             abc_classes = []
             for base_cls in bases:
