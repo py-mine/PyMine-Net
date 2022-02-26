@@ -26,7 +26,6 @@ def optionalabstractmethod(funcobj: Callable) -> Callable:
 
     NOTE: This will get removed along with the entire type-enforcement system eventually.
     """
-    funcobj.__isabstractmethod__ = True  # Mimics abc.abstractmethod behavior
     funcobj.__isoptionalabstractmethod__ = True
     return funcobj
 
@@ -96,31 +95,44 @@ class StrictABCMeta(ABCMeta):
         If an abstract method definition is found, but overridden implementation in the class isn't present,
         this method will be skipped."""
         # Get all of the defined abstract methods in the ABCs
-        abc_methods = []
+        ab_methods = []
         for abc_cls in abc_classes:
-            for abc_method_name in abc_cls.__abstractmethods__:
-                abc_method = getattr(abc_cls, abc_method_name)
-                if not callable(abc_method):
+            for ab_method_name in abc_cls.__abstractmethods__:
+                ab_method = getattr(abc_cls, ab_method_name)
+                if not callable(ab_method):
                     raise TypeError(
-                        f"Expected '{abc_method_name}' to be an abstractmethod, but it isn't callable."
+                        f"Expected '{ab_method_name}' to be an abstractmethod, but it isn't callable."
                     )
-                abc_methods.append((abc_method_name, abc_method))
+                ab_methods.append((ab_method_name, ab_method))
+
+            # This code is incredibely inefficient and I hate it, it's only here
+            # because I was forced to implement support for optional abstract methods
+            # which should never have been a thing, oh well...
+            for obj_name in dir(abc_cls):
+                obj_value = getattr(abc_cls, obj_name)
+                if getattr(obj_value, "__isoptionalabstractmethod__", False):
+                    if not callable(obj_value):
+                        raise TypeError(
+                            f"Expected '{obj_name}' to be an optional abstractmethod, but it isn't callable."
+                        )
+                    ab_methods.append((obj_name, obj_value))
+
 
         # Get matching overridden methods in the class, to the collected abstract methods
         _MISSING_SENTINEL = object()
-        for abc_method_name, abc_method in abc_methods:
-            defined_method = getattr(cls, abc_method_name, _MISSING_SENTINEL)
+        for ab_method_name, ab_method in ab_methods:
+            defined_method = getattr(cls, ab_method_name, _MISSING_SENTINEL)
 
             if defined_method is _MISSING_SENTINEL:
                 continue  # Skip unoverridden abstract methods
 
             if not callable(defined_method):
                 raise TypeError(
-                    f"Expected '{abc_method_name}' to be an abstractmethod, but it isn't callable."
+                    f"Expected '{ab_method_name}' to be an abstractmethod, but it isn't callable."
                 )
 
             # Compare the annotations
-            mcls._compare_annotations(abc_method, defined_method, abc_method_name)
+            mcls._compare_annotations(ab_method, defined_method, ab_method_name)
 
     @staticmethod
     def _compare_annotations(expected_f: Callable, compare_f: Callable, method_name: str) -> None:
