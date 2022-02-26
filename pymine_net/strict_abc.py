@@ -97,8 +97,15 @@ class StrictABCMeta(ABCMeta):
         - If the second (compare) function's signature isn't compatible the expected signature, check fails (TypeError).
         - Otherwise, if the signatures are compatible, the check is passed (returns None).
         """
-        expected_ann = inspect.get_annotations(expected_f, eval_str=True)
-        compare_ann = inspect.get_annotations(compare_f, eval_str=True)
+        try:
+            expected_ann = inspect.get_annotations(expected_f, eval_str=True)
+        except NameError:
+            expected_ann = inspect.get_annotations(expected_f)
+        try:
+            compare_ann = inspect.get_annotations(compare_f, eval_str=True)
+        except NameError:
+            compare_ann = inspect.get_annotations(compare_f)
+
         err_msg = f"Mismatched annotations in '{method_name}'."
 
         if len(expected_ann) == 0:  # Nothing to compare
@@ -112,6 +119,26 @@ class StrictABCMeta(ABCMeta):
                 raise TypeError(err_msg + f" Annotation for '{key}' not present, should be {exp_val}.")
 
             cmp_val = compare_ann[key]
+
+            # In case we weren't able to evaluate the string forward reference annotations
+            # we can at least check if the string they hold is the same. This isn't ideal,
+            # and can cause issues, and incorrect failures, but it's the best we can do.
+            if isinstance(exp_val, str):
+                if not isinstance(cmp_val, str):
+                    cmp_val = getattr(cmp_val, "__name__", None)
+                    if cmp_val is None:
+                        raise TypeError(
+                            err_msg + f" Can't compare annotations for '{key}', unable to evaluate the string forward reference"
+                            f", and '__name__' of the compare function isn't available."
+                        )
+                if exp_val != cmp_val:
+                    raise TypeError(err_msg + f" Forward reference annotations for '{key}' don't match ({exp_val!r} != {cmp_val!r})")
+
+                # If we know the strings in the forward reference annotations are the same,
+                # we can assume that they mean the same thing and mark the type check as passing,
+                # however it doesn't mean we're 100% that it actually is the same type, but it's
+                # the best we can do with unresolvable string annotations.
+                return
 
             try:
                 if not issubclass(cmp_val, exp_val):
