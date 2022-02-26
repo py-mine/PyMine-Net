@@ -32,7 +32,7 @@ def optionalabstractmethod(funcobj: Callable) -> Callable:
 
 def is_abstract(funcobj: Callable) -> bool:
     """Checks whether a given function is an abstract function."""
-    return getattr(funcobj, "__isabstractmethod__", False)
+    return getattr(funcobj, "__isabstractmethod__", False) or getattr(funcobj, "__isoptionalabstractmethod__", False)
 
 
 class StrictABCMeta(ABCMeta):
