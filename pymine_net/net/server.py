@@ -1,10 +1,11 @@
 import zlib
 from typing import Dict, Tuple, Type, Union
+from abc import abstractmethod
 
 from pymine_net.enums import GameState, PacketDirection
 from pymine_net.errors import UnknownPacketIdError
 from pymine_net.net.stream import AbstractTCPStream
-from pymine_net.strict_abc import StrictABC, abstract
+from pymine_net.strict_abc import StrictABC
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.packet_map import PacketMap
@@ -55,11 +56,11 @@ class AbstractProtocolServerClient(StrictABC):
 
         return packet_class.unpack(buf)
 
-    @abstract
+    @abstractmethod
     def read_packet(self) -> ServerBoundPacket:
         pass
 
-    @abstract
+    @abstractmethod
     def write_packet(self, packet: ClientBoundPacket) -> None:
         pass
 
@@ -75,10 +76,10 @@ class AbstractProtocolServer(StrictABC):
 
         self.connected_clients: Dict[Tuple[str, int], AbstractProtocolServerClient] = {}
 
-    @abstract
+    @abstractmethod
     def run(self) -> None:
         pass
 
-    @abstract
+    @abstractmethod
     def close(self) -> None:
         pass

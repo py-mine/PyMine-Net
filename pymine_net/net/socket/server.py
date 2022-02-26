@@ -1,10 +1,10 @@
 import socket
 import threading
 from typing import Dict, List, Tuple, Union
+from abc import abstractmethod
 
 from pymine_net.net.server import AbstractProtocolServer, AbstractProtocolServerClient
 from pymine_net.net.socket.stream import SocketTCPStream
-from pymine_net.strict_abc import abstract
 from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.packet_map import PacketMap
 
@@ -60,6 +60,6 @@ class SocketProtocolServer(AbstractProtocolServer):
         with client.stream.sock:
             self.new_client_connected(client)
 
-    @abstract
+    @abstractmethod
     def new_client_connected(self, client: SocketProtocolServerClient) -> None:
         pass

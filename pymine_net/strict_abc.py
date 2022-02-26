@@ -16,13 +16,26 @@ if TYPE_CHECKING:
 
 
 
-__all__ = ("StrictABC", "optionalabstractmethod")
+__all__ = ("StrictABC", "optionalabstractmethod", "is_abstract")
 
 
 def optionalabstractmethod(funcobj: Callable) -> Callable:
+    """Marks given function as an optional abstract method.
+
+    This means it's presnce won't be required, but if it will be present, we can
+    run the typing checks provided by the strict ABC.
+
+    NOTE: This will get removed along with the entire type-enforcement system eventually.
+    """
     funcobj.__isabstractmethod__ = True  # Mimics abc.abstractmethod behavior
     funcobj.__isoptionalabstractmethod__ = True
     return funcobj
+
+
+def is_abstract(funcobj: Callable) -> bool:
+    """Checks whether a given function is an abstract function."""
+    return getattr(funcobj, "__isabstractmethod__", False)
+
 
 
 class StrictABCMeta(ABCMeta):

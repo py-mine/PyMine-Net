@@ -1,9 +1,9 @@
 import asyncio
 from typing import Dict, Tuple, Union
+from abc import abstractmethod
 
 from pymine_net.net.asyncio.stream import AsyncTCPStream
 from pymine_net.net.server import AbstractProtocolServer, AbstractProtocolServerClient
-from pymine_net.strict_abc import abstract
 from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.packet_map import PacketMap
 
@@ -48,6 +48,6 @@ class AsyncProtocolServer(AbstractProtocolServer):
 
         await self.new_client_connected(client)
 
-    @abstract
+    @abstractmethod
     async def new_client_connected(self, client: AsyncProtocolServerClient) -> None:
         pass
