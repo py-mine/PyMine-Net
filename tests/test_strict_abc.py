@@ -34,18 +34,35 @@ class Helpers:
 
 
 def test_abc_creation():
-    test_cls = type("TestAbstract", (StrictABC,), {"foo": Helpers.helper_func})
+    test_cls = type("TestAbstract", (StrictABC,), {
+        "func": Helpers.helper_func,
+        "ab_func": Helpers.helper_ab_func,
+        "optional_ab_func": Helpers.helper_optional_ab_func,
+    })
 
-    assert hasattr(test_cls, "foo")  # Make sure the class was properly made with the func
-    foo = getattr(test_cls, "foo")
-    assert callable(foo)  # Make sure there's no decorator failure
-    # Make sure the function isn't an abstract method/optional abstract method
-    assert not getattr(foo, "__isabstractmethod__", False)
-    assert not getattr(foo, "__isoptionalabstractmethod__", False)
-    # There shouldn't be any abstract methods defined
+    cases = [
+        ("func", {"optional_ab": False, "ab": False}),
+        ("ab_func", {"optional_ab": False, "ab": True}),
+        ("optional_ab_func", {"optional_ab": True, "ab": False}),
+    ]
+
+
+    for method_name, params in cases:
+        # Make sure the class was properly made with the function
+        assert hasattr(test_cls, method_name)
+        fun = getattr(test_cls, method_name)
+        # Make sure there's no decorator failure and the function is still callable
+        assert callable(fun)
+        # Make sure the function is following the expected params
+        assert getattr(fun, "__isabstractmethod__", False) is params["ab"]
+        assert getattr(fun, "__isoptionalabstractmethod__", False) is params["optional_ab"]
+
+    # Make sure the class has __abstractmethods__ list, which only holds
+    # the true abstractmethods (not optional abstractmethods)
     assert hasattr(test_cls, "__abstractmethods__")
     abstract_methods = getattr(test_cls, "__abstractmethods__")
-    assert len(abstract_methods) == 0
+    assert "ab_func" in abstract_methods
+    assert "optional_ab_func" not in abstract_methods
 
 
 def test_abc_definition_enforcement():
