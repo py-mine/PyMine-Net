@@ -278,11 +278,11 @@ class StrictABCMeta(ABCMeta):
         for opt1, opt2 in compare_checks:
             if opt1 == opt2:
                 return
-        else:
-            raise TypeError(
-                err_msg
-                + f" String forward reference annotations for '{key}' don't match ({exp_val!r} != {cmp_val!r})"
-            )
+
+        raise TypeError(
+            err_msg
+            + f" String forward reference annotations for '{key}' don't match ({exp_val!r} != {cmp_val!r})"
+        )
 
 
 class StrictABC(metaclass=StrictABCMeta):
