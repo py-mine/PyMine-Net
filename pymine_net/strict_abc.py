@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import inspect
 from abc import ABCMeta
-from typing import TYPE_CHECKING, Callable, List, Tuple, Type, overload, Union, cast
+from typing import TYPE_CHECKING, Callable, List, Tuple, Type, Union, cast, overload
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -32,7 +32,9 @@ def optionalabstractmethod(funcobj: Callable) -> Callable:
 
 def is_abstract(funcobj: Callable) -> bool:
     """Checks whether a given function is an abstract function."""
-    return getattr(funcobj, "__isabstractmethod__", False) or getattr(funcobj, "__isoptionalabstractmethod__", False)
+    return getattr(funcobj, "__isabstractmethod__", False) or getattr(
+        funcobj, "__isoptionalabstractmethod__", False
+    )
 
 
 class StrictABCMeta(ABCMeta):
@@ -62,10 +64,16 @@ class StrictABCMeta(ABCMeta):
         # Find all abstract methods and optional abstract methods which are still present and weren't overridden
         # excluding those defined in this class directly, since if a class defines new abstract method in it,
         # we obviously don't expect it to be implemented in that class.
-        ab_methods = {method_name for method_name in cls.__abstractmethods__ if method_name not in cls.__dict__}
+        ab_methods = {
+            method_name
+            for method_name in cls.__abstractmethods__
+            if method_name not in cls.__dict__
+        }
         optional_ab_methods = {
-            method_name for method_name in dir(cls)
-            if getattr(getattr(cls, method_name), "__isoptionalabstractmethod__", False) and method_name not in cls.__dict__
+            method_name
+            for method_name in dir(cls)
+            if getattr(getattr(cls, method_name), "__isoptionalabstractmethod__", False)
+            and method_name not in cls.__dict__
         }
 
         if definition_check and len(ab_methods) > 0:
@@ -117,7 +125,6 @@ class StrictABCMeta(ABCMeta):
                         )
                     ab_methods.append((obj_name, obj_value))
 
-
         # Get matching overridden methods in the class, to the collected abstract methods
         _MISSING_SENTINEL = object()
         for ab_method_name, ab_method in ab_methods:
@@ -135,7 +142,12 @@ class StrictABCMeta(ABCMeta):
             mcls._compare_annotations(ab_method, defined_method, ab_method_name)
 
     @classmethod
-    def _compare_annotations(mcls, expected_f: Callable, compare_f: Callable, method_name: str) -> None:
+    def _compare_annotations(
+        mcls,
+        expected_f: Callable,
+        compare_f: Callable,
+        method_name: str,
+    ) -> None:
         """Compare annotations between two given functions.
 
         - If the first (expected) function doesn't have any annotations, this check is skipped.
@@ -202,14 +214,17 @@ class StrictABCMeta(ABCMeta):
 
     @overload
     @staticmethod
-    def _compare_forward_reference_annotations(exp_val: str, cmp_val: object, err_msg: str, key: str):
+    def _compare_forward_reference_annotations(
+        exp_val: str, cmp_val: object, err_msg: str, key: str
+    ):
         ...
 
     @overload
     @staticmethod
-    def _compare_forward_reference_annotations(exp_val: object, cmp_val: str, err_msg: str, key: str):
+    def _compare_forward_reference_annotations(
+        exp_val: object, cmp_val: str, err_msg: str, key: str
+    ):
         ...
-
 
     @overload
     @staticmethod
