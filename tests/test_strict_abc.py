@@ -135,4 +135,3 @@ def test_forward_annotation_comparison():
         StrictABC._compare_forward_reference_annotations(Bar, "Foo", Mock(), Mock())
     with pytest.raises(TypeError):
         StrictABC._compare_forward_reference_annotations("Foo", Bar, Mock(), Mock())
-
