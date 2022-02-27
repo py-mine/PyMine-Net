@@ -197,11 +197,11 @@ class StrictABCMeta(ABCMeta):
             # we can at least check if the string they hold is the same. This isn't ideal,
             # and can cause issues, and incorrect failures, but it's the best we can do.
             if isinstance(cmp_val, str) or isinstance(exp_val, str):
-                status, msg = mcls._compare_forward_reference_annotations(exp_val, cmp_val, key)
+                status, msg = mcls._compare_forward_reference_annotations(exp_val, cmp_val)
                 if status is True:
                     return
                 msg = cast(str, msg)
-                raise TypeError(err_msg + " " + msg)
+                raise TypeError(err_msg + f" Annotation for '{key}' isn't compatible, " + msg)
 
             try:
                 if not issubclass(cmp_val, exp_val):
@@ -221,21 +221,21 @@ class StrictABCMeta(ABCMeta):
     @overload
     @staticmethod
     def _compare_forward_reference_annotations(
-        exp_val: str, cmp_val: object, key: str
+        exp_val: str, cmp_val: object
     ) -> Tuple[bool, Optional[str]]:
         ...
 
     @overload
     @staticmethod
     def _compare_forward_reference_annotations(
-        exp_val: object, cmp_val: str, key: str
+        exp_val: object, cmp_val: str
     ) -> Tuple[bool, Optional[str]]:
         ...
 
     @overload
     @staticmethod
     def _compare_forward_reference_annotations(
-        exp_val: str, cmp_val: str, key: str
+        exp_val: str, cmp_val: str
     ) -> Tuple[bool, Optional[str]]:
         ...
 
@@ -243,7 +243,6 @@ class StrictABCMeta(ABCMeta):
     def _compare_forward_reference_annotations(
         exp_val: Union[str, object],
         cmp_val: Union[str, object],
-        key: str,
     ) -> Tuple[bool, Optional[str]]:
         """This compares 2 annotations, out of which at least one is a string.
 
@@ -282,8 +281,8 @@ class StrictABCMeta(ABCMeta):
             if len(compare_checks) == 0:
                 return (
                     False,
-                    f"Can't compare annotations for '{key}', unable to convert a real object to a string"
-                    f" for comparison against a string forward reference annotation. {real!r} ?= {fwd!r}",
+                    "unable to convert a real object to a string for comparison against a"
+                    f" string forward reference annotation. {real!r} ?= {fwd!r}",
                 )
 
         # Also try to get the "unqualified names" and if comparing those succeed,
@@ -307,7 +306,7 @@ class StrictABCMeta(ABCMeta):
 
         return (
             False,
-            f" String forward reference annotations for '{key}' don't match ({exp_val!r} != {cmp_val!r})",
+            f" string forward references don't match ({exp_val!r} != {cmp_val!r})",
         )
 
 

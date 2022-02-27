@@ -135,7 +135,7 @@ def test_is_abstract():
 
 
 def test_forward_annotation_comparison():
-    compare = lambda x, y: StrictABC._compare_forward_reference_annotations(x, y, Mock())[0]
+    compare = lambda x, y: StrictABC._compare_forward_reference_annotations(x, y)[0]
 
     # We should succeed for exactly same forward reference strings
     assert compare("Foo", "Foo") is True
