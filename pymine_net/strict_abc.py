@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import inspect
 from abc import ABCMeta
-from typing import TYPE_CHECKING, Callable, List, Tuple, Type, Union, cast, overload, Optional
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Type, Union, cast, overload
 
 if TYPE_CHECKING:
     from typing_extensions import Self
