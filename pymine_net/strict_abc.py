@@ -1,9 +1,11 @@
 """
 Contains a "strict" implementation of abc.ABC, enforcing presnce of all abstract methods on class creation.
 
-- Subclasses of abstract classes must implement all abstract methods/classmethods/staticmethods
-- A method's typehints are also enforced, if abstract method a has a return annotation of MyClass,
-    the implemented method must have a return annotation of MyClass or a subclass of MyClass.
+- Subclasses of StrictABC must implement all abstract methods/classmethods/staticmethods.
+- A method's typehitns are also enforced, however this is only temporary and should be replaced
+    with a type checker. This is currently here just to prevent some accidental misstyping since
+    there's no type-checker yet, however this runtime enforcement isn't perfect and can't fully
+    replace a type-chcker.
 """
 from __future__ import annotations
 
