@@ -200,9 +200,8 @@ class StrictABCMeta(ABCMeta):
                 status, msg = mcls._compare_forward_reference_annotations(exp_val, cmp_val, key)
                 if status is True:
                     return
-                else:
-                    msg = cast(str, msg)
-                    raise TypeError(err_msg + " " + msg)
+                msg = cast(str, msg)
+                raise TypeError(err_msg + " " + msg)
 
             try:
                 if not issubclass(cmp_val, exp_val):
