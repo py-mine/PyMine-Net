@@ -34,7 +34,7 @@ class Helpers:
 
 
 def test_abc_creation():
-    test_cls = type("TestAbstract", (StrictABC, ), {"foo": Helpers.helper_func})
+    test_cls = type("TestAbstract", (StrictABC,), {"foo": Helpers.helper_func})
 
     assert hasattr(test_cls, "foo")  # Make sure the class was properly made with the func
     foo = getattr(test_cls, "foo")
@@ -49,58 +49,60 @@ def test_abc_creation():
 
 
 def test_abc_definition_enforcement():
-    test_cls = type("TestAbstract", (StrictABC, ), {"foo": Helpers.helper_ab_func })
+    test_cls = type("TestAbstract", (StrictABC,), {"foo": Helpers.helper_ab_func})
 
     # Fail for class without overridden definition
     with pytest.raises(TypeError):
-        type("Test", (test_cls, ), {})
+        type("Test", (test_cls,), {})
 
     # Succeed for class with overridden definition
-    type("Test", (test_cls, ), {"foo": Helpers.helper_func})
+    type("Test", (test_cls,), {"foo": Helpers.helper_func})
 
     # Succeed for class without overridden definition, with ignored definition check
-    type("ExtendedTestAbstract", (test_cls, ), {}, definition_check=False)
+    type("ExtendedTestAbstract", (test_cls,), {}, definition_check=False)
 
 
 def test_abc_no_optional_definition_enforcement():
-    test_cls = type("TestAbstract", (StrictABC, ), {"foo": Helpers.helper_optional_ab_func})
+    test_cls = type("TestAbstract", (StrictABC,), {"foo": Helpers.helper_optional_ab_func})
 
     # Should succeed, even without providing a definition of the optional abstract function
-    type("Test", (test_cls, ), {})
+    type("Test", (test_cls,), {})
 
     # Should succeed with overridden optional abstract function with valid function
-    type("Test", (test_cls, ), {"foo": Helpers.helper_func})
+    type("Test", (test_cls,), {"foo": Helpers.helper_func})
 
 
 def test_abc_typing_enforcement():
-    test_cls = type("TestAbstract", (StrictABC, ), {"foo": Helpers.helper_annotated_ab_func})
+    test_cls = type("TestAbstract", (StrictABC,), {"foo": Helpers.helper_annotated_ab_func})
 
     # Fail for class without matching type annotated overridden method
     with pytest.raises(TypeError):
-        type("Test", (test_cls, ), {"foo": Helpers.helper_unannoteated_func})
+        type("Test", (test_cls,), {"foo": Helpers.helper_unannoteated_func})
 
     # Succeed for class with matching type annotated overridden method
-    type("Test", (test_cls, ), {"foo": Helpers.helper_annotated_func})
+    type("Test", (test_cls,), {"foo": Helpers.helper_annotated_func})
 
     # Succeed for class wtthout matching type annotated overridden method, but without type-check enabled
-    type("Test", (test_cls, ), {"foo": Helpers.helper_unannoteated_func}, typing_check=False)
+    type("Test", (test_cls,), {"foo": Helpers.helper_unannoteated_func}, typing_check=False)
 
     # Succeed for unoverridden method (without definition check)
-    type("Test", (test_cls, ), {}, definition_check=False)
+    type("Test", (test_cls,), {}, definition_check=False)
 
 
 def test_abc_optional_typing_enforcement():
-    test_cls = type("TestAbstract", (StrictABC, ), {"foo": Helpers.helper_annotated_optional_ab_func})
+    test_cls = type(
+        "TestAbstract", (StrictABC,), {"foo": Helpers.helper_annotated_optional_ab_func}
+    )
 
     # Succeed for unoverridden method (without definition check)
-    type("Test", (test_cls, ), {}, definition_check=False)
+    type("Test", (test_cls,), {}, definition_check=False)
 
     # Succeed for class with matching type annotated overridden method
-    type("Test", (test_cls, ), {"foo": Helpers.helper_annotated_func})
+    type("Test", (test_cls,), {"foo": Helpers.helper_annotated_func})
 
     # Fail for class without matching type annotated overridden maethod
     with pytest.raises(TypeError):
-        type("Test", (test_cls, ), {"foo": Helpers.helper_unannoteated_func})
+        type("Test", (test_cls,), {"foo": Helpers.helper_unannoteated_func})
 
 
 def test_is_abstract():
