@@ -135,25 +135,24 @@ def test_is_abstract():
 
 
 def test_forward_annotation_comparison():
+    compare = lambda x, y: StrictABC._compare_forward_reference_annotations(x, y, Mock())[0]
+
     # We should succeed for exactly same forward reference strings
-    StrictABC._compare_forward_reference_annotations("Foo", "Foo", Mock(), Mock())
+    assert compare("Foo", "Foo") is True
 
     # We should also succeed for unqualified comparison for reference strings
-    StrictABC._compare_forward_reference_annotations("py_mine.xyz.Foo", "Foo", Mock(), Mock())
-    StrictABC._compare_forward_reference_annotations("Foo", "py_mine.zyx.Foo", Mock(), Mock())
+    assert compare("py_mine.xyz.Foo", "Foo") is True
+    assert compare("Foo", "py_mine.zyx.Foo") is True
 
     # We should fail if the strings are completely different
-    with pytest.raises(TypeError):
-        StrictABC._compare_forward_reference_annotations("Foo", "Bar", Mock(), Mock())
+    assert compare("Foo", "Bar") is False
 
     Foo = type("Foo", (), {})
     # We should succeed for comparing string "Foo" and real Foo named class
-    StrictABC._compare_forward_reference_annotations(Foo, "Foo", Mock(), Mock())
-    StrictABC._compare_forward_reference_annotations("Foo", Foo, Mock(), Mock())
+    assert compare(Foo, "Foo") is True
+    assert compare("Foo", Foo) is True
 
     Bar = type("Bar", (), {})
     # We should fail for comparing string "Foo" and real Bar named class
-    with pytest.raises(TypeError):
-        StrictABC._compare_forward_reference_annotations(Bar, "Foo", Mock(), Mock())
-    with pytest.raises(TypeError):
-        StrictABC._compare_forward_reference_annotations("Foo", Bar, Mock(), Mock())
+    assert compare(Bar, "Foo") is False
+    assert compare("Foo", Bar) is False

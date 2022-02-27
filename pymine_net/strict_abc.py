@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import inspect
 from abc import ABCMeta
-from typing import TYPE_CHECKING, Callable, List, Tuple, Type, Union, cast, overload
+from typing import TYPE_CHECKING, Callable, List, Tuple, Type, Union, cast, overload, Optional
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -197,7 +197,12 @@ class StrictABCMeta(ABCMeta):
             # we can at least check if the string they hold is the same. This isn't ideal,
             # and can cause issues, and incorrect failures, but it's the best we can do.
             if isinstance(cmp_val, str) or isinstance(exp_val, str):
-                return mcls._compare_forward_reference_annotations(exp_val, cmp_val, err_msg, key)
+                status, msg = mcls._compare_forward_reference_annotations(exp_val, cmp_val, key)
+                if status is True:
+                    return
+                else:
+                    msg = cast(str, msg)
+                    raise TypeError(err_msg + " " + msg)
 
             try:
                 if not issubclass(cmp_val, exp_val):
@@ -217,29 +222,30 @@ class StrictABCMeta(ABCMeta):
     @overload
     @staticmethod
     def _compare_forward_reference_annotations(
-        exp_val: str, cmp_val: object, err_msg: str, key: str
-    ):
+        exp_val: str, cmp_val: object, key: str
+    ) -> Tuple[bool, Optional[str]]:
         ...
 
     @overload
     @staticmethod
     def _compare_forward_reference_annotations(
-        exp_val: object, cmp_val: str, err_msg: str, key: str
-    ):
+        exp_val: object, cmp_val: str, key: str
+    ) -> Tuple[bool, Optional[str]]:
         ...
 
     @overload
     @staticmethod
-    def _compare_forward_reference_annotations(exp_val: str, cmp_val: str, err_msg: str, key: str):
+    def _compare_forward_reference_annotations(
+        exp_val: str, cmp_val: str, key: str
+    ) -> Tuple[bool, Optional[str]]:
         ...
 
     @staticmethod
     def _compare_forward_reference_annotations(
         exp_val: Union[str, object],
         cmp_val: Union[str, object],
-        err_msg: str,
         key: str,
-    ):
+    ) -> Tuple[bool, Optional[str]]:
         """This compares 2 annotations, out of which at least one is a string.
 
         This comparison isn't perfect and can result in succeeding for types which aren't
@@ -250,6 +256,10 @@ class StrictABCMeta(ABCMeta):
 
         This method is temporary and will be removed, along with the entire type-checking
         functionality of the StrictABCMeta once a type-checker is in place.
+
+        Returns a success state and message tuple, first argument of which is a bool
+        telling us if the check succeeded, and second is optional message, which is present
+        when the check failed (otherwise it's None), containing info on why did it fail.
         """
         compare_checks: List[Tuple[str, str]] = []
         if isinstance(cmp_val, str) and isinstance(exp_val, str):
@@ -271,10 +281,10 @@ class StrictABCMeta(ABCMeta):
             # There's no point in continuing if we haven't found any way to convert
             # the real object into a string.
             if len(compare_checks) == 0:
-                raise TypeError(
-                    err_msg
-                    + f" Can't compare annotations for '{key}', unable to convert a real object to a string"
-                    f" for comparison against a string forward reference annotation. {real!r} ?= {fwd!r}"
+                return (
+                    False,
+                    f"Can't compare annotations for '{key}', unable to convert a real object to a string"
+                    f" for comparison against a string forward reference annotation. {real!r} ?= {fwd!r}",
                 )
 
         # Also try to get the "unqualified names" and if comparing those succeed,
@@ -294,11 +304,11 @@ class StrictABCMeta(ABCMeta):
         # supertype of the compare value, but we weren't able to resolve that.
         for opt1, opt2 in compare_checks:
             if opt1 == opt2:
-                return
+                return (True, None)
 
-        raise TypeError(
-            err_msg
-            + f" String forward reference annotations for '{key}' don't match ({exp_val!r} != {cmp_val!r})"
+        return (
+            False,
+            f" String forward reference annotations for '{key}' don't match ({exp_val!r} != {cmp_val!r})",
         )
 
 
