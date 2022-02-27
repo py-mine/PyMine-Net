@@ -34,18 +34,21 @@ class Helpers:
 
 
 def test_abc_creation():
-    test_cls = type("TestAbstract", (StrictABC,), {
-        "func": Helpers.helper_func,
-        "ab_func": Helpers.helper_ab_func,
-        "optional_ab_func": Helpers.helper_optional_ab_func,
-    })
+    test_cls = type(
+        "TestAbstract",
+        (StrictABC,),
+        {
+            "func": Helpers.helper_func,
+            "ab_func": Helpers.helper_ab_func,
+            "optional_ab_func": Helpers.helper_optional_ab_func,
+        },
+    )
 
     cases = [
         ("func", {"optional_ab": False, "ab": False}),
         ("ab_func", {"optional_ab": False, "ab": True}),
         ("optional_ab_func", {"optional_ab": True, "ab": False}),
     ]
-
 
     for method_name, params in cases:
         # Make sure the class was properly made with the function
