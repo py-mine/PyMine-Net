@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import inspect
 from abc import ABCMeta
-from typing import TYPE_CHECKING, Callable, List, Tuple, Type
+from typing import TYPE_CHECKING, Callable, List, Tuple, Type, overload, Union, cast
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -134,8 +134,8 @@ class StrictABCMeta(ABCMeta):
             # Compare the annotations
             mcls._compare_annotations(ab_method, defined_method, ab_method_name)
 
-    @staticmethod
-    def _compare_annotations(expected_f: Callable, compare_f: Callable, method_name: str) -> None:
+    @classmethod
+    def _compare_annotations(mcls, expected_f: Callable, compare_f: Callable, method_name: str) -> None:
         """Compare annotations between two given functions.
 
         - If the first (expected) function doesn't have any annotations, this check is skipped.
@@ -147,7 +147,9 @@ class StrictABCMeta(ABCMeta):
         incomplete and inaccurate, and it will never be accurate, because doing type-enforcing on runtime like this
         simply isn't something that the python's typing system was designed for, types should be ensured with a proper
         type-checker, not with runtime checks. This also completely lacks support for subtypes which don't pass issubclass
-        check, such as protocols. This is only here temporarily, until a type-checker is added which will replace this.
+        check, such as protocols. And support for string forward annotations is hacky at best.
+
+        This function is only here temporarily, until a type-checker is added which will replace this.
         """
         try:
             expected_ann = inspect.get_annotations(expected_f, eval_str=True)
@@ -180,26 +182,8 @@ class StrictABCMeta(ABCMeta):
             # In case we weren't able to evaluate the string forward reference annotations
             # we can at least check if the string they hold is the same. This isn't ideal,
             # and can cause issues, and incorrect failures, but it's the best we can do.
-            if isinstance(exp_val, str):
-                if not isinstance(cmp_val, str):
-                    cmp_val = getattr(cmp_val, "__name__", None)
-                    if cmp_val is None:
-                        raise TypeError(
-                            err_msg
-                            + f" Can't compare annotations for '{key}', unable to evaluate the string forward reference"
-                            f", and '__name__' of the compare function isn't available."
-                        )
-                if exp_val != cmp_val:
-                    raise TypeError(
-                        err_msg
-                        + f" Forward reference annotations for '{key}' don't match ({exp_val!r} != {cmp_val!r})"
-                    )
-
-                # If we know the strings in the forward reference annotations are the same,
-                # we can assume that they mean the same thing and mark the type check as passing,
-                # however it doesn't mean we're 100% that it actually is the same type, but it's
-                # the best we can do with unresolvable string annotations.
-                return
+            if isinstance(cmp_val, str) or isinstance(exp_val, str):
+                return mcls._compare_forward_reference_annotations(exp_val, cmp_val, err_msg, key)
 
             try:
                 if not issubclass(cmp_val, exp_val):
@@ -215,6 +199,90 @@ class StrictABCMeta(ABCMeta):
                         err_msg
                         + f" Annotation for '{key}' isn't compatible, should be {exp_val}, got {cmp_val}."
                     )
+
+    @overload
+    @staticmethod
+    def _compare_forward_reference_annotations(exp_val: str, cmp_val: object, err_msg: str, key: str):
+        ...
+
+    @overload
+    @staticmethod
+    def _compare_forward_reference_annotations(exp_val: object, cmp_val: str, err_msg: str, key: str):
+        ...
+
+
+    @overload
+    @staticmethod
+    def _compare_forward_reference_annotations(exp_val: str, cmp_val: str, err_msg: str, key: str):
+        ...
+
+    @staticmethod
+    def _compare_forward_reference_annotations(
+        exp_val: Union[str, object],
+        cmp_val: Union[str, object],
+        err_msg: str,
+        key: str,
+    ):
+        """This compares 2 annotations, out of which at least one is a string.
+
+        This comparison isn't perfect and can result in succeeding for types which aren't
+        actually matching type-wise, but they have the same string names. It can also fail
+        to succeed for types which should in fact be matching. This can happen if the true
+        types of those annotations weren't the same class, but rather a superclass and class,
+        comparisons like these are impossible to resolve when we only know the string names.
+
+        This method is temporary and will be removed, along with the entire type-checking
+        functionality of the StrictABCMeta once a type-checker is in place.
+        """
+        compare_checks: List[Tuple[str, str]] = []
+        if isinstance(cmp_val, str) and isinstance(exp_val, str):
+            # When both objects are string forward reference annotations,
+            # all we can do is try and compare these strings exactly
+            compare_checks.append((cmp_val, exp_val))
+        else:
+            real: object = cmp_val if isinstance(exp_val, str) else exp_val
+            fwd: str = exp_val if isinstance(exp_val, str) else cast(str, cmp_val)
+
+            # If we have a forward reference and an object to compare between each other,
+            # try to use multiple ways of converting the real object into a string and
+            # and store all of these for any comparison later
+            if hasattr(real, "__name__"):
+                compare_checks.append((fwd, getattr(real, "__name__")))
+            if hasattr(exp_val, "__qualname__"):
+                compare_checks.append((fwd, getattr(real, "__qualname__")))
+
+            # There's no point in continuing if we haven't found any way to convert
+            # the real object into a string.
+            if len(compare_checks) == 0:
+                raise TypeError(
+                    err_msg
+                    + f" Can't compare annotations for '{key}', unable to convert a real object to a string"
+                    f" for comparison against a string forward reference annotation. {real!r} ?= {fwd!r}"
+                )
+
+        # Also try to get the "unqualified names" and if comparing those succeed,
+        # we assume a success too. This works by only taking the last part of the
+        # string split by dots. So for example from 'py_mine.strict_abc.ABCMeta',
+        # we'd just get 'ABCMeta'.
+        for opt1, opt2 in compare_checks.copy():
+            opt1_unqual = opt1.rsplit(".", maxsplit=1)[-1]
+            opt2_unqual = opt2.rsplit(".", maxsplit=1)[-1]
+            compare_checks.append((opt1_unqual, opt2_unqual))
+
+        # Check if any of the options in our compare checks succeeds, if it does,
+        # we consider the annotations to be the same and mark the type check as passing.
+        # Even though this usually covers most cases, it doesn't mean we're 100% certain
+        # about this. It's possible that the same type was imported under a different name,
+        # or that we received a forward reference for a protocol type, which is a valid
+        # supertype of the compare value, but we weren't able to resolve that.
+        for opt1, opt2 in compare_checks:
+            if opt1 == opt2:
+                return
+        else:
+            raise TypeError(
+                err_msg
+                + f" String forward reference annotations for '{key}' don't match ({exp_val!r} != {cmp_val!r})"
+            )
 
 
 class StrictABC(metaclass=StrictABCMeta):
