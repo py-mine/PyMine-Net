@@ -58,7 +58,7 @@ class PacketMap:
     def __getitem__(self, key: Tuple[PacketDirection, int, int]) -> Packet:
         direction, state, packet_id = key
 
-        if direction == PacketDirection.CLIENTBOUND:
+        if direction is PacketDirection.CLIENTBOUND:
             return self.packets[state].client_bound[packet_id]
 
         return self.packets[state].server_bound[packet_id]
