@@ -27,18 +27,18 @@ class StatePacketMap:
     def from_list(
         cls,
         state: GameState,
-        packets: List[Union[ServerBoundPacket, ClientBoundPacket]],
+        packets: List[Union[Type[ServerBoundPacket], Type[ClientBoundPacket]]],
         *,
         check_duplicates: bool = False,
     ) -> Self:
         server_bound = {}
         client_bound = {}
         for packet in packets:
-            if isinstance(packet, ServerBoundPacket):
+            if issubclass(packet, ServerBoundPacket):
                 if check_duplicates and packet.id in server_bound:
                     raise DuplicatePacketIdError("unknown", state, packet.id, PacketDirection.SERVERBOUND)
                 server_bound[packet.id] = packet
-            elif isinstance(packet, ClientBoundPacket):
+            elif issubclass(packet, ClientBoundPacket):
                 if check_duplicates and packet.id in client_bound:
                     raise DuplicatePacketIdError("unknown", state, packet.id, PacketDirection.CLIENTBOUND)
                 client_bound[packet.id] = packet
