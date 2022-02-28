@@ -43,7 +43,7 @@ class StatePacketMap:
                     raise DuplicatePacketIdError("unknown", state, packet.id, PacketDirection.CLIENTBOUND)
                 client_bound[packet.id] = packet
             else:
-                raise TypeError(f"Expected ServerBoundPacket or ClientBoundPacket, got {type(packet)}")
+                raise TypeError(f"Expected ServerBoundPacket or ClientBoundPacket, got {packet} ({type(packet)})")
 
         return cls(state, server_bound, client_bound)
 
