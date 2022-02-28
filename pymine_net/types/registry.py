@@ -1,35 +1,58 @@
-from typing import Union
+from typing import Dict, Generic, Iterable, Mapping, Optional, TypeVar, Union, cast, overload
+
+T = TypeVar("T")
+K = TypeVar("K")
+V = TypeVar("V")
 
 __all__ = ("Registry",)
 
 
-class Registry:
+class Registry(Generic[K, V]):
+    data: Dict[K, V]
+    data_reversed: Dict[V, K]
+
+    @overload
     def __init__(
         self,
-        data: Union[dict, list, tuple],
-        data_reversed: Union[dict, list, tuple] = None,
+        data: Iterable[V],
+        data_reversed: Optional[Iterable[V]] = None,
     ):
-        self.data_reversed = data_reversed
+        ...
 
-        if isinstance(data, dict):
-            self.data = data
+    @overload
+    def __init__(
+        self,
+        data: Mapping[K, T],
+        data_reversed: Optional[Mapping[T, K]] = None,
+    ):
+        ...
 
+    def __init__(
+        self,
+        data: Union[Iterable[V], Mapping[K, V]],
+        data_reversed: Optional[Union[Iterable[V], Mapping[V, K]]] = None
+    ):
+        if isinstance(data, Mapping):
+            data = cast(Mapping[K, V], data)
+            self.data = dict(data)
             if data_reversed is None:
                 self.data_reversed = {v: k for k, v in data.items()}
-        elif isinstance(data, (list, tuple)):
-            self.data_reversed = data
-            self.data = {v: i for i, v in enumerate(self.data_reversed)}
+            else:
+                data_reversed = cast(Mapping[V, K], data_reversed)
+                self.data_reversed = dict(data_reversed)
+        elif isinstance(data, Iterable):
+            data = cast(Iterable[V], data)
+            self.data = cast(Dict[K, V], {i: v for i, v in enumerate(data)})
+            self.data_reversed = {v: i for i, v in self.data.items()}
         else:
-            raise TypeError(
-                "Creating a registry from something other than a dict, tuple, or list isn't supported"
-            )
+            raise TypeError(f"Can't make registry from {type(data)}, must be Iterable/Mapping.")
 
-    def encode(self, key: object) -> object:
+    def encode(self, key: K) -> V:
         """Key -> value, most likely an identifier to an integer."""
 
         return self.data[key]
 
-    def decode(self, value: object) -> object:
+    def decode(self, value: V) -> K:
         """Value -> key, most likely a numeric id to a string identifier."""
 
         return self.data_reversed[value]
