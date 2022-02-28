@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import Dict, List, Tuple, Type, Union, TYPE_CHECKING
+from typing import Dict, List, Literal, Tuple, Type, Union, TYPE_CHECKING, overload
 
 from pymine_net.enums import GameState, PacketDirection
 from pymine_net.errors import DuplicatePacketIdError
-from pymine_net.types.packet import ClientBoundPacket, Packet, ServerBoundPacket
+from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -54,6 +54,14 @@ class PacketMap:
     def __init__(self, protocol: Union[str, int], packets: Dict[GameState, StatePacketMap]):
         self.protocol = protocol
         self.packets = packets
+
+    @overload
+    def __getitem__(self, __key: Tuple[Literal[PacketDirection.CLIENTBOUND], int, int]) -> ClientBoundPacket:
+        ...
+
+    @overload
+    def __getitem__(self, __key: Tuple[Literal[PacketDirection.SERVERBOUND], int, int]) -> ServerBoundPacket:
+        ...
 
     def __getitem__(self, __key: Tuple[PacketDirection, int, int]) -> Union[ClientBoundPacket, ServerBoundPacket]:
         direction, state, packet_id = __key
