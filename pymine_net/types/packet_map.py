@@ -36,14 +36,20 @@ class StatePacketMap:
         for packet in packets:
             if issubclass(packet, ServerBoundPacket):
                 if check_duplicates and packet.id in server_bound:
-                    raise DuplicatePacketIdError("unknown", state, packet.id, PacketDirection.SERVERBOUND)
+                    raise DuplicatePacketIdError(
+                        "unknown", state, packet.id, PacketDirection.SERVERBOUND
+                    )
                 server_bound[packet.id] = packet
             elif issubclass(packet, ClientBoundPacket):
                 if check_duplicates and packet.id in client_bound:
-                    raise DuplicatePacketIdError("unknown", state, packet.id, PacketDirection.CLIENTBOUND)
+                    raise DuplicatePacketIdError(
+                        "unknown", state, packet.id, PacketDirection.CLIENTBOUND
+                    )
                 client_bound[packet.id] = packet
             else:
-                raise TypeError(f"Expected ServerBoundPacket or ClientBoundPacket, got {packet} ({type(packet)})")
+                raise TypeError(
+                    f"Expected ServerBoundPacket or ClientBoundPacket, got {packet} ({type(packet)})"
+                )
 
         return cls(state, server_bound, client_bound)
 
@@ -56,14 +62,20 @@ class PacketMap:
         self.packets = packets
 
     @overload
-    def __getitem__(self, __key: Tuple[Literal[PacketDirection.CLIENTBOUND], int, int]) -> Type[ClientBoundPacket]:
+    def __getitem__(
+        self, __key: Tuple[Literal[PacketDirection.CLIENTBOUND], int, int]
+    ) -> Type[ClientBoundPacket]:
         ...
 
     @overload
-    def __getitem__(self, __key: Tuple[Literal[PacketDirection.SERVERBOUND], int, int]) -> Type[ServerBoundPacket]:
+    def __getitem__(
+        self, __key: Tuple[Literal[PacketDirection.SERVERBOUND], int, int]
+    ) -> Type[ServerBoundPacket]:
         ...
 
-    def __getitem__(self, __key: Tuple[PacketDirection, int, int]) -> Union[Type[ClientBoundPacket], Type[ServerBoundPacket]]:
+    def __getitem__(
+        self, __key: Tuple[PacketDirection, int, int]
+    ) -> Union[Type[ClientBoundPacket], Type[ServerBoundPacket]]:
         direction, state, packet_id = __key
 
         if direction is PacketDirection.CLIENTBOUND:

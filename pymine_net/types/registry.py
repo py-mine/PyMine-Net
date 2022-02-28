@@ -29,7 +29,7 @@ class Registry(Generic[K, V]):
     def __init__(
         self,
         data: Union[Iterable[V], Mapping[K, V]],
-        data_reversed: Optional[Union[Iterable[V], Mapping[V, K]]] = None
+        data_reversed: Optional[Union[Iterable[V], Mapping[V, K]]] = None,
     ):
         if isinstance(data, Mapping):
             data = cast(Mapping[K, V], data)
