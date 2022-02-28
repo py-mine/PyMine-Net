@@ -1,9 +1,10 @@
 import zlib
+from abc import abstractmethod
 from typing import Type, Union
 
 from pymine_net.enums import GameState, PacketDirection
 from pymine_net.errors import UnknownPacketIdError
-from pymine_net.strict_abc import StrictABC, abstract
+from pymine_net.strict_abc import StrictABC
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
 from pymine_net.types.packet_map import PacketMap
@@ -21,11 +22,11 @@ class AbstractProtocolClient(StrictABC):
         self.state = GameState.HANDSHAKING
         self.compression_threshold = -1
 
-    @abstract
+    @abstractmethod
     def connect(self) -> None:
         pass
 
-    @abstract
+    @abstractmethod
     def close(self) -> None:
         pass
 
@@ -63,10 +64,10 @@ class AbstractProtocolClient(StrictABC):
 
         return packet_class.unpack(buf)
 
-    @abstract
+    @abstractmethod
     def read_packet(self) -> ClientBoundPacket:
         pass
 
-    @abstract
+    @abstractmethod
     def write_packet(self, packet: ServerBoundPacket) -> None:
         pass
