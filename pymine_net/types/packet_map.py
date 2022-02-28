@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from typing import Dict, List, Tuple, Type, Union
+from typing import Dict, List, Tuple, Type, Union, TYPE_CHECKING
 
 from pymine_net.enums import GameState, PacketDirection
 from pymine_net.errors import DuplicatePacketIdError
 from pymine_net.types.packet import ClientBoundPacket, Packet, ServerBoundPacket
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class StatePacketMap:
@@ -22,36 +25,27 @@ class StatePacketMap:
 
     @classmethod
     def from_list(
-        cls, state: GameState, packets: List[Type[Packet]], *, check_duplicates: bool = False
-    ) -> StatePacketMap:
-        self = cls(
-            state,
-            {p.id: p for p in packets if issubclass(p, ServerBoundPacket)},
-            {p.id: p for p in packets if issubclass(p, ClientBoundPacket)},
-        )
+        cls,
+        state: GameState,
+        packets: List[Union[ServerBoundPacket, ClientBoundPacket]],
+        *,
+        check_duplicates: bool = False,
+    ) -> Self:
+        server_bound = {}
+        client_bound = {}
+        for packet in packets:
+            if isinstance(packet, ServerBoundPacket):
+                if check_duplicates and packet.id in server_bound:
+                    raise DuplicatePacketIdError("unknown", state, packet.id, PacketDirection.SERVERBOUND)
+                server_bound[packet.id] = packet
+            elif isinstance(packet, ClientBoundPacket):
+                if check_duplicates and packet.id in client_bound:
+                    raise DuplicatePacketIdError("unknown", state, packet.id, PacketDirection.CLIENTBOUND)
+                client_bound[packet.id] = packet
+            else:
+                raise TypeError(f"Expected ServerBoundPacket or ClientBoundPacket, got {type(packet)}")
 
-        if check_duplicates:
-            for packet_id in self.server_bound.keys():
-                found = [
-                    p for p in packets if p.id == packet_id and issubclass(p, ServerBoundPacket)
-                ]
-
-                if len(found) > 1:
-                    raise DuplicatePacketIdError(
-                        "unknown", state, packet_id, PacketDirection.SERVERBOUND
-                    )
-
-            for packet_id in self.client_bound.keys():
-                found = [
-                    p for p in packets if p.id == packet_id and issubclass(p, ClientBoundPacket)
-                ]
-
-                if len(found) > 1:
-                    raise DuplicatePacketIdError(
-                        "unknown", state, packet_id, PacketDirection.CLIENTBOUND
-                    )
-
-        return self
+        return cls(state, server_bound, client_bound)
 
 
 class PacketMap:
