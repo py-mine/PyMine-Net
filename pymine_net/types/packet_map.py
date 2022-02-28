@@ -56,14 +56,14 @@ class PacketMap:
         self.packets = packets
 
     @overload
-    def __getitem__(self, __key: Tuple[Literal[PacketDirection.CLIENTBOUND], int, int]) -> ClientBoundPacket:
+    def __getitem__(self, __key: Tuple[Literal[PacketDirection.CLIENTBOUND], int, int]) -> Type[ClientBoundPacket]:
         ...
 
     @overload
-    def __getitem__(self, __key: Tuple[Literal[PacketDirection.SERVERBOUND], int, int]) -> ServerBoundPacket:
+    def __getitem__(self, __key: Tuple[Literal[PacketDirection.SERVERBOUND], int, int]) -> Type[ServerBoundPacket]:
         ...
 
-    def __getitem__(self, __key: Tuple[PacketDirection, int, int]) -> Union[ClientBoundPacket, ServerBoundPacket]:
+    def __getitem__(self, __key: Tuple[PacketDirection, int, int]) -> Union[Type[ClientBoundPacket], Type[ServerBoundPacket]]:
         direction, state, packet_id = __key
 
         if direction is PacketDirection.CLIENTBOUND:
