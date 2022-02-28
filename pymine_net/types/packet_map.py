@@ -55,8 +55,8 @@ class PacketMap:
         self.protocol = protocol
         self.packets = packets
 
-    def __getitem__(self, key: Tuple[PacketDirection, int, int]) -> Packet:
-        direction, state, packet_id = key
+    def __getitem__(self, __key: Tuple[PacketDirection, int, int]) -> Packet:
+        direction, state, packet_id = __key
 
         if direction is PacketDirection.CLIENTBOUND:
             return self.packets[state].client_bound[packet_id]
