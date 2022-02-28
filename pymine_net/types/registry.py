@@ -1,6 +1,5 @@
 from typing import Dict, Generic, Iterable, Mapping, Optional, TypeVar, Union, cast, overload
 
-T = TypeVar("T")
 K = TypeVar("K")
 V = TypeVar("V")
 
@@ -22,8 +21,8 @@ class Registry(Generic[K, V]):
     @overload
     def __init__(
         self,
-        data: Mapping[K, T],
-        data_reversed: Optional[Mapping[T, K]] = None,
+        data: Mapping[K, V],
+        data_reversed: Optional[Mapping[V, K]] = None,
     ):
         ...
 
