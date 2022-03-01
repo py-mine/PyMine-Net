@@ -267,7 +267,9 @@ class Buffer(bytearray):
             "tag": self.read_nbt(),
         }
 
-    def write_slot(self, item_id: Optional[int] = None, count: int = 1, tag: Optional[nbt.TAG] = None) -> Self:
+    def write_slot(
+        self, item_id: Optional[int] = None, count: int = 1, tag: Optional[nbt.TAG] = None
+    ) -> Self:
         """Writes an inventory / container slot to the buffer."""
 
         if item_id is None:
