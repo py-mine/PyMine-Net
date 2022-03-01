@@ -516,3 +516,9 @@ class Buffer(bytearray):
             self.write_string(node["suggestions_type"])
 
         return self
+
+    def write_block(self, value: object):
+        # TODO: This method is not yet implemented, but it needs to be here
+        # so that pyright doesn't mind us referencing it in other places
+        # but it should be implemented as soon as possible
+        raise NotImplementedError()
