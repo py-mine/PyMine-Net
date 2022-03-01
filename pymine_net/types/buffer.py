@@ -265,9 +265,8 @@ class Buffer(bytearray):
         """Writes an inventory / container slot to the buffer."""
 
         if item_id is None:
-            self.write("?", False)
-        else:
-            self.write("?", True).write_varint(item_id).write("b", count).write_nbt(tag)
+            return self.write("?", False)
+        return self.write("?", True).write_varint(item_id).write("b", count).write_nbt(tag)
 
     def read_rotation(self) -> Tuple[float, float, float]:
         """Reads a rotation from the buffer."""
