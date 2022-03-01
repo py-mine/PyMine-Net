@@ -3,12 +3,15 @@ from __future__ import annotations
 import json
 import struct
 import uuid
-from typing import Callable, Dict, Optional, Tuple, Union, cast
+from typing import Callable, Dict, Optional, Tuple, Union, TYPE_CHECKING, cast
 
 from pymine_net.enums import Direction, EntityModifier, Pose
 from pymine_net.types import nbt
 from pymine_net.types.chat import Chat
 from pymine_net.types.registry import Registry
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 __all__ = ("Buffer",)
 
@@ -18,7 +21,7 @@ class Buffer(bytearray):
         super().__init__(*args, **kwargs)
         self.pos = 0
 
-    def write_bytes(self, data: Union[bytes, bytearray]) -> Buffer:
+    def write_bytes(self, data: Union[bytes, bytearray]) -> Self:
         """Writes bytes to the buffer."""
 
         return self.extend(data)
@@ -45,7 +48,7 @@ class Buffer(bytearray):
 
         self.pos = 0
 
-    def extend(self, data: Union[Buffer, bytes, bytearray]) -> Buffer:
+    def extend(self, data: Union[bytes, bytearray]) -> Self:
         super().extend(data)
         return self
 
@@ -56,7 +59,7 @@ class Buffer(bytearray):
         self.pos += 1
         return byte
 
-    def write_byte(self, value: int) -> Buffer:
+    def write_byte(self, value: int) -> Self:
         """Writes a singular byte to the buffer."""
 
         return self.extend(struct.pack(">b", value))
@@ -71,7 +74,7 @@ class Buffer(bytearray):
 
         return unpacked
 
-    def write(self, fmt: str, *value: object) -> Buffer:
+    def write(self, fmt: str, *value: object) -> Self:
         """Using the given format and value, packs the value and writes it to the buffer."""
 
         self.write_bytes(struct.pack(">" + fmt, *value))
@@ -83,7 +86,7 @@ class Buffer(bytearray):
         if self.read("?"):
             return reader()
 
-    def write_optional(self, writer: Callable, value: object = None) -> Buffer:
+    def write_optional(self, writer: Callable, value: object = None) -> Self:
         """Writes an optional value to the buffer."""
 
         if value is None:
@@ -119,7 +122,7 @@ class Buffer(bytearray):
 
         return value
 
-    def write_varint(self, value: int, max_bits: int = 32) -> Buffer:
+    def write_varint(self, value: int, max_bits: int = 32) -> Self:
         """Writes a varint to the buffer."""
 
         value_max = (1 << (max_bits - 1)) - 1
@@ -154,7 +157,7 @@ class Buffer(bytearray):
 
         return value - 1
 
-    def write_optional_varint(self, value: int = None) -> Buffer:
+    def write_optional_varint(self, value: int = None) -> Self:
         """Writes an optional (None if not present) varint to the buffer."""
 
         return self.write_varint(0 if value is None else value + 1)
@@ -164,7 +167,7 @@ class Buffer(bytearray):
 
         return self.read_bytes(self.read_varint(max_bits=16)).decode("utf-8")
 
-    def write_string(self, value: str) -> Buffer:
+    def write_string(self, value: str) -> Self:
         """Writes a string in UTF8 to the buffer."""
 
         encoded = value.encode("utf-8")
@@ -177,7 +180,7 @@ class Buffer(bytearray):
 
         return json.loads(self.read_string())
 
-    def write_json(self, value: object) -> Buffer:
+    def write_json(self, value: object) -> Self:
         """Writes json data to the buffer."""
 
         return self.write_string(json.dumps(value))
@@ -187,7 +190,7 @@ class Buffer(bytearray):
 
         return nbt.unpack(self[self.pos :])
 
-    def write_nbt(self, value: nbt.TAG = None) -> Buffer:
+    def write_nbt(self, value: nbt.TAG = None) -> Self:
         """Writes an nbt tag to the buffer."""
 
         if value is None:
@@ -202,7 +205,7 @@ class Buffer(bytearray):
 
         return uuid.UUID(bytes=bytes(self.read_bytes(16)))
 
-    def write_uuid(self, value: uuid.UUID) -> Buffer:
+    def write_uuid(self, value: uuid.UUID) -> Self:
         """Writes a UUID to the buffer."""
 
         return self.write_bytes(value.bytes)
@@ -229,12 +232,12 @@ class Buffer(bytearray):
 
         return Chat(self.read_json())
 
-    def write_chat(self, value: Chat) -> Buffer:
+    def write_chat(self, value: Chat) -> Self:
         """Writes a chat message to the buffer."""
 
         return self.write_json(value.data)
 
-    def write_position(self, x: int, y: int, z: int) -> Buffer:
+    def write_position(self, x: int, y: int, z: int) -> Self:
         """Writes a Minecraft position (x, y, z) to the buffer."""
 
         def to_twos_complement(num, bits):
@@ -261,7 +264,7 @@ class Buffer(bytearray):
             "tag": self.read_nbt(),
         }
 
-    def write_slot(self, item_id: int = None, count: int = 1, tag: nbt.TAG = None) -> Buffer:
+    def write_slot(self, item_id: int = None, count: int = 1, tag: nbt.TAG = None) -> Self:
         """Writes an inventory / container slot to the buffer."""
 
         if item_id is None:
@@ -273,7 +276,7 @@ class Buffer(bytearray):
 
         return cast(Tuple[float, float, float], self.read("fff"))
 
-    def write_rotation(self, x: float, y: float, z: float) -> Buffer:
+    def write_rotation(self, x: float, y: float, z: float) -> Self:
         """Writes a rotation to the buffer."""
 
         return self.write("fff", x, y, z)
@@ -283,7 +286,7 @@ class Buffer(bytearray):
 
         return Direction(self.read_varint())
 
-    def write_direction(self, value: Direction) -> Buffer:
+    def write_direction(self, value: Direction) -> Self:
         """Writes a direction to the buffer."""
 
         return self.write_varint(value.value)
@@ -293,12 +296,12 @@ class Buffer(bytearray):
 
         return Pose(self.read_varint())
 
-    def write_pose(self, value: Pose) -> Buffer:
+    def write_pose(self, value: Pose) -> Self:
         """Writes a pose to the buffer."""
 
         return self.write_varint(value.value)
 
-    def write_recipe_item(self, value: Union[dict, str]) -> Buffer:
+    def write_recipe_item(self, value: Union[dict, str]) -> Self:
         """Writes a recipe item / slot to the buffer."""
 
         if isinstance(value, dict):
@@ -310,7 +313,7 @@ class Buffer(bytearray):
 
         return self
 
-    def write_ingredient(self, value: dict) -> Buffer:
+    def write_ingredient(self, value: dict) -> Self:
         """Writes a part of a recipe to the buffer."""
 
         self.write_varint(len(value))
@@ -320,7 +323,7 @@ class Buffer(bytearray):
 
         return self
 
-    def write_recipe(self, recipe_id: str, recipe: dict) -> Buffer:
+    def write_recipe(self, recipe_id: str, recipe: dict) -> Self:
         """Writes a recipe to the buffer."""
 
         recipe_type = recipe["type"]
@@ -378,7 +381,7 @@ class Buffer(bytearray):
             "level": self.read_varint(),
         }
 
-    def write_villager(self, kind: int, profession: int, level: int) -> Buffer:
+    def write_villager(self, kind: int, profession: int, level: int) -> Self:
         return self.write_varint(kind).write_varint(profession).write_varint(level)
 
     def write_trade(
@@ -393,7 +396,7 @@ class Buffer(bytearray):
         price_multi: float,
         demand: int,
         in_item_2: dict = None,
-    ) -> Buffer:
+    ) -> Self:
         self.write_slot(**in_item_1).write_slot(**out_item)
 
         if in_item_2 is not None:
@@ -427,7 +430,7 @@ class Buffer(bytearray):
 
         return particle
 
-    def write_particle(self, **value) -> Buffer:
+    def write_particle(self, **value) -> Self:
         particle_id = value["particle_id"]
 
         if particle_id == 3 or particle_id == 23:
@@ -439,7 +442,7 @@ class Buffer(bytearray):
 
         return self
 
-    def write_entity_metadata(self, value: Dict[Tuple[int, int], object]) -> Buffer:
+    def write_entity_metadata(self, value: Dict[Tuple[int, int], object]) -> Self:
         #  index, type, value
         for (i, t), v in value.items():
             self.write("B", i).write_varint(t)
@@ -495,7 +498,7 @@ class Buffer(bytearray):
     def write_modifier(self, uuid_: uuid.UUID, amount: float, operation: EntityModifier):
         return self.write_uuid(uuid_).write("f", amount).write("b", operation)
 
-    def write_node(self, node: dict) -> Buffer:
+    def write_node(self, node: dict) -> Self:
         node_flags = node["flags"]
         self.write_byte(node_flags).write_varint(len(node["children"]))
 
