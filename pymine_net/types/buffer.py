@@ -26,7 +26,7 @@ class Buffer(bytearray):
 
         return self.extend(data)
 
-    def read_bytes(self, length: int = None) -> bytearray:
+    def read_bytes(self, length: Optional[int] = None) -> bytearray:
         """Reads bytes from the buffer, if length is None then all bytes are read."""
 
         if length is None:
@@ -86,7 +86,7 @@ class Buffer(bytearray):
         if self.read("?"):
             return reader()
 
-    def write_optional(self, writer: Callable, value: object = None) -> Self:
+    def write_optional(self, writer: Callable, value: Optional[object] = None) -> Self:
         """Writes an optional value to the buffer."""
 
         if value is None:
@@ -157,7 +157,7 @@ class Buffer(bytearray):
 
         return value - 1
 
-    def write_optional_varint(self, value: int = None) -> Self:
+    def write_optional_varint(self, value: Optional[int] = None) -> Self:
         """Writes an optional (None if not present) varint to the buffer."""
 
         return self.write_varint(0 if value is None else value + 1)
@@ -190,7 +190,7 @@ class Buffer(bytearray):
 
         return nbt.unpack(self[self.pos :])
 
-    def write_nbt(self, value: nbt.TAG = None) -> Self:
+    def write_nbt(self, value: Optional[nbt.TAG] = None) -> Self:
         """Writes an nbt tag to the buffer."""
 
         if value is None:
@@ -264,7 +264,7 @@ class Buffer(bytearray):
             "tag": self.read_nbt(),
         }
 
-    def write_slot(self, item_id: int = None, count: int = 1, tag: nbt.TAG = None) -> Self:
+    def write_slot(self, item_id: Optional[int] = None, count: int = 1, tag: Optional[nbt.TAG] = None) -> Self:
         """Writes an inventory / container slot to the buffer."""
 
         if item_id is None:
@@ -395,7 +395,7 @@ class Buffer(bytearray):
         special_price: int,
         price_multi: float,
         demand: int,
-        in_item_2: dict = None,
+        in_item_2: Optional[dict] = None,
     ) -> Self:
         self.write_slot(**in_item_1).write_slot(**out_item)
 
