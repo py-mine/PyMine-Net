@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import struct
 import uuid
-from typing import Callable, Dict, Optional, Tuple, Union, TYPE_CHECKING, cast
+from typing import Callable, Dict, Optional, Tuple, Union, TYPE_CHECKING, TypeVar, cast
 
 from pymine_net.enums import Direction, EntityModifier, Pose
 from pymine_net.types import nbt
@@ -12,6 +12,8 @@ from pymine_net.types.registry import Registry
 
 if TYPE_CHECKING:
     from typing_extensions import Self
+
+T = TypeVar("T")
 
 __all__ = ("Buffer",)
 
@@ -80,7 +82,7 @@ class Buffer(bytearray):
         self.write_bytes(struct.pack(">" + fmt, *value))
         return self
 
-    def read_optional(self, reader: Callable) -> Optional[object]:
+    def read_optional(self, reader: Callable[[], T]) -> Optional[T]:
         """Reads an optional value from the buffer."""
 
         if self.read("?"):
