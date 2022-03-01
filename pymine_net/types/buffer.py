@@ -487,7 +487,7 @@ class Buffer(bytearray):
         return self
 
     def read_modifier(self) -> Tuple[uuid.UUID, float, EntityModifier]:
-        return (self.read_uuid(), self.read("f"), EntityModifier(self.read("b")))
+        return (self.read_uuid(), cast(float, self.read("f")), EntityModifier(self.read("b")))
 
     def write_modifier(self, uuid_: uuid.UUID, amount: float, operation: EntityModifier):
         return self.write_uuid(uuid_).write("f", amount).write("b", operation)
