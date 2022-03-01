@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import gzip
 import struct
-from typing import List
+from typing import List, Optional
 
 from mutf8 import decode_modified_utf8, encode_modified_utf8
 
@@ -71,7 +71,7 @@ class TAG:
 
     id = None
 
-    def __init__(self, name: str = None):
+    def __init__(self, name: Optional[str] = None):
         self.id = self.__class__.id
         self.name = "" if name is None else name
 

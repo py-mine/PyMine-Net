@@ -41,7 +41,7 @@ class PlaySelectAdvancementTab(ClientBoundPacket):
 
     id = 0x40
 
-    def __init__(self, identifier: str = None):
+    def __init__(self, identifier: Optional[str] = None):
         super().__init__()
 
         self.identifier = identifier
