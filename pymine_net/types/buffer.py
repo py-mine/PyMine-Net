@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import struct
 import uuid
-from typing import Callable, Dict, Optional, Tuple, Union
+from typing import Callable, Dict, Optional, Tuple, Union, cast
 
 from pymine_net.enums import Direction, EntityModifier, Pose
 from pymine_net.types import nbt
@@ -100,7 +100,7 @@ class Buffer(bytearray):
         value = 0
 
         for i in range(10):
-            byte = self.read("B")
+            byte = cast(int, self.read("B"))
             value |= (byte & 0x7F) << 7 * i
 
             if not byte & 0x80:
@@ -216,7 +216,7 @@ class Buffer(bytearray):
 
             return num
 
-        data = self.read("Q")
+        data = cast(int, self.read("Q"))
 
         return (
             from_twos_complement(data >> 38, 26),
@@ -272,7 +272,7 @@ class Buffer(bytearray):
     def read_rotation(self) -> Tuple[float, float, float]:
         """Reads a rotation from the buffer."""
 
-        return self.read("fff")
+        return cast(Tuple[float, float, float], self.read("fff"))
 
     def write_rotation(self, x: float, y: float, z: float) -> Buffer:
         """Writes a rotation to the buffer."""
