@@ -108,10 +108,11 @@ class TAG:
     def pretty(self, indent: int = 0) -> str:
         return ("    " * indent) + f'{self.__class__.__name__}("{self.name}"): {self.data}'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.pretty()
 
-    __repr__ = __str__
+    def __repr__(self) -> str:
+        return self.pretty()
 
 
 class TAG_End(TAG):
