@@ -319,6 +319,8 @@ class Buffer(bytearray):
         for slot in value.values():
             self.write_recipe_item(slot)
 
+        return self
+
     def write_recipe(self, recipe_id: str, recipe: dict) -> Buffer:
         """Writes a recipe to the buffer."""
 
