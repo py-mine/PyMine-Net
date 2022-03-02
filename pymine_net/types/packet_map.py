@@ -24,34 +24,20 @@ class StatePacketMap:
     def from_list(
         cls, state: GameState, packets: List[Type[Packet]], *, check_duplicates: bool = False
     ) -> StatePacketMap:
-        self = cls(
-            state,
-            {p.id: p for p in packets if issubclass(p, ServerBoundPacket)},
-            {p.id: p for p in packets if issubclass(p, ClientBoundPacket)},
-        )
+        server_bound = {}
+        client_bound = {}
 
-        if check_duplicates:
-            for packet_id in self.server_bound.keys():
-                found = [
-                    p for p in packets if p.id == packet_id and issubclass(p, ServerBoundPacket)
-                ]
+        for packet in packets:
+            if issubclass(packet, ServerBoundPacket):
+                if check_duplicates and packet.id in server_bound:
+                    raise DuplicatePacketIdError("unknown", state, packet.id, PacketDirection.SERVERBOUND)
+                server_bound[packet.id] = packet
+            if issubclass(packet, ClientBoundPacket):
+                if check_duplicates and packet.id in client_bound:
+                    raise DuplicatePacketIdError("unknown", state, packet.id, PacketDirection.CLIENTBOUND)
+                client_bound[packet.id] = packet
 
-                if len(found) > 1:
-                    raise DuplicatePacketIdError(
-                        "unknown", state, packet_id, PacketDirection.SERVERBOUND
-                    )
-
-            for packet_id in self.client_bound.keys():
-                found = [
-                    p for p in packets if p.id == packet_id and issubclass(p, ClientBoundPacket)
-                ]
-
-                if len(found) > 1:
-                    raise DuplicatePacketIdError(
-                        "unknown", state, packet_id, PacketDirection.CLIENTBOUND
-                    )
-
-        return self
+        return cls(state, server_bound, client_bound)
 
 
 class PacketMap:
