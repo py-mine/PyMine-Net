@@ -25,7 +25,9 @@ class Player:
     def __init__(self, entity_id: int, data: nbt.TAG_Compound):
         self.entity_id = entity_id
 
-        self._data: Dict[str, nbt.TAG] = data  # typehinted as Dict[str, nbt.TAG] for ease of development
+        self._data: Dict[
+            str, nbt.TAG
+        ] = data  # typehinted as Dict[str, nbt.TAG] for ease of development
 
         # attributes like player settings not stored in Player._data
         self.username: str = None
