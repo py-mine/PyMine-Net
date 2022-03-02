@@ -58,7 +58,7 @@ class Buffer(bytearray):
         return byte
 
     def write_byte(self, value: int) -> Buffer:
-        """Writes a singular byte to the buffer."""
+        """Writes a singular byte passed as an integer to the buffer."""
 
         return self.extend(struct.pack(">b", value))
 
