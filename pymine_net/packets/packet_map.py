@@ -1,5 +1,5 @@
 import importlib
-import os
+from pathlib import Path
 import warnings
 from typing import Dict, List, Union
 
@@ -9,15 +9,11 @@ from pymine_net.types.packet_map import DuplicatePacketIdError, PacketMap, State
 
 __all__ = ("load_packet_map",)
 
-GAME_STATES = {
-    GameState.HANDSHAKING: "handshaking",
-    GameState.STATUS: "status",
-    GameState.LOGIN: "login",
-    GameState.PLAY: "play",
-}
+
+GAME_STATES = [(name.lower(), state) for name, state in GameState.__members__.items()]
 
 # the directory this file is contained in
-FILE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+FILE_DIR = Path(__file__).parent.absolute()
 
 PROTOCOL_MAP = {757: "v_1_18_1"}
 
@@ -32,18 +28,18 @@ def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> Packet
     protocol = PROTOCOL_MAP.get(protocol, protocol)
     packets: Dict[GameState, StatePacketMap] = {}
 
-    for state, state_name in GAME_STATES.items():
-        module_base = ["packets", str(protocol), state_name]
+    for state_name, state in GAME_STATES:
+        module_base = [str(protocol), state_name]
 
         packet_classes: List[Packet] = []
 
         # iterate through the files in the <state> folder
-        for file_name in os.listdir(os.path.join(FILE_DIR, *module_base)):
-            if not file_name.endswith(".py"):
+        for path in Path(FILE_DIR, *module_base).iterdir():
+            if not path.is_file() or not path.name.endswith(".py"):
                 continue
 
             # import the file (pymine_net.packets.<protocol>.<state>.<packet group>)
-            module = importlib.import_module(".".join(["pymine_net", *module_base, file_name[:-3]]))
+            module = importlib.import_module(".".join(["pymine_net", "packets", *module_base, path.name[:-3]]))
 
             if debug and not hasattr(module, "__all__"):
                 warnings.warn(f"{module.__name__} is missing member __all__ and cannot be loaded.")
