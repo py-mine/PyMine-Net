@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import struct
 import uuid
+from functools import partial
 from typing import Callable, Dict, Optional, Tuple, Union
 
 from pymine_net.enums import Direction, EntityModifier, Pose
@@ -439,50 +440,42 @@ class Buffer(bytearray):
         return self
 
     def write_entity_metadata(self, value: Dict[Tuple[int, int], object]) -> Buffer:
+        def _f_10(v):
+            """This is basically write_optional_position.
+            It's defined here because the function is too complex to be a lambda,
+            so instead we just refer to this definition in the switch dict."""
+            self.write("?", v is not None)
+            if v is not None:
+                self.write_position(*v)
+
+        # Define a switch dict, which holds functions taking
+        # one argument (value) for each type number.
+        sw = {
+            0: partial(self.write, "b"),
+            1: partial(self.write_varint),
+            2: partial(self.write, "f"),
+            3: self.write_string,
+            4: self.write_chat,
+            5: partial(self.write_optional, self.write_chat),
+            6: lambda v: self.write_slot(**v),
+            7: partial(self.write, "?"),
+            8: lambda v: self.write_rotation(*v),
+            9: lambda v: self.write_rotation(*v),
+            10: _f_10,
+            11: self.write_direction,
+            12: partial(self.write_optional, self.write_uuid),
+            13: self.write_block,
+            14: self.write_nbt,
+            15: lambda v: self.write_particle(**v),
+            16: lambda v: self.write_villager(*v),
+            17: self.write_optional_varint,
+            18: self.write_pose,
+        }
+
         #  index, type, value
         for (i, t), v in value.items():
             self.write("B", i).write_varint(t)
-
-            if t == 0:
-                self.write("b", v)
-            elif t == 1:
-                self.write_varint(v)
-            elif t == 2:
-                self.write("f", v)
-            elif t == 3:
-                self.write_string(v)
-            elif t == 4:
-                self.write_chat(v)
-            elif t == 5:
-                self.write_optional(self.write_chat, v)
-            elif t == 6:
-                self.write_slot(**v)
-            elif t == 7:
-                self.write("?", v)
-            elif t == 8:
-                self.write_rotation(*v)
-            elif t == 9:
-                self.write_position(*v)
-            elif t == 10:
-                self.write("?", v is not None)
-                if v is not None:
-                    self.write_position(*v)
-            elif t == 11:
-                self.write_direction(v)
-            elif t == 12:
-                self.write_optional(self.write_uuid, v)
-            elif t == 13:
-                self.write_block(v)
-            elif t == 14:
-                self.write_nbt(v)
-            elif t == 15:
-                self.write_particle(**v)
-            elif t == 16:
-                self.write_villager(*v)
-            elif t == 17:
-                self.write_optional_varint(v)
-            elif t == 18:
-                self.write_pose(v)
+            sw[t](v)
 
         self.write_bytes(b"\xFE")
 
