@@ -1,9 +1,9 @@
-from pymine_net.strict_abc import abstract
+from abc import abstractmethod
 
 
 class AbstractTCPStream:
     """Abstract class for a TCP stream."""
 
-    @abstract
+    @abstractmethod
     def read_varint(self) -> int:
         pass
