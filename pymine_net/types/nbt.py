@@ -29,6 +29,11 @@ TYPES: List[TAG] = []
 
 
 def unpack(buf, root_is_full: bool = True) -> TAG_Compound:
+    """
+    Unpacks an NBT compound tag from a Buffer.
+    - If root_is_full == True, it's expected that the root tag is prefixed with a tag ID and has a name.
+    """
+
     try:
         data = gzip.decompress(buf)
     except gzip.BadGzipFile:

@@ -20,10 +20,12 @@ class PlayerProperty:
 
 
 class Player:
+    """Stores a player's settings, NBT data from disk, and other data."""
+
     def __init__(self, entity_id: int, data: nbt.TAG_Compound):
         self.entity_id = entity_id
 
-        self._data: Dict[str, nbt.TAG] = data
+        self._data: Dict[str, nbt.TAG] = data  # typehinted as Dict[str, nbt.TAG] for ease of development
 
         # attributes like player settings not stored in Player._data
         self.username: str = None
@@ -45,16 +47,28 @@ class Player:
         self.uuid = UUID(bytes=struct.pack(">iiii", *self["UUID"]))
 
     def __getitem__(self, key: str) -> nbt.TAG:
+        """Gets an NBT tag from the internal NBT compound tag."""
+
         return self._data[key]
 
-    def __setitem__(self, key: str, value: object) -> None:
+    def __setitem__(self, key: str, value: nbt.TAG) -> None:
+        """Sets an NBT tag in the internal NBT compound tag."""
+
         self._data[key] = value
 
     def get(self, key: str, default: object = None) -> Optional[nbt.TAG]:
+        """Gets an NBT tag from the internal NBT compound tag."""
+
         try:
             return self[key]
         except KeyError:
             return default
+
+    @classmethod
+    def new(cls, entity_id: int, uuid: UUID, spawn: Vector3, dimension: str) -> Player:
+        """Creates a new player from the provided parameters."""
+
+        return cls(entity_id, cls.new_nbt(uuid, spawn, dimension))
 
     @property
     def x(self) -> float:
@@ -128,15 +142,13 @@ class Player:
     def gamemode(self, gamemode: GameMode) -> None:
         self["playerGameType"] = nbt.TAG_Int("playerGameType", gamemode)
 
-    @classmethod
-    def new(cls, entity_id: int, uuid: UUID, spawn: Vector3, dimension: str) -> Player:
-        return cls(entity_id, cls.new_nbt(uuid, spawn, dimension))
-
     def __repr__(self) -> str:
-        return
+        return f"{self.__class__.__name__}({self.uuid})"
 
     @staticmethod
     def new_nbt(uuid: UUID, spawn: Vector3, dimension: str) -> nbt.TAG:
+        """Generates new NBT data for a player."""
+
         return nbt.TAG_Compound(
             "",
             [

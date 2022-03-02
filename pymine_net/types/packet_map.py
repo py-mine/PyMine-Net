@@ -8,7 +8,7 @@ from pymine_net.types.packet import ClientBoundPacket, Packet, ServerBoundPacket
 
 
 class StatePacketMap:
-    """Stores a game state's packets"""
+    """Stores a game state's packets seperated into serverbound and clientbound."""
 
     def __init__(
         self,
@@ -61,7 +61,7 @@ class PacketMap:
         self.protocol = protocol
         self.packets = packets
 
-    def __getitem__(self, key: Tuple[PacketDirection, int, int]) -> Packet:
+    def __getitem__(self, key: Tuple[PacketDirection, GameState, int]) -> Packet:
         direction, state, packet_id = key
 
         if direction == PacketDirection.CLIENTBOUND:

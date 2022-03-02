@@ -23,6 +23,12 @@ PROTOCOL_MAP = {757: "v_1_18_1"}
 
 
 def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> PacketMap:
+    """
+    Iterates through the protocol's packets direction and constructs a PacketMap.
+    - Used for automatic decoding of incoming packet ids into packet classes for decoding the entire packet.
+    - Also necessary for the packet tests to function.
+    """
+
     protocol = PROTOCOL_MAP.get(protocol, protocol)
     packets: Dict[GameState, StatePacketMap] = {}
 

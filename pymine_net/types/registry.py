@@ -4,6 +4,8 @@ __all__ = ("Registry",)
 
 
 class Registry:
+    """Stores various Minecraft data like block types, block states, particles, fluids, entities, and more."""
+
     def __init__(
         self,
         data: Union[dict, list, tuple],
