@@ -350,14 +350,14 @@ class PlayPlayerPositionAndRotationServerBound(ServerBoundPacket):
         self.on_ground = on_ground
 
     @classmethod
-    def decode(cls, buf: Buffer) -> PlayPlayerPositionAndRotationServerBound:
+    def unpack(cls, buf: Buffer) -> PlayPlayerPositionAndRotationServerBound:
         return cls(
             buf.read("d"),
             buf.read("d"),
             buf.read("d"),
-            buf.unpack("f"),
-            buf.unpack("f"),
-            buf.unpack("?"),
+            buf.read("f"),
+            buf.read("f"),
+            buf.read("?"),
         )
 
 
