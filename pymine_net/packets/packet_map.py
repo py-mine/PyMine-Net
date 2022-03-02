@@ -1,6 +1,6 @@
 import importlib
-from pathlib import Path
 import warnings
+from pathlib import Path
 from typing import Dict, List, Union
 
 from pymine_net.enums import GameState
@@ -39,7 +39,9 @@ def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> Packet
                 continue
 
             # import the file (pymine_net.packets.<protocol>.<state>.<packet group>)
-            module = importlib.import_module(".".join(["pymine_net", "packets", *module_base, path.name[:-3]]))
+            module = importlib.import_module(
+                ".".join(["pymine_net", "packets", *module_base, path.name[:-3]])
+            )
 
             if debug and not hasattr(module, "__all__"):
                 warnings.warn(f"{module.__name__} is missing member __all__ and cannot be loaded.")
