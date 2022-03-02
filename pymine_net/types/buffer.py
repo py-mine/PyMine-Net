@@ -12,9 +12,10 @@ from pymine_net.types.chat import Chat
 from pymine_net.types.registry import Registry
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing_extensions import Self, TypeAlias
 
 T = TypeVar("T")
+JsonCompatible: TypeAlias = Union[dict, list, str, int, float, bool, None]
 
 __all__ = ("Buffer",)
 
@@ -178,12 +179,12 @@ class Buffer(bytearray):
 
         return self
 
-    def read_json(self) -> object:
+    def read_json(self) -> JsonCompatible:
         """Reads json data from the buffer."""
 
         return json.loads(self.read_string())
 
-    def write_json(self, value: object) -> Self:
+    def write_json(self, value: JsonCompatible) -> Self:
         """Writes json data to the buffer."""
 
         return self.write_string(json.dumps(value))
