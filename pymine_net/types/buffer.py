@@ -313,7 +313,7 @@ class Buffer(bytearray):
         if isinstance(value, dict):
             self.write_slot(**value)
         elif isinstance(value, str):
-            self.write_slot(value)
+            self.write_slot(value)  # TODO: This function takes int, but we're passing str?
         else:
             raise TypeError(f"Invalid type {type(value)}.")
 
@@ -432,7 +432,7 @@ class Buffer(bytearray):
             particle["blue"] = self.read("f")
             particle["scale"] = self.read("f")
         elif particle_id == 32:
-            particle["item"] = self.read_slot()
+            particle["item"] = self.read_slot()  # TODO: This function call is missing argument?
 
         return particle
 
