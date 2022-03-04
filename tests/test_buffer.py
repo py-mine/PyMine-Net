@@ -1,11 +1,7 @@
 import json
-import os
-import sys
+from pathlib import Path
 
 import pytest
-
-# fix path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from pymine_net.types.buffer import Buffer
 
@@ -126,9 +122,8 @@ def test_string():
 def test_json():
     buf = Buffer()
 
-    with open(os.path.join("tests", "sample_data", "test.json")) as test_file:
-        data = json.load(test_file)
-        buf.write_json(data)
+    data = json.loads(Path("tests", "sample_data", "test.json").read_text())
+    buf.write_json(data)
 
     for key, value in buf.read_json().items():
         assert key in data

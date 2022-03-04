@@ -7,6 +7,7 @@ Contains a "strict" implementation of abc.ABC, enforcing presnce of all abstract
     there's no type-checker yet, however this runtime enforcement isn't perfect and can't fully
     replace a type-chcker.
 """
+
 from __future__ import annotations
 
 import inspect

@@ -15,6 +15,8 @@ __all__ = ("Buffer",)
 
 
 class Buffer(bytearray):
+    """A bytearray subclass that provides methods for reading/writing various Minecraft data-types sent in packets."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.pos = 0

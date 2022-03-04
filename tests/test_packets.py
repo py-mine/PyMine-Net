@@ -1,5 +1,3 @@
-import os
-import sys
 import uuid
 from typing import Dict, Optional, Tuple, Union
 
@@ -12,9 +10,6 @@ from pymine_net.types.chat import Chat
 from pymine_net.types.packet import ServerBoundPacket
 
 colorama.init(autoreset=True)
-
-# fix path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from pymine_net import load_packet_map
 from pymine_net.enums import GameState
