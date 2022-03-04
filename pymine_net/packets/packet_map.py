@@ -10,8 +10,6 @@ from pymine_net.types.packet_map import DuplicatePacketIdError, PacketMap, State
 __all__ = ("load_packet_map",)
 
 
-GAME_STATES = [(name.lower(), state) for name, state in GameState.__members__.items()]
-
 # the directory this file is contained in
 FILE_DIR = Path(__file__).parent.absolute()
 
@@ -28,7 +26,7 @@ def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> Packet
     protocol = PROTOCOL_MAP.get(protocol, protocol)
     packets: Dict[GameState, StatePacketMap] = {}
 
-    for state_name, state in GAME_STATES:
+    for state_name, state in GameState.__members__.items():
         module_base = [str(protocol), state_name]
 
         packet_classes: List[Packet] = []
