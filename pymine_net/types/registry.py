@@ -18,9 +18,11 @@ class Registry:
 
             if data_reversed is None:
                 self.data_reversed = {v: k for k, v in data.items()}
+        # When we get an iterable, we want to treat the positions as the
+        # IDs for the values.
         elif isinstance(data, (list, tuple)):
+            self.data = {v: i for i, v in enumerate(data)}
             self.data_reversed = data
-            self.data = {v: i for i, v in enumerate(self.data_reversed)}
         else:
             raise TypeError(
                 "Creating a registry from something other than a dict, tuple, or list isn't supported"
