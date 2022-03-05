@@ -8,7 +8,7 @@ from pymine_net.types.packet import ClientBoundPacket, Packet, ServerBoundPacket
 
 
 class StatePacketMap:
-    """Stores a game state's packets seperated into serverbound and clientbound."""
+    """Stores a game state's packets separated into serverbound and clientbound."""
 
     def __init__(
         self,
