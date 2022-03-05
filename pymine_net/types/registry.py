@@ -7,6 +7,8 @@ __all__ = ("Registry",)
 
 
 class Registry(Generic[K, V]):
+    """Stores various Minecraft data like block types, block states, particles, fluids, entities, and more."""
+
     data: Dict[K, V]
     data_reversed: Dict[V, K]
 

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class StatePacketMap:
-    """Stores a game state's packets"""
+    """Stores a game state's packets seperated into serverbound and clientbound."""
 
     def __init__(
         self,
@@ -63,18 +63,18 @@ class PacketMap:
 
     @overload
     def __getitem__(
-        self, __key: Tuple[Literal[PacketDirection.CLIENTBOUND], int, int]
+        self, __key: Tuple[Literal[PacketDirection.CLIENTBOUND], GameState, int]
     ) -> Type[ClientBoundPacket]:
         ...
 
     @overload
     def __getitem__(
-        self, __key: Tuple[Literal[PacketDirection.SERVERBOUND], int, int]
+        self, __key: Tuple[Literal[PacketDirection.SERVERBOUND], GameState, int]
     ) -> Type[ServerBoundPacket]:
         ...
 
     def __getitem__(
-        self, __key: Tuple[PacketDirection, int, int]
+        self, __key: Tuple[PacketDirection, GameState, int]
     ) -> Union[Type[ClientBoundPacket], Type[ServerBoundPacket]]:
         direction, state, packet_id = __key
 
