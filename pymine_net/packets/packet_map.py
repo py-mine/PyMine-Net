@@ -1,7 +1,7 @@
 import pkgutil
 import warnings
 from pathlib import Path
-from typing import Dict, Iterable, NoReturn, Type, Union
+from typing import Dict, Iterator, NoReturn, Type, Union
 
 from pymine_net.enums import GameState
 from pymine_net.types.packet import Packet
@@ -18,7 +18,7 @@ PROTOCOL_MAP = {757: "v_1_18_1"}
 
 def walk_packet_classes(
     protocol_name: str, state: GameState, debug: bool = False
-) -> Iterable[Type[Packet]]:
+) -> Iterator[Type[Packet]]:
     """
     Try to import every pymine.packets.{protocol_name}.{state.name} package,
     and search it's __all__ for presence of subclasses of the Packet class.
