@@ -16,4 +16,6 @@ class Chat:
             self.data = data
 
     def __eq__(self, other: Chat) -> bool:
+        if not isinstance(other, Chat):
+            return NotImplemented
         return self.data == other.data
