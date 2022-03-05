@@ -342,7 +342,7 @@ class Buffer(bytearray):
 
             self.write_recipe_item(recipe["result"])
         elif recipe_type == "minecraft:crafting_shaped":
-            self.write_varint(len(recipe["patern"][0])).write_varint(
+            self.write_varint(len(recipe["pattern"][0])).write_varint(
                 len(recipe["pattern"])
             ).write_string(recipe["group"])
 
