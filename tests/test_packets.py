@@ -4,6 +4,8 @@ from typing import Dict, Optional, Tuple, Union
 import colorama
 import pytest
 
+from pymine_net import load_packet_map
+from pymine_net.enums import GameState
 from pymine_net.strict_abc import is_abstract
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.chat import Chat
@@ -11,10 +13,7 @@ from pymine_net.types.packet import ServerBoundPacket
 
 colorama.init(autoreset=True)
 
-from pymine_net import load_packet_map
-from pymine_net.enums import GameState
 
-STATE_LIST = [GameState.HANDSHAKING, GameState.STATUS, GameState.LOGIN, GameState.PLAY]
 CHECKABLE_ANNOS = {bool, int, float, bytes, str, uuid.UUID, Chat}
 CHECKABLE_ANNOS.update({a.__name__ for a in CHECKABLE_ANNOS})
 
@@ -41,7 +40,7 @@ def test_ensure_all_packets(
 
     print(f"PACKET CHECK (protocol={protocol}): ", end="")
 
-    for state in STATE_LIST:
+    for state in GameState.__members__.values():
         missing_clientbound = []
         missing_serverbound = []
 
@@ -87,7 +86,7 @@ def test_pack_clientbound_packets(protocol: Union[int, str]):
     packet_map = load_packet_map(protocol)
 
     # iterate through each packet class in the state list
-    for state in STATE_LIST:
+    for state in GameState.__members__.values():
         packet_classes = {
             **packet_map.packets[state].client_bound,
             **packet_map.packets[state].server_bound,
