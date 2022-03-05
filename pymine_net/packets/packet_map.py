@@ -43,13 +43,13 @@ def walk_packet_classes(
             try:
                 obj = getattr(module, member_name)
             except AttributeError:
-                if debug:
-                    warnings.warn(
-                        f"{module.__name__} is missing member {member_name!r} present in __all__."
-                    )
-            else:
-                if issubclass(obj, Packet):
-                    yield obj
+                warnings.warn(
+                    f"{module.__name__} is missing member {member_name!r} present in __all__."
+                )
+                continue
+
+            if issubclass(obj, Packet):
+                yield obj
 
 
 def load_packet_map(protocol: Union[int, str], *, debug: bool = False) -> PacketMap:
