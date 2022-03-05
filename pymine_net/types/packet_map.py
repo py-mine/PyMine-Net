@@ -22,7 +22,11 @@ class StatePacketMap:
 
     @classmethod
     def from_list(
-        cls, state: GameState, packets: List[Type[Packet]], *, check_duplicates: bool = False
+        cls,
+        state: GameState,
+        packets: List[Type[Packet]],
+        *,
+        check_duplicates: bool = False,
     ) -> StatePacketMap:
         server_bound = {}
         client_bound = {}
