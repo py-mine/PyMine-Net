@@ -14,6 +14,7 @@ class Packet(StrictABC):
 
     :cvar id: Packet identification number. Defaults to None.
     """
+
     id: ClassVar[Optional[int]] = None
 
 

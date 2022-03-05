@@ -34,11 +34,15 @@ class StatePacketMap:
         for packet in packets:
             if issubclass(packet, ServerBoundPacket):
                 if check_duplicates and packet.id in server_bound:
-                    raise DuplicatePacketIdError("unknown", state, packet.id, PacketDirection.SERVERBOUND)
+                    raise DuplicatePacketIdError(
+                        "unknown", state, packet.id, PacketDirection.SERVERBOUND
+                    )
                 server_bound[packet.id] = packet
             if issubclass(packet, ClientBoundPacket):
                 if check_duplicates and packet.id in client_bound:
-                    raise DuplicatePacketIdError("unknown", state, packet.id, PacketDirection.CLIENTBOUND)
+                    raise DuplicatePacketIdError(
+                        "unknown", state, packet.id, PacketDirection.CLIENTBOUND
+                    )
                 client_bound[packet.id] = packet
 
         return cls(state, server_bound, client_bound)

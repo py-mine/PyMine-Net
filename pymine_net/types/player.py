@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import random
 import struct
-from typing import Dict, List, Optional, Set
 from dataclasses import dataclass
+from typing import Dict, List, Optional, Set
 from uuid import UUID
 
 import pymine_net.types.nbt as nbt
