@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import random
 import struct
-from dataclasses import dataclass
 from typing import Dict, List, Optional, Set
 from uuid import UUID
 
@@ -11,11 +10,13 @@ from pymine_net.enums import ChatMode, GameMode, MainHand, SkinPart
 from pymine_net.types.vector import Rotation, Vector3
 
 
-@dataclass(slots=True)
 class PlayerProperty:
-    name: str
-    value: str
-    signature: Optional[str] = None
+    __slots__ = ("name", "value", "signature")
+
+    def __init__(self, name: str, value: str, signature: Optional[str] = None):
+        self.name = name
+        self.value = value
+        self.signature = signature
 
 
 class Player:
