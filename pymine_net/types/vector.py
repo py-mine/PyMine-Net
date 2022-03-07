@@ -1,27 +1,28 @@
-from dataclasses import dataclass
 from typing import Generic, TypeVar
 
 T = TypeVar("T", bound=float)
 
 
-@dataclass(slots=True)
 class Vector3(Generic[T]):
     """
     Stores three numeric values: x, y, z.
     - Used for position and movement data in the Player class.
     """
+    __slots__ = ("x", "y", "z")
 
-    x: T
-    y: T
-    z: T
+    def __init__(self, x: T, y: T, z: T):
+        self.x = x
+        self.y = y
+        self.z = z
 
 
-@dataclass(slots=True)
 class Rotation(Generic[T]):
     """
     Stores the pitch and yaw values of a rotation.
     - Used for storing rotation data in the Player class.
     """
+    __slots__ = ("yaw", "pitch")
 
-    yaw: T
-    pitch: T
+    def __init__(self, yaw: T, pitch: T):
+        self.yaw = yaw
+        self.pitch = pitch
