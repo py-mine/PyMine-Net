@@ -8,7 +8,7 @@ from pymine_net.types.packet import ClientBoundPacket, Packet, ServerBoundPacket
 
 
 class StatePacketMap:
-    """Stores a game state's packets seperated into serverbound and clientbound."""
+    """Stores a game state's packets separated into serverbound and clientbound."""
 
     def __init__(
         self,
@@ -22,36 +22,30 @@ class StatePacketMap:
 
     @classmethod
     def from_list(
-        cls, state: GameState, packets: List[Type[Packet]], *, check_duplicates: bool = False
+        cls,
+        state: GameState,
+        packets: List[Type[Packet]],
+        *,
+        check_duplicates: bool = False,
     ) -> StatePacketMap:
-        self = cls(
-            state,
-            {p.id: p for p in packets if issubclass(p, ServerBoundPacket)},
-            {p.id: p for p in packets if issubclass(p, ClientBoundPacket)},
-        )
+        server_bound = {}
+        client_bound = {}
 
-        if check_duplicates:
-            for packet_id in self.server_bound.keys():
-                found = [
-                    p for p in packets if p.id == packet_id and issubclass(p, ServerBoundPacket)
-                ]
-
-                if len(found) > 1:
+        for packet in packets:
+            if issubclass(packet, ServerBoundPacket):
+                if check_duplicates and packet.id in server_bound:
                     raise DuplicatePacketIdError(
-                        "unknown", state, packet_id, PacketDirection.SERVERBOUND
+                        "unknown", state, packet.id, PacketDirection.SERVERBOUND
                     )
-
-            for packet_id in self.client_bound.keys():
-                found = [
-                    p for p in packets if p.id == packet_id and issubclass(p, ClientBoundPacket)
-                ]
-
-                if len(found) > 1:
+                server_bound[packet.id] = packet
+            if issubclass(packet, ClientBoundPacket):
+                if check_duplicates and packet.id in client_bound:
                     raise DuplicatePacketIdError(
-                        "unknown", state, packet_id, PacketDirection.CLIENTBOUND
+                        "unknown", state, packet.id, PacketDirection.CLIENTBOUND
                     )
+                client_bound[packet.id] = packet
 
-        return self
+        return cls(state, server_bound, client_bound)
 
 
 class PacketMap:
@@ -64,7 +58,7 @@ class PacketMap:
     def __getitem__(self, key: Tuple[PacketDirection, GameState, int]) -> Packet:
         direction, state, packet_id = key
 
-        if direction == PacketDirection.CLIENTBOUND:
+        if direction is PacketDirection.CLIENTBOUND:
             return self.packets[state].client_bound[packet_id]
 
         return self.packets[state].server_bound[packet_id]

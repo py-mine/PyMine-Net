@@ -19,7 +19,7 @@ jobs:
       - name: autoblack_fix
         if: steps.black-check.outcome != 'success' && github.event_name != 'pull_request'
         run: black --config pyproject.toml .
-      
+
       - name: autoblack_mark
         if: steps.black-check.outcome != 'success' && github.event_name == 'pull_request'
         run: |
@@ -27,7 +27,7 @@ jobs:
           do
             echo -e "::warning file=$s,line=0,title=Reformatting Needed::This file needs reformatting with black"
           done
-         
+
       - name: isort_check
         id: isort-check
         continue-on-error: true
@@ -36,7 +36,7 @@ jobs:
       - name: isort_fix
         if: steps.isort-check.outcome != 'success'
         run: isort .
-      
+
       - name: publish
         if: steps.black-check.outcome != 'success' && github.event_name != 'pull_request'
         run: |
