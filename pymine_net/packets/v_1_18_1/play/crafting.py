@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pymine_net.types.buffer import Buffer
 from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
@@ -177,7 +177,7 @@ class PlayUnlockRecipes(ClientBoundPacket):
         smoker_book_open: bool,
         smoker_book_filter_active: bool,
         recipe_ids_1: List[str],
-        recipe_ids_2: List[list] = None,
+        recipe_ids_2: Optional[List[list]] = None,
     ):
         super().__init__()
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 import pymine_net.types.nbt as nbt
@@ -804,8 +804,8 @@ class PlayFacePlayer(ClientBoundPacket):
         target_y: float,
         target_z: float,
         is_entity: bool,
-        entity_id: int = None,
-        entity_feet_or_eyes: int = None,
+        entity_id: Optional[int] = None,
+        entity_feet_or_eyes: Optional[int] = None,
     ):
         super().__init__()
 
