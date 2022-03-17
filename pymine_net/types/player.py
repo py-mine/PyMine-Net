@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import random
 import struct
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, TypeVar, Union
 from uuid import UUID
 
 import pymine_net.types.nbt as nbt
 from pymine_net.enums import ChatMode, GameMode, MainHand, SkinPart
 from pymine_net.types.vector import Rotation, Vector3
+
+T = TypeVar("T")
 
 
 class PlayerProperty:
@@ -58,7 +60,7 @@ class Player:
 
         self._data[key] = value
 
-    def get(self, key: str, default: object = None) -> Optional[nbt.TAG]:
+    def get(self, key: str, default: T = None) -> Union[Optional[nbt.TAG], T]:
         """Gets an NBT tag from the internal NBT compound tag."""
 
         try:
