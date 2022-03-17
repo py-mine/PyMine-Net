@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Literal, Tuple, Type, Union, TYPE_CHECKING, overload
+from typing import TYPE_CHECKING, Dict, List, Literal, Tuple, Type, Union, overload
 
 from pymine_net.enums import GameState, PacketDirection
 from pymine_net.errors import DuplicatePacketIdError

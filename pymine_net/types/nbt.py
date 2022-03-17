@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import gzip
 import struct
-from typing import Type, List, Optional
+from typing import List, Optional, Type
 
 from mutf8 import decode_modified_utf8, encode_modified_utf8
 

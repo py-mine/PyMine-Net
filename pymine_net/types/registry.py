@@ -1,4 +1,4 @@
-from typing import Any, Mapping, Sequence, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence
 
 if TYPE_CHECKING:
     from typing_extensions import Self

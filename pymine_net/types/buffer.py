@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 import struct
 import uuid
-from typing import Callable, Dict, Optional, Tuple, Union, TYPE_CHECKING, TypeVar, cast
 from functools import partial
+from typing import TYPE_CHECKING, Callable, Dict, Optional, Tuple, TypeVar, Union, cast
 
 from pymine_net.enums import Direction, EntityModifier, Pose
 from pymine_net.types import nbt
