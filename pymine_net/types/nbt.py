@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import gzip
 import struct
-from typing import List, Optional
+from typing import Type, List, Optional
 
 from mutf8 import decode_modified_utf8, encode_modified_utf8
 
@@ -25,7 +25,7 @@ __all__ = (
     "unpack",
 )
 
-TYPES: List[TAG] = []
+TYPES: List[Type[TAG]] = []
 
 
 def unpack(buf, root_is_full: bool = True) -> TAG_Compound:
