@@ -1,60 +1,46 @@
-from typing import Dict, Generic, Iterable, Mapping, Optional, TypeVar, Union, cast, overload
-
-K = TypeVar("K")
-V = TypeVar("V")
+from typing import Any, Mapping, Sequence, Union
 
 __all__ = ("Registry",)
 
 
-class Registry(Generic[K, V]):
+class Registry:
     """Stores various Minecraft data like block types, block states, particles, fluids, entities, and more."""
 
-    data: Dict[K, V]
-    data_reversed: Dict[V, K]
-
-    @overload
     def __init__(
         self,
-        data: Iterable[V],
-        data_reversed: Optional[Iterable[V]] = None,
+        data: Union[Mapping, Sequence],
+        data_reversed: Mapping = None,
     ):
-        ...
+        """
+        Makes a doubly hashed map, providing O(1) lookups for both keys and values.
 
-    @overload
-    def __init__(
-        self,
-        data: Mapping[K, V],
-        data_reversed: Optional[Mapping[V, K]] = None,
-    ):
-        ...
+        If data_reversed is specified, we use it for the reverse map instead of autogenerating
+        one from data  by simply swapping keys and values.
 
-    def __init__(
-        self,
-        data: Union[Iterable[V], Mapping[K, V]],
-        data_reversed: Optional[Union[Iterable[V], Mapping[V, K]]] = None,
-    ):
+        If data is given as an iterable, we treat the positions as IDs (keys) and the elements as values.
+        """
+        if data_reversed is not None and not isinstance(data_reversed, Mapping):
+            raise TypeError(f"data_reversed must be a Mapping, got {type(data_reversed)}.")
+
         if isinstance(data, Mapping):
-            data = cast(Mapping[K, V], data)
             self.data = dict(data)
-            if data_reversed is None:
-                self.data_reversed = {v: k for k, v in data.items()}
-            else:
-                data_reversed = cast(Mapping[V, K], data_reversed)
-                self.data_reversed = dict(data_reversed)
-        # When we get an iterable, we want to treat the positions as the
-        # IDs for the values and the elements as keys.
-        elif isinstance(data, (list, tuple)):
+        elif isinstance(data, Sequence):
             self.data = {v: i for i, v in enumerate(data)}
-            self.data_reversed = data
         else:
-            raise TypeError(f"Can't make registry from {type(data)}, must be Iterable/Mapping.")
+            raise TypeError(f"Can't make registry from {type(data)}, must be Sequence/Mapping.")
 
-    def encode(self, key: K) -> V:
+        # Generate reverse mapping if it wasn't passed directly
+        if data_reversed is None:
+            self.data_reversed = {v: k for k, v in self.data.items()}
+        else:
+            self.data_reversed = data_reversed
+
+    def encode(self, key: Any) -> Any:
         """Key -> value, most likely an identifier to an integer."""
 
         return self.data[key]
 
-    def decode(self, value: V) -> K:
+    def decode(self, value: Any) -> Any:
         """Value -> key, most likely a numeric id to a string identifier."""
 
         return self.data_reversed[value]
