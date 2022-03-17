@@ -6,7 +6,7 @@ from typing import Union
 class Chat:
     """
     Stores Minecraft chat/message data.
-    - Used for chat messages, disconnect messages, chat messages, and anything else needing chat formatting.
+    - Used for chat messages, disconnect messages, and anything else needing chat formatting.
     """
 
     def __init__(self, data: Union[str, dict]):
@@ -16,4 +16,6 @@ class Chat:
             self.data = data
 
     def __eq__(self, other: Chat) -> bool:
+        if not isinstance(other, Chat):
+            return NotImplemented
         return self.data == other.data

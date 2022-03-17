@@ -41,10 +41,11 @@ class Registry(Generic[K, V]):
             else:
                 data_reversed = cast(Mapping[V, K], data_reversed)
                 self.data_reversed = dict(data_reversed)
-        elif isinstance(data, Iterable):
-            data = cast(Iterable[V], data)
-            self.data = cast(Dict[K, V], {i: v for i, v in enumerate(data)})
-            self.data_reversed = {v: i for i, v in self.data.items()}
+        # When we get an iterable, we want to treat the positions as the
+        # IDs for the values and the elements as keys.
+        elif isinstance(data, (list, tuple)):
+            self.data = {v: i for i, v in enumerate(data)}
+            self.data_reversed = data
         else:
             raise TypeError(f"Can't make registry from {type(data)}, must be Iterable/Mapping.")
 

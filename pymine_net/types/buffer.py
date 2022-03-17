@@ -1,10 +1,10 @@
 from __future__ import annotations
-from functools import partial
 
 import json
 import struct
 import uuid
 from typing import Callable, Dict, Optional, Tuple, Union, TYPE_CHECKING, TypeVar, cast
+from functools import partial
 
 from pymine_net.enums import Direction, EntityModifier, Pose
 from pymine_net.types import nbt
@@ -460,6 +460,8 @@ class Buffer(bytearray):
             if v is not None:
                 self.write_position(*v)
 
+        # Define a switch dict, which holds functions taking
+        # one argument (value) for each type number.
         sw = {
             0: partial(self.write, "b"),
             1: partial(self.write_varint),

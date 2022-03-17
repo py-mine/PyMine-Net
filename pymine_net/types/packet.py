@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from typing import ClassVar, Optional
 
 from pymine_net.strict_abc import StrictABC, optionalabstractmethod
 from pymine_net.types.buffer import Buffer
@@ -11,19 +12,16 @@ __all__ = ("Packet", "ServerBoundPacket", "ClientBoundPacket")
 class Packet(StrictABC):
     """Base Packet class.
 
-    :param int id: Packet identification number. Defaults to None.
-    :ivar id:
+    :cvar id: Packet identification number. Defaults to None.
     """
 
-    def __init__(self):
-        self.id: int = self.__class__.id
+    id: ClassVar[Optional[int]] = None
 
 
 class ServerBoundPacket(Packet):
     """Base Packet class for packets received from the client. (Client -> Server)
 
-    :param int id: Packet identification number. Defaults to None.
-    :ivar id:
+    :cvar id: Packet identification number. Defaults to None.
     """
 
     @optionalabstractmethod
@@ -39,8 +37,7 @@ class ServerBoundPacket(Packet):
 class ClientBoundPacket(Packet):
     """Base Packet class for packets to be sent from the server. (Server -> Client)
 
-    :param int id: Packet identification number. Defaults to None.
-    :ivar id:
+    :cvar id: Packet identification number. Defaults to None.
     """
 
     @abstractmethod

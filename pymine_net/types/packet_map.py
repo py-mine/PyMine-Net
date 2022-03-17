@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class StatePacketMap:
-    """Stores a game state's packets seperated into serverbound and clientbound."""
+    """Stores a game state's packets separated into serverbound and clientbound."""
 
     def __init__(
         self,
@@ -40,7 +40,7 @@ class StatePacketMap:
                         "unknown", state, packet.id, PacketDirection.SERVERBOUND
                     )
                 server_bound[packet.id] = packet
-            elif issubclass(packet, ClientBoundPacket):
+            if issubclass(packet, ClientBoundPacket):
                 if check_duplicates and packet.id in client_bound:
                     raise DuplicatePacketIdError(
                         "unknown", state, packet.id, PacketDirection.CLIENTBOUND

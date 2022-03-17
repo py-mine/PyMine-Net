@@ -107,7 +107,7 @@ class LoginEncryptionResponse(ServerBoundPacket):
 
 
 class LoginSuccess(ClientBoundPacket):
-    """Sent by the server to denote a successfull login. (Server -> Client)
+    """Sent by the server to denote a successful login. (Server -> Client)
 
     :param UUID uuid: The UUID of the connecting player/client.
     :param str username: The username of the connecting player/client.
