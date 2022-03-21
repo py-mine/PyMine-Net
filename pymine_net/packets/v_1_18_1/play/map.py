@@ -86,7 +86,7 @@ class PlayMapData(ClientBoundPacket):
 
         buf.write("B", self.columns)
 
-        if len(self.columns) < 1:
+        if self.columns < 1:
             return buf
 
         return (
