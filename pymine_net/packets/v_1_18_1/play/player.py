@@ -787,6 +787,8 @@ class PlayPlayerInfo(ClientBoundPacket):
             for player in self.players:
                 buf.write_uuid(player.uuid)
 
+        return buf
+
 
 class PlayFacePlayer(ClientBoundPacket):
     """Used by the server to rotate the client player to face the given location or entity. (Server -> Client)
