@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List, Optional, cast
 from uuid import UUID
 
 import pymine_net.types.nbt as nbt
@@ -314,7 +314,12 @@ class PlayPlayerPositionServerBound(ServerBoundPacket):
 
     @classmethod
     def unpack(cls, buf: Buffer) -> PlayPlayerPositionServerBound:
-        return cls(buf.read("d"), buf.read("d"), buf.read("d"), buf.read("?"))
+        return cls(
+            cast(int, buf.read("d")),
+            cast(int, buf.read("d")),
+            cast(int, buf.read("d")),
+            cast(bool, buf.read("?"))
+        )
 
 
 class PlayPlayerPositionAndRotationServerBound(ServerBoundPacket):
@@ -352,12 +357,12 @@ class PlayPlayerPositionAndRotationServerBound(ServerBoundPacket):
     @classmethod
     def unpack(cls, buf: Buffer) -> PlayPlayerPositionAndRotationServerBound:
         return cls(
-            buf.read("d"),
-            buf.read("d"),
-            buf.read("d"),
-            buf.read("f"),
-            buf.read("f"),
-            buf.read("?"),
+            cast(int, buf.read("d")),
+            cast(int, buf.read("d")),
+            cast(int, buf.read("d")),
+            cast(float, buf.read("f")),
+            cast(float, buf.read("f")),
+            cast(bool, buf.read("?")),
         )
 
 
@@ -416,7 +421,11 @@ class PlayPlayerRotation(ServerBoundPacket):
 
     @classmethod
     def unpack(cls, buf: Buffer) -> PlayPlayerRotation:
-        return cls(buf.read("f"), buf.read("f"), buf.read("?"))
+        return cls(
+            cast(float, buf.read("f")),
+            cast(float, buf.read("f")),
+            cast(bool, buf.read("?"))
+        )
 
 
 class PlayPlayerMovement(ServerBoundPacket):
@@ -436,7 +445,7 @@ class PlayPlayerMovement(ServerBoundPacket):
 
     @classmethod
     def unpack(cls, buf: Buffer) -> PlayPlayerMovement:
-        return cls(buf.read("?"))
+        return cls(cast(bool, buf.read("?")))
 
 
 class PlayTeleportConfirm(ServerBoundPacket):
@@ -530,11 +539,11 @@ class PlayClientSettings(ServerBoundPacket):
             buf.read_string(),
             buf.read_byte(),
             buf.read_varint(),
-            buf.read("?"),
-            buf.read("B"),
+            cast(bool, buf.read("?")),
+            cast(int, buf.read("B")),
             buf.read_varint(),
-            buf.read("?"),
-            buf.read("?"),
+            cast(bool, buf.read("?")),
+            cast(bool, buf.read("?")),
         )
 
 
@@ -558,7 +567,10 @@ class PlayCreativeInventoryAction(ServerBoundPacket):
 
     @classmethod
     def unpack(cls, buf: Buffer) -> PlayCreativeInventoryAction:
-        return cls(buf.read("h"), buf.read_slot())
+        return cls(
+            cast(int, buf.read("h")),
+            buf.read_slot(),  # TODO: This is missing a Registry parameter?
+        )
 
 
 class PlaySpectate(ServerBoundPacket):
