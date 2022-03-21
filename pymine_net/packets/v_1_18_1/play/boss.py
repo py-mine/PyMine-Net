@@ -32,7 +32,7 @@ class PlayBossBar(ClientBoundPacket):
         self.data = data
 
     def pack(self) -> Buffer:
-        buf = Buffer.write_uuid(self.uuid).write_varint(self.action)
+        buf = Buffer().write_uuid(self.uuid).write_varint(self.action)
 
         if self.action == 0:
             buf.write_chat(self.data["title"]).write("f", self.data["health"]).write_varint(
