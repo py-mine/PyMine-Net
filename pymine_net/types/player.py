@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import random
 import struct
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, TypeVar, Union
 from uuid import UUID
 
 import pymine_net.types.nbt as nbt
 from pymine_net.enums import ChatMode, GameMode, MainHand, SkinPart
 from pymine_net.types.vector import Rotation, Vector3
+
+T = TypeVar("T")
 
 
 class PlayerProperty:
@@ -30,14 +32,14 @@ class Player:
         ] = data  # typehinted as Dict[str, nbt.TAG] for ease of development
 
         # attributes like player settings not stored in Player._data
-        self.username: str = None
+        self.username: Optional[str] = None
         self.properties: List[PlayerProperty] = []
         self.latency = -1
-        self.display_name: str = None
+        self.display_name: Optional[str] = None
 
         # attributes from PlayClientSettings packet
-        self.locale: str = None
-        self.view_distance: int = None
+        self.locale: Optional[str] = None
+        self.view_distance: Optional[int] = None
         self.chat_mode: ChatMode = ChatMode.ENABLED
         self.chat_colors: bool = True
         self.displayed_skin_parts: Set[SkinPart] = set()
@@ -58,7 +60,7 @@ class Player:
 
         self._data[key] = value
 
-    def get(self, key: str, default: object = None) -> Optional[nbt.TAG]:
+    def get(self, key: str, default: T = None) -> Union[Optional[nbt.TAG], T]:
         """Gets an NBT tag from the internal NBT compound tag."""
 
         try:

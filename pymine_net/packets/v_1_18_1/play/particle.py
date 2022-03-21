@@ -73,5 +73,5 @@ class PlayParticle(ClientBoundPacket):
             .write("f", self.offset_z)
             .write("f", self.particle_data)
             .write("i", self.particle_count)
-            .write_particle(self.data)
+            .write_particle(**self.data)
         )

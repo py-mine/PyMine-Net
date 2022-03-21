@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from typing import Dict, List, Tuple, Type, Union
+from typing import TYPE_CHECKING, Dict, List, Literal, Tuple, Type, Union, overload
 
 from pymine_net.enums import GameState, PacketDirection
 from pymine_net.errors import DuplicatePacketIdError
-from pymine_net.types.packet import ClientBoundPacket, Packet, ServerBoundPacket
+from pymine_net.types.packet import ClientBoundPacket, ServerBoundPacket
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class StatePacketMap:
@@ -24,13 +27,12 @@ class StatePacketMap:
     def from_list(
         cls,
         state: GameState,
-        packets: List[Type[Packet]],
+        packets: List[Union[Type[ServerBoundPacket], Type[ClientBoundPacket]]],
         *,
         check_duplicates: bool = False,
-    ) -> StatePacketMap:
+    ) -> Self:
         server_bound = {}
         client_bound = {}
-
         for packet in packets:
             if issubclass(packet, ServerBoundPacket):
                 if check_duplicates and packet.id in server_bound:
@@ -44,6 +46,10 @@ class StatePacketMap:
                         "unknown", state, packet.id, PacketDirection.CLIENTBOUND
                     )
                 client_bound[packet.id] = packet
+            else:
+                raise TypeError(
+                    f"Expected ServerBoundPacket or ClientBoundPacket, got {packet} ({type(packet)})"
+                )
 
         return cls(state, server_bound, client_bound)
 
@@ -55,8 +61,22 @@ class PacketMap:
         self.protocol = protocol
         self.packets = packets
 
-    def __getitem__(self, key: Tuple[PacketDirection, GameState, int]) -> Packet:
-        direction, state, packet_id = key
+    @overload
+    def __getitem__(
+        self, __key: Tuple[Literal[PacketDirection.CLIENTBOUND], GameState, int]
+    ) -> Type[ClientBoundPacket]:
+        ...
+
+    @overload
+    def __getitem__(
+        self, __key: Tuple[Literal[PacketDirection.SERVERBOUND], GameState, int]
+    ) -> Type[ServerBoundPacket]:
+        ...
+
+    def __getitem__(
+        self, __key: Tuple[PacketDirection, GameState, int]
+    ) -> Union[Type[ClientBoundPacket], Type[ServerBoundPacket]]:
+        direction, state, packet_id = __key
 
         if direction is PacketDirection.CLIENTBOUND:
             return self.packets[state].client_bound[packet_id]
