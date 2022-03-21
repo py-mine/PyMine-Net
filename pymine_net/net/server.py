@@ -46,7 +46,7 @@ class AbstractProtocolServerClient(StrictABC):
 
         # attempt to get packet class from given state and packet id
         try:
-            packet_class: Type[ClientBoundPacket] = self.packet_map[
+            packet_class: Type[ServerBoundPacket] = self.packet_map[
                 PacketDirection.SERVERBOUND, self.state, packet_id
             ]
         except KeyError:
