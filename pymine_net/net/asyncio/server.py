@@ -30,7 +30,11 @@ class AsyncProtocolServer(AbstractProtocolServer):
 
         self.connected_clients: Dict[Tuple[str, int], AsyncProtocolServerClient] = {}
 
-        self.server: asyncio.AbstractServer = None
+        # We type-ignore this assignment since we don't expect it to stay as None
+        # it should be set in run function which is expected to be ran after init
+        # this avoids further type-ignores or casts whenever it'd be used, to tell
+        # type checker that it won't actually be None.
+        self.server: asyncio.AbstractServer = None  # type: ignore
 
     async def run(self) -> None:
         self.server = await asyncio.start_server(self._client_connected_cb, self.host, self.port)
