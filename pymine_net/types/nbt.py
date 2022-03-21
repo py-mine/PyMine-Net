@@ -154,7 +154,7 @@ class TAG_Byte(TAG):
 
     id = 1
 
-    def __init__(self, name: str, data: int):
+    def __init__(self, name: Optional[str], data: int):
         super().__init__(name)
 
         self.data = data
@@ -177,7 +177,7 @@ class TAG_Short(TAG):
 
     id = 2
 
-    def __init__(self, name: str, data: int):
+    def __init__(self, name: Optional[str], data: int):
         super().__init__(name)
 
         self.data = data
@@ -200,7 +200,7 @@ class TAG_Int(TAG):
 
     id = 3
 
-    def __init__(self, name: str, data: int):
+    def __init__(self, name: Optional[str], data: int):
         super().__init__(name)
 
         self.data = data
@@ -223,7 +223,7 @@ class TAG_Long(TAG):
 
     id = 4
 
-    def __init__(self, name: str, data: int):
+    def __init__(self, name: Optional[str], data: int):
         super().__init__(name)
 
         self.data = data
@@ -246,7 +246,7 @@ class TAG_Float(TAG):
 
     id = 5
 
-    def __init__(self, name: str, data: float):
+    def __init__(self, name: Optional[str], data: float):
         super().__init__(name)
 
         self.data = data
@@ -269,7 +269,7 @@ class TAG_Double(TAG):
 
     id = 6
 
-    def __init__(self, name: str, data: float):
+    def __init__(self, name: Optional[str], data: float):
         super().__init__(name)
 
         self.data = data
@@ -292,7 +292,7 @@ class TAG_Byte_Array(TAG, bytearray):
 
     id = 7
 
-    def __init__(self, name: str, data: bytearray):
+    def __init__(self, name: Optional[str], data: bytearray):
         TAG.__init__(self, name)
 
         if isinstance(data, str):
@@ -322,7 +322,7 @@ class TAG_String(TAG):
 
     id = 8
 
-    def __init__(self, name: str, data: str):
+    def __init__(self, name: Optional[str], data: str):
         super().__init__(name)
 
         self.data = data
@@ -349,7 +349,7 @@ class TAG_List(TAG, list):
 
     id = 9
 
-    def __init__(self, name: str, data: List[TAG]):
+    def __init__(self, name: Optional[str], data: List[TAG]):
         TAG.__init__(self, name)
         list.__init__(self, data)
 
@@ -387,7 +387,7 @@ class TAG_Compound(TAG, dict):
 
     id = 10
 
-    def __init__(self, name: str, data: List[TAG]):
+    def __init__(self, name: Optional[str], data: List[TAG]):
         TAG.__init__(self, name)
         dict.__init__(self, [(t.name, t) for t in data])
 
@@ -439,7 +439,7 @@ class TAG_Int_Array(TAG, list):
 
     id = 11
 
-    def __init__(self, name: str, data: list):
+    def __init__(self, name: Optional[str], data: list):
         TAG.__init__(self, name)
         list.__init__(self, data)
 
@@ -468,7 +468,7 @@ class TAG_Long_Array(TAG, list):
 
     id = 12
 
-    def __init__(self, name: str, data: List[int]):
+    def __init__(self, name: Optional[str], data: List[int]):
         TAG.__init__(self, name)
         list.__init__(self, data)
 
