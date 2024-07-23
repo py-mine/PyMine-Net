@@ -47,10 +47,10 @@ class PlayMapData(ClientBoundPacket):
         tracking_pos: bool,
         icons: List[Tuple[int, int, int, int, bool, Optional[Chat]]],
         columns: int,
-        rows: int = None,
-        x: int = None,
-        z: int = None,
-        data: bytes = None,
+        rows: Optional[int] = None,
+        x: Optional[int] = None,
+        z: Optional[int] = None,
+        data: Optional[bytes] = None,
     ):
         super().__init__()
 
@@ -86,7 +86,7 @@ class PlayMapData(ClientBoundPacket):
 
         buf.write("B", self.columns)
 
-        if len(self.columns) < 1:
+        if self.columns < 1:
             return buf
 
         return (

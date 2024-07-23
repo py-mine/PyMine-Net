@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from pymine_net.strict_abc import StrictABC, optionalabstractmethod
 from pymine_net.types.buffer import Buffer
@@ -12,10 +12,10 @@ __all__ = ("Packet", "ServerBoundPacket", "ClientBoundPacket")
 class Packet(StrictABC):
     """Base Packet class.
 
-    :cvar id: Packet identification number. Defaults to None.
+    :cvar id: Packet identification number.
     """
 
-    id: ClassVar[Optional[int]] = None
+    id: ClassVar[int]
 
 
 class ServerBoundPacket(Packet):

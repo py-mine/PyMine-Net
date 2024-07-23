@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import Optional
 
 from strict_abc import StrictABC
 
@@ -17,7 +18,7 @@ class AbstractBlockPalette(StrictABC):
         pass
 
     @abstractmethod
-    def encode(self, block: str, props: dict = None) -> int:
+    def encode(self, block: str, props: Optional[dict] = None) -> int:
         pass
 
     @abstractmethod

@@ -4,12 +4,18 @@ import json
 import struct
 import uuid
 from functools import partial
-from typing import Callable, Dict, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Callable, Dict, Optional, Tuple, TypeVar, Union, cast
 
 from pymine_net.enums import Direction, EntityModifier, Pose
 from pymine_net.types import nbt
 from pymine_net.types.chat import Chat
 from pymine_net.types.registry import Registry
+
+if TYPE_CHECKING:
+    from typing_extensions import Self, TypeAlias
+
+T = TypeVar("T")
+JsonCompatible: TypeAlias = Union[dict, list, str, int, float, bool, None]
 
 __all__ = ("Buffer",)
 
@@ -21,12 +27,12 @@ class Buffer(bytearray):
         super().__init__(*args, **kwargs)
         self.pos = 0
 
-    def write_bytes(self, data: Union[bytes, bytearray]) -> Buffer:
+    def write_bytes(self, data: Union[bytes, bytearray]) -> Self:
         """Writes bytes to the buffer."""
 
         return self.extend(data)
 
-    def read_bytes(self, length: int = None) -> bytearray:
+    def read_bytes(self, length: Optional[int] = None) -> bytearray:
         """Reads bytes from the buffer, if length is None then all bytes are read."""
 
         if length is None:
@@ -48,7 +54,7 @@ class Buffer(bytearray):
 
         self.pos = 0
 
-    def extend(self, data: Union[Buffer, bytes, bytearray]) -> Buffer:
+    def extend(self, data: Union[bytes, bytearray]) -> Self:
         super().extend(data)
         return self
 
@@ -59,7 +65,7 @@ class Buffer(bytearray):
         self.pos += 1
         return byte
 
-    def write_byte(self, value: int) -> Buffer:
+    def write_byte(self, value: int) -> Self:
         """Writes a singular byte passed as an integer to the buffer."""
 
         return self.extend(struct.pack(">b", value))
@@ -74,19 +80,19 @@ class Buffer(bytearray):
 
         return unpacked
 
-    def write(self, fmt: str, *value: object) -> Buffer:
+    def write(self, fmt: str, *value: object) -> Self:
         """Using the given format and value, packs the value and writes it to the buffer."""
 
         self.write_bytes(struct.pack(">" + fmt, *value))
         return self
 
-    def read_optional(self, reader: Callable) -> Optional[object]:
+    def read_optional(self, reader: Callable[[], T]) -> Optional[T]:
         """Reads an optional value from the buffer."""
 
         if self.read("?"):
             return reader()
 
-    def write_optional(self, writer: Callable, value: object = None) -> Buffer:
+    def write_optional(self, writer: Callable, value: Optional[object] = None) -> Self:
         """Writes an optional value to the buffer."""
 
         if value is None:
@@ -103,7 +109,7 @@ class Buffer(bytearray):
         value = 0
 
         for i in range(10):
-            byte = self.read("B")
+            byte = cast(int, self.read("B"))
             value |= (byte & 0x7F) << 7 * i
 
             if not byte & 0x80:
@@ -122,7 +128,7 @@ class Buffer(bytearray):
 
         return value
 
-    def write_varint(self, value: int, max_bits: int = 32) -> Buffer:
+    def write_varint(self, value: int, max_bits: int = 32) -> Self:
         """Writes a varint to the buffer."""
 
         value_max = (1 << (max_bits - 1)) - 1
@@ -157,7 +163,7 @@ class Buffer(bytearray):
 
         return value - 1
 
-    def write_optional_varint(self, value: int = None) -> Buffer:
+    def write_optional_varint(self, value: Optional[int] = None) -> Self:
         """Writes an optional (None if not present) varint to the buffer."""
 
         return self.write_varint(0 if value is None else value + 1)
@@ -167,7 +173,7 @@ class Buffer(bytearray):
 
         return self.read_bytes(self.read_varint(max_bits=16)).decode("utf-8")
 
-    def write_string(self, value: str) -> Buffer:
+    def write_string(self, value: str) -> Self:
         """Writes a string in UTF8 to the buffer."""
 
         encoded = value.encode("utf-8")
@@ -175,12 +181,12 @@ class Buffer(bytearray):
 
         return self
 
-    def read_json(self) -> object:
+    def read_json(self) -> JsonCompatible:
         """Reads json data from the buffer."""
 
         return json.loads(self.read_string())
 
-    def write_json(self, value: object) -> Buffer:
+    def write_json(self, value: JsonCompatible) -> Self:
         """Writes json data to the buffer."""
 
         return self.write_string(json.dumps(value))
@@ -190,7 +196,7 @@ class Buffer(bytearray):
 
         return nbt.unpack(self[self.pos :])
 
-    def write_nbt(self, value: nbt.TAG = None) -> Buffer:
+    def write_nbt(self, value: Optional[nbt.TAG] = None) -> Self:
         """Writes an nbt tag to the buffer."""
 
         if value is None:
@@ -205,7 +211,7 @@ class Buffer(bytearray):
 
         return uuid.UUID(bytes=bytes(self.read_bytes(16)))
 
-    def write_uuid(self, value: uuid.UUID) -> Buffer:
+    def write_uuid(self, value: uuid.UUID) -> Self:
         """Writes a UUID to the buffer."""
 
         return self.write_bytes(value.bytes)
@@ -219,7 +225,7 @@ class Buffer(bytearray):
 
             return num
 
-        data = self.read("Q")
+        data = cast(int, self.read("Q"))
 
         return (
             from_twos_complement(data >> 38, 26),
@@ -232,12 +238,12 @@ class Buffer(bytearray):
 
         return Chat(self.read_json())
 
-    def write_chat(self, value: Chat) -> Buffer:
+    def write_chat(self, value: Chat) -> Self:
         """Writes a chat message to the buffer."""
 
         return self.write_json(value.data)
 
-    def write_position(self, x: int, y: int, z: int) -> Buffer:
+    def write_position(self, x: int, y: int, z: int) -> Self:
         """Writes a Minecraft position (x, y, z) to the buffer."""
 
         def to_twos_complement(num, bits):
@@ -264,20 +270,21 @@ class Buffer(bytearray):
             "tag": self.read_nbt(),
         }
 
-    def write_slot(self, item_id: int = None, count: int = 1, tag: nbt.TAG = None) -> Buffer:
+    def write_slot(
+        self, item_id: Optional[int] = None, count: int = 1, tag: Optional[nbt.TAG] = None
+    ) -> Self:
         """Writes an inventory / container slot to the buffer."""
 
         if item_id is None:
-            self.write("?", False)
-        else:
-            self.write("?", True).write_varint(item_id).write("b", count).write_nbt(tag)
+            return self.write("?", False)
+        return self.write("?", True).write_varint(item_id).write("b", count).write_nbt(tag)
 
     def read_rotation(self) -> Tuple[float, float, float]:
         """Reads a rotation from the buffer."""
 
-        return self.read("fff")
+        return cast(Tuple[float, float, float], self.read("fff"))
 
-    def write_rotation(self, x: float, y: float, z: float) -> Buffer:
+    def write_rotation(self, x: float, y: float, z: float) -> Self:
         """Writes a rotation to the buffer."""
 
         return self.write("fff", x, y, z)
@@ -287,7 +294,7 @@ class Buffer(bytearray):
 
         return Direction(self.read_varint())
 
-    def write_direction(self, value: Direction) -> Buffer:
+    def write_direction(self, value: Direction) -> Self:
         """Writes a direction to the buffer."""
 
         return self.write_varint(value.value)
@@ -297,24 +304,24 @@ class Buffer(bytearray):
 
         return Pose(self.read_varint())
 
-    def write_pose(self, value: Pose) -> Buffer:
+    def write_pose(self, value: Pose) -> Self:
         """Writes a pose to the buffer."""
 
         return self.write_varint(value.value)
 
-    def write_recipe_item(self, value: Union[dict, str]) -> Buffer:
+    def write_recipe_item(self, value: Union[dict, str]) -> Self:
         """Writes a recipe item / slot to the buffer."""
 
         if isinstance(value, dict):
             self.write_slot(**value)
         elif isinstance(value, str):
-            self.write_slot(value)
+            self.write_slot(value)  # TODO: This function takes int, but we're passing str?
         else:
             raise TypeError(f"Invalid type {type(value)}.")
 
         return self
 
-    def write_ingredient(self, value: dict) -> Buffer:
+    def write_ingredient(self, value: dict) -> Self:
         """Writes a part of a recipe to the buffer."""
 
         self.write_varint(len(value))
@@ -322,7 +329,9 @@ class Buffer(bytearray):
         for slot in value.values():
             self.write_recipe_item(slot)
 
-    def write_recipe(self, recipe_id: str, recipe: dict) -> Buffer:
+        return self
+
+    def write_recipe(self, recipe_id: str, recipe: dict) -> Self:
         """Writes a recipe to the buffer."""
 
         recipe_type = recipe["type"]
@@ -380,7 +389,7 @@ class Buffer(bytearray):
             "level": self.read_varint(),
         }
 
-    def write_villager(self, kind: int, profession: int, level: int) -> Buffer:
+    def write_villager(self, kind: int, profession: int, level: int) -> Self:
         return self.write_varint(kind).write_varint(profession).write_varint(level)
 
     def write_trade(
@@ -394,8 +403,8 @@ class Buffer(bytearray):
         special_price: int,
         price_multi: float,
         demand: int,
-        in_item_2: dict = None,
-    ) -> Buffer:
+        in_item_2: Optional[dict] = None,
+    ) -> Self:
         self.write_slot(**in_item_1).write_slot(**out_item)
 
         if in_item_2 is not None:
@@ -425,11 +434,11 @@ class Buffer(bytearray):
             particle["blue"] = self.read("f")
             particle["scale"] = self.read("f")
         elif particle_id == 32:
-            particle["item"] = self.read_slot()
+            particle["item"] = self.read_slot()  # TODO: This function call is missing argument?
 
         return particle
 
-    def write_particle(self, **value) -> Buffer:
+    def write_particle(self, **value) -> Self:
         particle_id = value["particle_id"]
 
         if particle_id == 3 or particle_id == 23:
@@ -441,9 +450,10 @@ class Buffer(bytearray):
 
         return self
 
-    def write_entity_metadata(self, value: Dict[Tuple[int, int], object]) -> Buffer:
+    def write_entity_metadata(self, value: Dict[Tuple[int, int], object]) -> Self:
         def _f_10(v):
             """This is basically write_optional_position.
+
             It's defined here because the function is too complex to be a lambda,
             so instead we just refer to this definition in the switch dict."""
             self.write("?", v is not None)
@@ -484,12 +494,12 @@ class Buffer(bytearray):
         return self
 
     def read_modifier(self) -> Tuple[uuid.UUID, float, EntityModifier]:
-        return (self.read_uuid(), self.read("f"), EntityModifier(self.read("b")))
+        return (self.read_uuid(), cast(float, self.read("f")), EntityModifier(self.read("b")))
 
     def write_modifier(self, uuid_: uuid.UUID, amount: float, operation: EntityModifier):
         return self.write_uuid(uuid_).write("f", amount).write("b", operation)
 
-    def write_node(self, node: dict) -> Buffer:
+    def write_node(self, node: dict) -> Self:
         node_flags = node["flags"]
         self.write_byte(node_flags).write_varint(len(node["children"]))
 
@@ -513,3 +523,9 @@ class Buffer(bytearray):
             self.write_string(node["suggestions_type"])
 
         return self
+
+    def write_block(self, value: object):
+        # TODO: This method is not yet implemented, but it needs to be here
+        # so that pyright doesn't mind us referencing it in other places
+        # but it should be implemented as soon as possible
+        raise NotImplementedError()

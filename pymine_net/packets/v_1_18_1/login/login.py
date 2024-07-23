@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Optional
 from uuid import UUID
 
 from pymine_net.types.buffer import Buffer
@@ -190,7 +191,7 @@ class LoginPluginResponse(ServerBoundPacket):
 
     id = 0x02
 
-    def __init__(self, message_id: int, data: bytes = None):
+    def __init__(self, message_id: int, data: Optional[bytes] = None):
         self.message_id = message_id
         self.data = data
 
